@@ -78,6 +78,8 @@ type Project = {
   /** Optional hover media (e.g. GIF) shown over imageSrc while the card is hovered. */
   hoverImageSrc?: string;
   videoSrc?: string;
+  /** Uniform scale >1 crops letterboxing / side bars inside the rounded card. */
+  mediaZoom?: number;
   /** Full/uncropped Mux assets for ExperimentModal / ExperimentSiteEmbed. */
   popupImageSrc?: string;
   popupVideoSrc?: string;
@@ -200,6 +202,7 @@ const staticProjects: Project[] = [
     description: "A community for creators building together.",
     imageSrc: "",
     videoSrc: "/videos/creators-collective.mp4",
+    mediaZoom: 1.12,
     backgroundColor: "#ffffff",
   },
 ];
@@ -208,9 +211,15 @@ type ProjectMediaProps = {
   imageSrc: string;
   videoSrc?: string;
   hoverImageSrc?: string;
+  mediaZoom?: number;
 };
 
-const ProjectMedia = React.memo(function ProjectMedia({ imageSrc, videoSrc, hoverImageSrc }: ProjectMediaProps) {
+const ProjectMedia = React.memo(function ProjectMedia({
+  imageSrc,
+  videoSrc,
+  hoverImageSrc,
+  mediaZoom = 1,
+}: ProjectMediaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -274,6 +283,10 @@ const ProjectMedia = React.memo(function ProjectMedia({ imageSrc, videoSrc, hove
   }, []);
 
   if (videoSrc) {
+    const zoomStyle =
+      mediaZoom !== 1
+        ? { transform: `scale(${mediaZoom})`, transformOrigin: "center center" }
+        : undefined;
     return (
       <div
         ref={containerRef}
@@ -287,6 +300,7 @@ const ProjectMedia = React.memo(function ProjectMedia({ imageSrc, videoSrc, hove
             alt=""
             decoding="async"
             onLoad={() => setImageLoaded(true)}
+            style={zoomStyle}
             className={clsx(
               "absolute max-w-none object-cover size-full rounded-[26px] transition-opacity duration-500 ease-out pointer-events-none z-10",
               videoLoaded ? "opacity-0" : "opacity-100"
@@ -295,16 +309,18 @@ const ProjectMedia = React.memo(function ProjectMedia({ imageSrc, videoSrc, hove
         )}
         {isVisible && videoReady && (!imageSrc || imageLoaded) && (
           <>
-            <VideoPlayer
-              src={videoSrc}
-              className="absolute max-w-none object-cover rounded-[26px] size-full"
-              autoPlay
-              muted
-              loop
-              controls={false}
-              muxEnvKey="e4cc19a78gcf0tbtfmu4m7ruf"
-              onLoaded={() => setVideoLoaded(true)}
-            />
+            <div className="absolute inset-0" style={zoomStyle}>
+              <VideoPlayer
+                src={videoSrc}
+                className="absolute max-w-none object-cover rounded-[26px] size-full"
+                autoPlay
+                muted
+                loop
+                controls={false}
+                muxEnvKey="e4cc19a78gcf0tbtfmu4m7ruf"
+                onLoaded={() => setVideoLoaded(true)}
+              />
+            </div>
             <div className="absolute inset-0 z-[2] rounded-[26px] pointer-events-none" />
           </>
         )}
@@ -450,6 +466,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
             imageSrc={project.imageSrc}
             videoSrc={project.videoSrc}
             hoverImageSrc={project.hoverImageSrc}
+            mediaZoom={project.mediaZoom}
           />
           <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
           <div className="absolute bottom-0 left-0 p-3 hidden md:block">
@@ -525,6 +542,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           imageSrc={project.imageSrc}
           videoSrc={project.videoSrc}
           hoverImageSrc={project.hoverImageSrc}
+          mediaZoom={project.mediaZoom}
         />
         <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
       </div>
@@ -1212,9 +1230,7 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
                     isContactBadgeExpanded ? "opacity-20" : "opacity-100",
                   )}
                 >
-                  Building quality products for causes that matter.
-                  {" "}
-                  Currently at{" "}
+                  A 6x hackathon winner at{" "}
                   <HeroCompanyLink
                     href={HERO_COMPANY_HREFS.waterloo}
                     ariaLabel="University of Waterloo Systems Design Engineering"
@@ -1226,7 +1242,7 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
                       className="inline-block h-[1.15em] w-auto align-[-0.2em]"
                     />
                   </HeroCompanyLink>
-                  .
+                  {`, building quality products for causes that matter.`}
                 </span>
                 <span
                   className={clsx(
