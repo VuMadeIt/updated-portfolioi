@@ -34,7 +34,8 @@ test("uses large contact text and deeper intro fade on Work", () => {
 });
 
 test("updates the work hero copy and links company names out", () => {
-  assert.match(homeSource, /Building quality products for causes that matter at/);
+  assert.match(homeSource, /Building quality products for causes that matter\./);
+  assert.match(homeSource, /Currently at/);
   assert.doesNotMatch(homeSource, /Designing tools for human connection/);
   assert.doesNotMatch(homeSource, /Designing to spark/);
   assert.doesNotMatch(homeSource, /Designing products to spark/);
@@ -50,14 +51,20 @@ test("updates the work hero copy and links company names out", () => {
     /<br className="md:hidden" aria-hidden="true" \/>[\s\S]*?Previously at /,
   );
   assert.match(homeSource, /waterloo-crest\.png/);
-  assert.match(homeSource, /ariaLabel="University of Waterloo"/);
+  assert.match(
+    homeSource,
+    /ariaLabel="University of Waterloo Systems Design Engineering"/,
+  );
   assert.match(homeSource, /parrot: "https:\/\/www\.ycombinator\.com\/companies\/parrot"/);
   assert.match(
     homeSource,
     /systematicStorytelling: "https:\/\/www\.systematicstorytelling\.com\/"/,
   );
   assert.match(homeSource, /digitalExtremes: "https:\/\/www\.digitalextremes\.com\/"/);
-  assert.match(homeSource, /waterloo: "https:\/\/uwaterloo\.ca\/"/);
+  assert.match(
+    homeSource,
+    /waterloo:\s*"https:\/\/uwaterloo\.ca\/future-students\/programs\/systems-design-engineering"/,
+  );
   assert.match(homeSource, /target="_blank"/);
   assert.match(homeSource, /rel="noopener noreferrer"/);
   assert.match(homeSource, /INLINE_LINK_CLASS/);

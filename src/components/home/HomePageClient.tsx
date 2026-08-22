@@ -152,9 +152,9 @@ const staticProjects: Project[] = [
   },
   {
     id: "design-meetup",
-    title: "Design Meetup",
+    title: "Hack Canada",
     year: "2026",
-    description: "A new site for Design Meetup, a nationwide community I help run for designers & creatives!",
+    description: "A nationwide community I help run for builders & creatives.",
     imageSrc: designMeetupClip.imageSrc,
     videoSrc: designMeetupClip.videoSrc,
     popupImageSrc: designMeetupFull.imageSrc,
@@ -194,20 +194,13 @@ const staticProjects: Project[] = [
     ],
   },
   {
-    id: "sundays",
-    title: "Sundays",
+    id: "creators-collective",
+    title: "Creators Collective",
     year: "2026",
-    description: "A new site for Sundays, a weekly coworking session I help host for creatives in LA.",
-    imageSrc: "https://image.mux.com/RmmMHG2l02e02I3powzzRYb6qWuW00HwxAAcB7wo41FGo00/thumbnail.png?width=1920&time=0",
-    videoSrc: "https://stream.mux.com/RmmMHG2l02e02I3powzzRYb6qWuW00HwxAAcB7wo41FGo00.m3u8",
-    xLink: "https://x.com/michelletliu/status/2044470508641784033",
+    description: "A community for creators building together.",
+    imageSrc: "",
+    videoSrc: "/videos/creators-collective.mp4",
     backgroundColor: "#ffffff",
-    toolCategories: [
-      { label: 'UI & Motion', tools: ['Tailwind CSS', 'Framer Motion'] },
-      { label: 'Frontend', tools: ['Next.js', 'React', 'TypeScript'] },
-      { label: '3D', tools: ['Three.js', 'React Three Fiber'] },
-      { label: 'Content & Infra', tools: ['Notion API', 'Vercel'] },
-    ],
   },
 ];
 
@@ -371,7 +364,7 @@ function getExperimentLink(projectId: string): { href: string; label: string; ex
     case 'sketchbook': return { href: '/sketchbook', label: 'Try It Out!', external: false };
     case 'library': return { href: '/library', label: 'Try It Out!', external: false };
     case 'film': return { href: '/film', label: 'Try It Out!', external: false };
-    case 'sundays': return { href: 'https://sundays.rsvp', label: 'Visit Site', external: true };
+    case 'creators-collective': return null;
     case 'design-meetup': return { href: 'https://designmeetup.info', label: 'Visit Site', external: true };
     case 'gallery': return { href: '/gallery', label: 'Try It Out!', external: false };
     default: return null;
@@ -386,7 +379,7 @@ type ProjectCardProps = {
   index?: number;
 };
 
-const SIDE_PROJECT_IDS = ["design-meetup", "parrot", "gallery", "sundays"];
+const SIDE_PROJECT_IDS = ["design-meetup", "parrot", "gallery", "creators-collective"];
 /** Experiments kept in data/routes but omitted from the home experiments grid. */
 const HIDDEN_EXPERIMENT_IDS: string[] = [];
 /** Experiments that skip the preview modal and navigate straight to their page. */
@@ -840,6 +833,27 @@ function mergeWorkProjects(
     }
 
     if (SIDE_PROJECT_IDS.includes(project.id)) {
+      // Keep local hero videos (Parrot / Creators Collective) instead of Sanity Mux.
+      if (project.videoSrc && !project.videoSrc.includes("stream.mux.com")) {
+        const experimentData = experimentMap[project.id];
+        if (!experimentData) return project;
+        return {
+          ...project,
+          title:
+            project.id === "design-meetup"
+              ? "Hack Canada"
+              : experimentData.title || project.title,
+          year: experimentData.year || project.year,
+          description: experimentData.description || project.description,
+          xLink: experimentData.xLink || project.xLink,
+          tryItOutHref:
+            experimentData.tryItOutHref || project.tryItOutHref,
+          backgroundColor:
+            experimentData.backgroundColor || project.backgroundColor,
+          toolCategories:
+            experimentData.toolCategories || project.toolCategories,
+        };
+      }
       const experimentData = experimentMap[project.id];
       if (experimentData) {
         const clipPlaybackId =
@@ -865,7 +879,10 @@ function mergeWorkProjects(
             : fallbackUrl || muxUrls.imageSrc;
         return {
           ...project,
-          title: experimentData.title,
+          title:
+            project.id === "design-meetup"
+              ? "Hack Canada"
+              : experimentData.title,
           year: experimentData.year,
           description: experimentData.description,
           imageSrc,
@@ -881,6 +898,9 @@ function mergeWorkProjects(
             experimentData.toolCategories || project.toolCategories,
         };
       }
+      if (project.id === "design-meetup") {
+        return { ...project, title: "Hack Canada" };
+      }
     }
 
     return project;
@@ -891,7 +911,8 @@ const HERO_COMPANY_HREFS = {
   parrot: "https://www.ycombinator.com/companies/parrot",
   systematicStorytelling: "https://www.systematicstorytelling.com/",
   digitalExtremes: "https://www.digitalextremes.com/",
-  waterloo: "https://uwaterloo.ca/",
+  waterloo:
+    "https://uwaterloo.ca/future-students/programs/systems-design-engineering",
 } as const;
 
 function HeroCompanyLink({
@@ -1081,7 +1102,7 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
     }
 
     const isMobile = window.innerWidth < 768;
-    const shouldGoFullscreen = projectId === 'film' || (isMobile && projectId !== 'sketchbook' && projectId !== 'sundays' && projectId !== 'design-meetup');
+    const shouldGoFullscreen = projectId === 'film' || (isMobile && projectId !== 'sketchbook' && projectId !== 'creators-collective' && projectId !== 'design-meetup');
 
     if (posthogEnabled) {
       posthog.capture("project_opened", {
@@ -1191,8 +1212,13 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
                     isContactBadgeExpanded ? "opacity-20" : "opacity-100",
                   )}
                 >
-                  Building quality products for causes that matter at{" "}
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.waterloo} ariaLabel="University of Waterloo">
+                  Building quality products for causes that matter.
+                  {" "}
+                  Currently at{" "}
+                  <HeroCompanyLink
+                    href={HERO_COMPANY_HREFS.waterloo}
+                    ariaLabel="University of Waterloo Systems Design Engineering"
+                  >
                     <img
                       src="/images/waterloo-crest.png"
                       alt=""

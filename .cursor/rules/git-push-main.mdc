@@ -1,0 +1,15 @@
+---
+description: When user says git push, always push to lucas remote main
+alwaysApply: true
+---
+
+# Git push → main
+
+When the user says **git push** (or equivalent: push this, push it, push to github):
+
+1. Commit first if there are uncommitted changes they intend to ship (follow existing commit rules / ask only if scope is unclear).
+2. Push to the **`lucas`** remote’s **`main`** branch: `git push lucas HEAD:main` (after integrating `lucas/main` via rebase or merge when needed).
+3. Do **not** invent a feature branch as a substitute for `main` unless push-to-main is blocked and the user declines approval.
+4. Prefer keeping commits authored as the user’s git identity (`user.name` / `user.email`) so GitHub shows them as the committer.
+5. Do not push `.github/workflows` unless the user explicitly asks (OAuth scope issues on this remote).
+6. Confirm with the GitHub commit / branch URL on `VuMadeIt/updated-portfolioi` when done.
