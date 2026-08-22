@@ -1,0 +1,630 @@
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "@/lib/navigation";
+import clsx from "clsx";
+import { ScrollReveal } from "../shared/ScrollReveal";
+import PageHeader from "../layout/PageHeader";
+import NavigationTabs from "../layout/NavigationTabs";
+import { useHeroAnimation } from "../../hooks/useHeroAnimation";
+import { fadeUpStyles } from "../../styles/animations";
+import LoadingSpinner from "../shared/LoadingSpinner";
+import Footer from "../layout/Footer";
+import HeaderBreakpoint from "./HeaderBreakpoint";
+import HeaderBreakpointRuled from "./HeaderBreakpointRuled";
+import ArtGallery from "./ArtGallery";
+import ArtSidebar, { ArtCategory } from "./ArtSidebar";
+import SketchbookGallery from "./SketchbookGallery";
+import MuralGallery from "./MuralGallery";
+import type { ArtCardData } from "./ArtCard";
+import type { SketchbookData, SketchbookItem } from "./SketchbookGallery";
+import type { MuralData, MuralImage } from "./MuralGallery";
+import ArtLightbox, { type ArtLightboxItem } from "./ArtLightbox";
+import { TouchIcon } from "../icons/TouchIcon";
+
+// Sanity imports
+import { client, urlFor } from "../../sanity/client";
+import { ART_PIECES_QUERY, SKETCHBOOKS_QUERY, MURALS_QUERY } from "../../sanity/queries";
+import { getCachedData, setCachedData, preloadLikelyPages } from "../../sanity/preload";
+import type { ArtPiece, Sketchbook, Mural, ArtType } from "../../sanity/types";
+
+const EMPTY_ART_BY_TYPE: Record<ArtType, ArtCardData[]> = {
+  painting: [],
+  conceptual: [],
+  graphite: [],
+};
+
+function readCachedArtPage(): {
+  artPiecesByType: Record<ArtType, ArtCardData[]>;
+  sketchbooks: SketchbookData[];
+  murals: MuralData[];
+} | null {
+  const artPieces = getCachedData<ArtPiece[]>("art:pieces");
+  const sketchbooks = getCachedData<Sketchbook[]>("art:sketchbooks");
+  const murals = getCachedData<Mural[]>("art:murals");
+  if (!artPieces || !sketchbooks || !murals) return null;
+
+  const grouped = groupArtPiecesByType(artPieces);
+  return {
+    artPiecesByType: {
+      painting: transformArtPieces(grouped.painting),
+      conceptual: transformArtPieces(grouped.conceptual),
+      graphite: transformArtPieces(grouped.graphite),
+    },
+    sketchbooks: transformSketchbooks(sketchbooks),
+    murals: transformMurals(murals),
+  };
+}
+
+function transformArtPieces(sanityData: ArtPiece[]): ArtCardData[] {
+  return sanityData.map((piece) => {
+    const metadataParts = [piece.medium, piece.size, piece.year].filter(Boolean);
+    const metadata = metadataParts.join(", ");
+
+    return {
+      id: piece._id,
+      imageSrc: piece.image ? urlFor(piece.image).width(800).url() : "",
+      fullImageSrc: piece.image
+        ? urlFor(piece.image).width(1600).quality(90).url()
+        : undefined,
+      aspectRatio: piece.image?.dimensions?.aspectRatio,
+      title: piece.title,
+      metadata: metadata || undefined,
+    };
+  });
+}
+
+function transformSketchbooks(sanityData: Sketchbook[]): SketchbookData[] {
+  return sanityData.map((sketchbook) => ({
+    id: sketchbook._id,
+    title: sketchbook.title,
+    sidebarLabel: sketchbook.sidebarLabel,
+    date: sketchbook.date,
+    images:
+      sketchbook.images?.map((img) => ({
+        id: img._key,
+        imageSrc: img.asset ? urlFor(img).height(600).url() : "",
+        fullImageSrc: img.asset
+          ? urlFor(img).width(1600).quality(90).url()
+          : undefined,
+      })) || [],
+  }));
+}
+
+function transformMurals(sanityData: Mural[]): MuralData[] {
+  return sanityData.map((mural) => ({
+    id: mural._id,
+    title: mural.title,
+    sidebarLabel: mural.sidebarLabel,
+    location: mural.location,
+    date: mural.date,
+    description: mural.description,
+    images:
+      mural.images?.map((img) => ({
+        id: img._key,
+        imageSrc: img.asset ? urlFor(img).height(600).url() : "",
+        fullImageSrc: img.asset
+          ? urlFor(img).width(1600).quality(90).url()
+          : undefined,
+      })) || [],
+  }));
+}
+
+// Group art pieces by type
+function groupArtPiecesByType(pieces: ArtPiece[]): Record<ArtType, ArtPiece[]> {
+  const grouped: Record<ArtType, ArtPiece[]> = {
+    painting: [],
+    conceptual: [],
+    graphite: [],
+  };
+
+  pieces.forEach((piece) => {
+    if (piece.artType && grouped[piece.artType]) {
+      grouped[piece.artType].push(piece);
+    }
+  });
+
+  return grouped;
+}
+
+export default function ArtPage() {
+  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState<ArtCategory>("painting");
+  const [activeSketchbookIndex, setActiveSketchbookIndex] = useState<number | undefined>(undefined);
+  const [activeMuralIndex, setActiveMuralIndex] = useState<number | undefined>(undefined);
+
+  const heroAnimationPlayed = useHeroAnimation();
+
+  // Section refs for scrolling
+  const paintingRef = useRef<HTMLDivElement>(null);
+  const conceptualRef = useRef<HTMLDivElement>(null);
+  const graphiteRef = useRef<HTMLDivElement>(null);
+  const sketchbookRef = useRef<HTMLDivElement>(null);
+  const muralsRef = useRef<HTMLDivElement>(null);
+  
+  // Individual sketchbook refs
+  const sketchbookRefs = useRef<(HTMLDivElement | null)[]>([]);
+  
+  // Individual mural refs
+  const muralRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Sanity data state — hydrate synchronously from preload cache when warm
+  const [cachedInitial] = useState(readCachedArtPage);
+  const [artPiecesByType, setArtPiecesByType] = useState<Record<ArtType, ArtCardData[]>>(
+    () => cachedInitial?.artPiecesByType ?? EMPTY_ART_BY_TYPE,
+  );
+  const [sketchbooks, setSketchbooks] = useState<SketchbookData[]>(
+    () => cachedInitial?.sketchbooks ?? [],
+  );
+  const [murals, setMurals] = useState<MuralData[]>(
+    () => cachedInitial?.murals ?? [],
+  );
+  const [isLoading, setIsLoading] = useState(() => cachedInitial === null);
+  const [error, setError] = useState<string | null>(null);
+  const [lightboxItem, setLightboxItem] = useState<ArtLightboxItem | null>(null);
+
+  useEffect(() => {
+    preloadLikelyPages();
+  }, []);
+
+  // Fetch data from Sanity (uses preloaded cache if available)
+  useEffect(() => {
+    async function fetchArtData() {
+      try {
+        setError(null);
+
+        const cachedArtPieces = getCachedData<ArtPiece[]>("art:pieces");
+        const cachedSketchbooks = getCachedData<Sketchbook[]>("art:sketchbooks");
+        const cachedMurals = getCachedData<Mural[]>("art:murals");
+        const hasFullCache = !!(cachedArtPieces && cachedSketchbooks && cachedMurals);
+
+        // Only show spinner when we have nothing to render yet
+        if (!hasFullCache) setIsLoading(true);
+
+        const [artPiecesData, sketchbooksData, muralsData] = await Promise.all([
+          cachedArtPieces ?? client.fetch<ArtPiece[]>(ART_PIECES_QUERY),
+          cachedSketchbooks ?? client.fetch<Sketchbook[]>(SKETCHBOOKS_QUERY),
+          cachedMurals ?? client.fetch<Mural[]>(MURALS_QUERY),
+        ]);
+
+        if (!cachedArtPieces && artPiecesData) setCachedData("art:pieces", artPiecesData);
+        if (!cachedSketchbooks && sketchbooksData) {
+          setCachedData("art:sketchbooks", sketchbooksData);
+        }
+        if (!cachedMurals && muralsData) setCachedData("art:murals", muralsData);
+
+        const grouped = groupArtPiecesByType(artPiecesData || []);
+        setArtPiecesByType({
+          painting: transformArtPieces(grouped.painting),
+          conceptual: transformArtPieces(grouped.conceptual),
+          graphite: transformArtPieces(grouped.graphite),
+        });
+        setSketchbooks(transformSketchbooks(sketchbooksData || []));
+        setMurals(transformMurals(muralsData || []));
+      } catch (err) {
+        console.error("Error fetching art data:", err);
+        setError("Failed to load art content. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchArtData();
+  }, []);
+
+  // Scroll to section when category is clicked
+  const handleCategoryClick = (category: ArtCategory) => {
+    setActiveCategory(category);
+    
+    // Reset sketchbook index when clicking on sketchbook header or other categories
+    if (category === "sketchbook") {
+      setActiveSketchbookIndex(0); // Default to first sketchbook
+      setActiveMuralIndex(undefined);
+    } else if (category === "murals") {
+      setActiveMuralIndex(0); // Default to first mural
+      setActiveSketchbookIndex(undefined);
+    } else {
+      setActiveSketchbookIndex(undefined);
+      setActiveMuralIndex(undefined);
+    }
+
+    const refMap: Record<ArtCategory, React.RefObject<HTMLDivElement | null>> = {
+      painting: paintingRef,
+      conceptual: conceptualRef,
+      graphite: graphiteRef,
+      sketchbook: sketchbookRef,
+      murals: muralsRef,
+    };
+
+    const ref = refMap[category];
+    if (ref?.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Scroll to specific sketchbook when subcategory is clicked
+  const handleSketchbookClick = (index: number) => {
+    setActiveCategory("sketchbook");
+    setActiveSketchbookIndex(index);
+    setActiveMuralIndex(undefined);
+    
+    const sketchbookElement = sketchbookRefs.current[index];
+    if (sketchbookElement) {
+      sketchbookElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Scroll to specific mural when subcategory is clicked
+  const handleMuralClick = (index: number) => {
+    setActiveCategory("murals");
+    setActiveMuralIndex(index);
+    setActiveSketchbookIndex(undefined);
+    
+    const muralElement = muralRefs.current[index];
+    if (muralElement) {
+      muralElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Track scroll position to update active category
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        { id: "painting" as ArtCategory, ref: paintingRef },
+        { id: "conceptual" as ArtCategory, ref: conceptualRef },
+        { id: "graphite" as ArtCategory, ref: graphiteRef },
+        { id: "sketchbook" as ArtCategory, ref: sketchbookRef },
+        { id: "murals" as ArtCategory, ref: muralsRef },
+      ];
+
+      // Use a threshold from the top of the viewport
+      const viewportThreshold = 250; // pixels from top of viewport
+
+      // Find the section that has scrolled past the threshold (from bottom to top order)
+      // This selects the "topmost" section that's currently at or above the threshold
+      let activeSection: ArtCategory | null = null;
+      
+      // Iterate from last section to first - find the last one that's above the threshold
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.ref.current) {
+          const rect = section.ref.current.getBoundingClientRect();
+          if (rect.top <= viewportThreshold) {
+            activeSection = section.id;
+            break;
+          }
+        }
+      }
+      
+      // If no section has scrolled past threshold (we're at the very top), 
+      // select the first visible section
+      if (!activeSection) {
+        for (const section of sections) {
+          if (section.ref.current) {
+            const rect = section.ref.current.getBoundingClientRect();
+            // Select the first section that's visible in the viewport
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+              activeSection = section.id;
+              break;
+            }
+          }
+        }
+      }
+
+      // Update the state if we found an active section
+      if (activeSection) {
+        setActiveCategory(activeSection);
+        
+        // If in sketchbook section, determine which sketchbook is active
+        if (activeSection === "sketchbook") {
+          let foundSketchbookIndex = 0;
+          for (let j = sketchbookRefs.current.length - 1; j >= 0; j--) {
+            const sketchbookEl = sketchbookRefs.current[j];
+            if (sketchbookEl) {
+              const rect = sketchbookEl.getBoundingClientRect();
+              if (rect.top <= viewportThreshold) {
+                foundSketchbookIndex = j;
+                break;
+              }
+            }
+          }
+          setActiveSketchbookIndex(foundSketchbookIndex);
+          setActiveMuralIndex(undefined);
+        } else if (activeSection === "murals") {
+          // If in murals section, determine which mural is active
+          let foundMuralIndex = 0;
+          for (let j = muralRefs.current.length - 1; j >= 0; j--) {
+            const muralEl = muralRefs.current[j];
+            if (muralEl) {
+              const rect = muralEl.getBoundingClientRect();
+              if (rect.top <= viewportThreshold) {
+                foundMuralIndex = j;
+                break;
+              }
+            }
+          }
+          setActiveMuralIndex(foundMuralIndex);
+          setActiveSketchbookIndex(undefined);
+        } else {
+          setActiveSketchbookIndex(undefined);
+          setActiveMuralIndex(undefined);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    // Run once on mount to set initial state
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [sketchbooks.length, murals.length]);
+
+  const handleArtItemClick = (item: ArtCardData) => {
+    const src = item.fullImageSrc || item.imageSrc;
+    if (!src) return;
+    setLightboxItem({
+      imageSrc: src,
+      previewSrc: item.imageSrc || undefined,
+      title: item.title,
+      detail: item.metadata,
+      alt: item.title,
+    });
+  };
+
+  const handleSketchbookImageClick = (
+    sketchbook: SketchbookData,
+    image: SketchbookItem
+  ) => {
+    const src = image.fullImageSrc || image.imageSrc;
+    if (!src) return;
+    setLightboxItem({
+      imageSrc: src,
+      previewSrc: image.imageSrc || undefined,
+      title: sketchbook.title,
+      detail: sketchbook.date || undefined,
+      alt: sketchbook.title,
+    });
+  };
+
+  const handleMuralImageClick = (mural: MuralData, image: MuralImage) => {
+    const src = image.fullImageSrc || image.imageSrc;
+    if (!src) return;
+    const detail = [mural.location, mural.date].filter(Boolean).join(", ");
+    setLightboxItem({
+      imageSrc: src,
+      previewSrc: image.imageSrc || undefined,
+      title: mural.title,
+      detail: detail || undefined,
+      alt: mural.title,
+    });
+  };
+
+  // Calculate counts for sidebar
+  const categoryCounts = {
+    painting: artPiecesByType.painting.length,
+    conceptual: artPiecesByType.conceptual.length,
+    graphite: artPiecesByType.graphite.length,
+    sketchbook: sketchbooks.length,
+    murals: murals.length,
+  };
+
+  return (
+    <div className="bg-white flex flex-col items-center relative size-full min-h-screen">
+      {/* Inject fade up animation styles */}
+      <style>{fadeUpStyles}</style>
+      
+      {/* Header */}
+      <PageHeader
+        variant="art"
+        heroAnimationPlayed={heroAnimationPlayed}
+        nameAddon={
+          <p className="font-['Michelle',sans-serif] font-normal text-zinc-500 text-xl whitespace-pre-wrap">
+            b. 2004
+          </p>
+        }
+      >
+        <>
+          {/* Desktop */}
+          <div className="hidden md:block">
+            <p>Currently based in Toronto, Canada.</p>
+          </div>
+          {/* Mobile */}
+          <div className="md:hidden">
+            <p>Currently based in Toronto, Canada.</p>
+          </div>
+        </>
+      </PageHeader>
+
+      {/* Navigation */}
+      <NavigationTabs activeTab="art" heroAnimationPlayed={heroAnimationPlayed} />
+
+      {/* Main Content Area */}
+      <div className="flex flex-col lg:flex-row gap-4 items-start px-16 max-md:px-6 pt-2 relative shrink-0 w-full">
+        {/* Sidebar - hidden on mobile, visible on desktop */}
+        <div className="hidden lg:block lg:sticky lg:top-8 pb-8 w-[202px] shrink-0 z-50">
+          <ArtSidebar
+            activeCategory={activeCategory}
+            onCategoryClick={handleCategoryClick}
+            counts={categoryCounts}
+            sketchbookLabels={sketchbooks.map((s) => 
+              s.sidebarLabel || s.title.split(" ")[0].toUpperCase()
+            )}
+            sketchbookImageCounts={sketchbooks.map((s) => s.images.length)}
+            activeSketchbookIndex={activeSketchbookIndex}
+            onSketchbookClick={handleSketchbookClick}
+            muralLabels={murals.map((m) => 
+              m.sidebarLabel || m.title.split(" ")[0].toUpperCase()
+            )}
+            activeMuralIndex={activeMuralIndex}
+            onMuralClick={handleMuralClick}
+          />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col gap-12 items-start justify-center pb-8 min-w-0 w-full">
+          
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex items-center justify-center w-full py-20">
+              <LoadingSpinner size="md" label="" />
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !isLoading && (
+            <div className="flex items-center justify-center w-full py-20">
+              <div className="flex flex-col items-center gap-4 text-center">
+                <p className="text-zinc-600 text-base">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 rounded-lg text-zinc-700 text-sm transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Content */}
+          {!isLoading && !error && (
+            <>
+              {/* Painting Section */}
+              <section ref={paintingRef} className="flex flex-col gap-3 items-start w-full">
+                <ScrollReveal variant="fade" className="w-full">
+                  <HeaderBreakpoint
+                    text="Painting"
+                    action={
+                      artPiecesByType.painting.length > 0 ? (
+                        <ScrollReveal delay={400} variant="fade" preserveDelay>
+                          <a
+                            href="/art/gallery"
+                            className="inline-flex shrink-0 items-center gap-1 -my-0.5 -py-0.5 pr-2.5 font-normal text-zinc-500 no-underline transition-colors hover:text-blue-400"
+                          >
+                            3D Gallery
+                            <TouchIcon />
+                          </a>
+                        </ScrollReveal>
+                      ) : null
+                    }
+                  />
+                </ScrollReveal>
+                {artPiecesByType.painting.length > 0 ? (
+                  <ScrollReveal delay={120} className="w-full">
+                    <ArtGallery 
+                      items={artPiecesByType.painting} 
+                      onItemClick={handleArtItemClick}
+                      reverseColumnsMobile
+                    />
+                  </ScrollReveal>
+                ) : (
+                  <p className="text-zinc-400 text-sm py-8">No paintings yet.</p>
+                )}
+              </section>
+
+              {/* Conceptual Section */}
+              <section ref={conceptualRef} className="flex flex-col gap-3 items-start w-full">
+                <ScrollReveal variant="fade" className="w-full">
+                  <HeaderBreakpoint text="Conceptual" />
+                </ScrollReveal>
+                {artPiecesByType.conceptual.length > 0 ? (
+                  <ScrollReveal delay={120} className="w-full">
+                    <ArtGallery 
+                      items={artPiecesByType.conceptual} 
+                      onItemClick={handleArtItemClick}
+                      masonryMobile
+                    />
+                  </ScrollReveal>
+                ) : (
+                  <p className="text-zinc-400 text-sm py-8">No conceptual pieces yet.</p>
+                )}
+              </section>
+
+              {/* Graphite Section */}
+              <section ref={graphiteRef} className="flex flex-col gap-3 items-start w-full">
+                <ScrollReveal variant="fade" className="w-full">
+                  <HeaderBreakpoint text="Graphite" />
+                </ScrollReveal>
+                {artPiecesByType.graphite.length > 0 ? (
+                  <ScrollReveal delay={120} className="w-full">
+                    <ArtGallery 
+                      items={artPiecesByType.graphite} 
+                      onItemClick={handleArtItemClick}
+                    />
+                  </ScrollReveal>
+                ) : (
+                  <p className="text-zinc-400 text-sm py-8">No graphite drawings yet.</p>
+                )}
+              </section>
+
+              {/* Sketchbook Section */}
+              <section ref={sketchbookRef} className="flex flex-col gap-3 items-start w-full">
+                <ScrollReveal variant="fade" className="w-full">
+                  <HeaderBreakpointRuled className="-mb-4" text="Sketchbook" />
+                </ScrollReveal>
+                {sketchbooks.length > 0 ? (
+                  <div className="flex flex-col gap-8 py-8 w-full">
+                    {sketchbooks.map((sketchbook, index) => (
+                      <ScrollReveal
+                        key={sketchbook.id}
+                        delay={index * 120}
+                        className="w-full"
+                      >
+                        <div className="w-full" ref={(el) => { sketchbookRefs.current[index] = el; }}>
+                          <SketchbookGallery
+                            data={sketchbook}
+                            onImageClick={(image) =>
+                              handleSketchbookImageClick(sketchbook, image)
+                            }
+                          />
+                        </div>
+                      </ScrollReveal>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-zinc-400 text-sm py-8">No sketchbooks yet.</p>
+                )}
+              </section>
+
+              {/* Murals Section */}
+              <section ref={muralsRef} className="flex flex-col gap-3 items-start w-full">
+                <ScrollReveal variant="fade" className="w-full">
+                  <HeaderBreakpointRuled className="-mb-4" text="Murals" />
+                </ScrollReveal>
+                {murals.length > 0 ? (
+                  <div className="flex flex-col gap-8 py-8 w-full">
+                    {murals.map((mural, index) => (
+                      <ScrollReveal
+                        key={mural.id}
+                        delay={index * 120}
+                        className="w-full"
+                      >
+                        <div className="w-full" ref={(el) => { muralRefs.current[index] = el; }}>
+                          <MuralGallery
+                            data={mural}
+                            onImageClick={(image) =>
+                              handleMuralImageClick(mural, image)
+                            }
+                          />
+                        </div>
+                      </ScrollReveal>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-zinc-400 text-sm py-8">No murals yet.</p>
+                )}
+              </section>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <Footer />
+
+      <ArtLightbox
+        item={lightboxItem}
+        onClose={() => setLightboxItem(null)}
+      />
+    </div>
+  );
+}
+

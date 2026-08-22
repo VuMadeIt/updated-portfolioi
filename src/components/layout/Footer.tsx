@@ -1,0 +1,244 @@
+import React, { useEffect, useState } from "react";
+import imgFinalSealLogo1 from "../../assets/logo.png";
+import { ScrollReveal } from "../shared/ScrollReveal";
+import { ArrowUpRight } from "../icons/ArrowUpRight";
+import BlueprintLogo from "../shared/BlueprintLogo";
+import { LinksBackgroundImageAndText, SocialIconLinks } from "../SocialLinks";
+import { CursorLogo } from "../icons/CursorLogo";
+
+type FooterProps = {
+  /** default: red seal; blueprint: gray outline logo (design-system) */
+  logoVariant?: "default" | "blueprint";
+  /** Override brand link (design-system returns to the tab that opened it). */
+  logoHref?: string;
+};
+
+function FooterBrand({
+  logoVariant,
+  gapClassName,
+  logoHref = "/",
+}: {
+  logoVariant: "default" | "blueprint";
+  gapClassName: string;
+  logoHref?: string;
+}) {
+  return (
+    <a
+      href={logoHref}
+      {...(logoVariant === "blueprint"
+        ? { "data-blueprint-doorway-back": "" }
+        : {})}
+      className={`group content-stretch flex ${gapClassName} items-center justify-center relative shrink-0 transition-opacity ${
+        logoVariant === "default" ? "hover:opacity-80" : ""
+      }`}
+    >
+      <div className="relative shrink-0 size-7">
+        {logoVariant === "blueprint" ? (
+          <BlueprintLogo mode="always" />
+        ) : (
+          <img
+            alt="Lucas Vu Logo"
+            className="object-contain size-full"
+            src={imgFinalSealLogo1}
+          />
+        )}
+      </div>
+      <p className="font-['Michelle',sans-serif] font-medium leading-normal relative shrink-0 text-[#3f3f46] text-3xl">
+        lucas vu
+      </p>
+    </a>
+  );
+}
+
+const DEFAULT_CITY = "Toronto";
+const DEFAULT_TIMEZONE = "America/Toronto";
+
+function useOwnerLocation() {
+  return { city: DEFAULT_CITY, timezone: DEFAULT_TIMEZONE };
+}
+
+function useLocalTime(timezone: string) {
+  const format = (tz: string) => {
+    const raw = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date());
+    const [hStr, mStr] = raw.split(":");
+    const h24 = parseInt(hStr, 10);
+    const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+    const ampm = h24 >= 12 ? "PM" : "AM";
+    return { formatted: `${h12}:${mStr} ${ampm}`, h24 };
+  };
+
+  const [state, setState] = useState<{ formatted: string; h24: number } | null>(null);
+
+  useEffect(() => {
+    setState(format(timezone));
+    const id = setInterval(() => setState(format(timezone)), 1000);
+    return () => clearInterval(id);
+  }, [timezone]);
+
+  return state;
+}
+
+function SunIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <circle cx="8" cy="8" r="2.75" fill="currentColor" />
+      <line x1="8" y1="1" x2="8" y2="2.75" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="8" y1="13.25" x2="8" y2="15" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="15" y1="8" x2="13.25" y2="8" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="2.75" y1="8" x2="1" y2="8" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="12.95" y1="3.05" x2="11.75" y2="4.25" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="4.25" y1="11.75" x2="3.05" y2="12.95" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="12.95" y1="12.95" x2="11.75" y2="11.75" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="4.25" y1="4.25" x2="3.05" y2="3.05" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MoonIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 9.27A6.5 6.5 0 1 1 6.73 2 5.5 5.5 0 0 0 14 9.27Z" />
+    </svg>
+  );
+}
+
+function BlinkingTime({ time, h24, city }: { time: string; h24: number; city: string }) {
+  if (!time) return null;
+  const isDay = h24 >= 6 && h24 < 18;
+  const icon = isDay
+    ? <SunIcon className="inline-block w-[11px] h-[11px] -mt-[2px] mr-1" />
+    : <MoonIcon className="inline-block w-[11px] h-[11px] -mt-[2px] mr-1" />;
+  const colonIndex = time.indexOf(":");
+  if (colonIndex === -1) return <>{icon}{time}, {city}</>;
+  const before = time.slice(0, colonIndex);
+  const after = time.slice(colonIndex + 1);
+  return (
+    <>
+      {icon}
+      {before}
+      <span className="animate-[blink_1.2s_ease-in-out_infinite]">:</span>
+      {after}, {city}
+    </>
+  );
+}
+
+export default function Footer({
+  logoVariant = "default",
+  logoHref = "/",
+}: FooterProps) {
+  const { city, timezone } = useOwnerLocation();
+  const timeData = useLocalTime(timezone);
+  const localTime = timeData?.formatted ?? "";
+  const localH24 = timeData?.h24 ?? 12;
+
+  return (
+    <div className="relative shrink-0 w-full">
+      <div className="flex flex-col items-center size-full">
+        <div className="content-stretch flex flex-col gap-16 items-center px-16 max-md:px-6 pt-8 pb-8 max-md:pb-16 max-md:pt-4 relative w-full">
+          <ScrollReveal className="content-stretch flex flex-col gap-5 items-start relative shrink-0 w-full">
+            <div className="bg-zinc-100 h-px shrink-0 w-full" />
+            
+            {/* Desktop Grid (4 columns) */}
+            <div className="hidden md:grid gap-5 grid-cols-[repeat(4,_minmax(0px,_1fr))] grid-rows-[repeat(1,_fit-content(100%))] relative shrink-0 w-full">
+              {/* Column 1: Logo + Time */}
+              <div className="[grid-area:1_/_1] content-stretch flex flex-col gap-0 items-start relative shrink-0">
+                <FooterBrand
+                  logoVariant={logoVariant}
+                  gapClassName="gap-3"
+                  logoHref={logoHref}
+                />
+                <p className="font-['Michelle',sans-serif] font-normal leading-normal text-zinc-400 text-base">
+                  <BlinkingTime time={localTime} h24={localH24} city={city} />
+                </p>
+              </div>
+              
+              {/* Column 3: Nav Links */}
+              <div className="[grid-area:1_/_3] content-stretch flex flex-col gap-2 items-start relative shrink-0">
+                <LinksBackgroundImageAndText text="Work" href="/" />
+                <LinksBackgroundImageAndText text="About" href="/about" />
+              </div>
+              
+              {/* Column 4: Contact + Social */}
+              <div className="[grid-area:1_/_4] content-stretch flex flex-col gap-4 items-start relative shrink-0">
+                <div className="content-stretch flex flex-col font-['Michelle',sans-serif] font-normal items-start relative shrink-0 text-zinc-400 w-full">
+                  <p className="leading-normal min-w-full relative shrink-0 text-base w-[min-content]">Let's work together!</p>
+                  <p className="leading-normal relative shrink-0 text-base break-all">
+                    <a href="mailto:lucasvu.work@gmail.com" className="group/email inline-flex items-center hover:text-blue-500 text-zinc-600 font-medium transition-colors duration-200">
+                      <span>{`lucasvu.work@gmail.com`}</span>
+                      <span className="ml-1 inline-flex items-center opacity-0 group-hover/email:opacity-100 transition-opacity duration-150 ease-out"><ArrowUpRight size="1em" /></span>
+                    </a>
+                  </p>
+                </div>
+                <div className="content-stretch flex flex-col gap-4 items-start relative shrink-0">
+                  <SocialIconLinks />
+                </div>
+              </div>
+            </div>
+            
+            {/* Mobile Layout (Vertical Stack) */}
+            <div className="md:hidden content-stretch flex flex-col gap-10 items-start relative shrink-0 w-full">
+              {/* Logo Section + Time */}
+              <div className="content-stretch flex flex-col gap-0 items-start relative shrink-0">
+                <FooterBrand
+                  logoVariant={logoVariant}
+                  gapClassName="gap-2"
+                  logoHref={logoHref}
+                />
+                <p className="font-['Michelle',sans-serif] font-normal leading-normal text-zinc-400 text-base">
+                  <BlinkingTime time={localTime} h24={localH24} city={city} />
+                </p>
+              </div>
+              
+              {/* Contact + Social + Nav */}
+              <div className="content-stretch flex flex-col gap-10 items-start relative shrink-0">
+                <div className="content-stretch flex flex-col gap-4 items-start relative shrink-0">
+                  <div className="content-stretch flex flex-col font-['Michelle',sans-serif] font-normal items-start relative shrink-0 text-zinc-400 w-[326px]">
+                    <p className="leading-normal relative shrink-0 text-base w-full">Let's work together!</p>
+                    <p className="leading-normal relative shrink-0 text-base w-full break-all">
+                      <a href="mailto:lucasvu.work@gmail.com" className="group/email inline-flex items-center hover:text-blue-500 text-zinc-600 font-medium transition-colors duration-200">
+                        <span>{`lucasvu.work@gmail.com`}</span>
+                        <span className="ml-0 group-hover/email:ml-1.5 inline-flex items-center opacity-0 group-hover/email:opacity-100 transition-all duration-150 ease-out"><ArrowUpRight size="1em" /></span>
+                      </a>
+                    </p>
+                  </div>
+                  <div className="content-stretch flex flex-col gap-4 items-start relative shrink-0 w-[326px]">
+                    <SocialIconLinks />
+                  </div>
+                </div>
+                <div className="content-stretch flex flex-col gap-4 items-start relative shrink-0 w-[338px]">
+                  <LinksBackgroundImageAndText text="WORK" href="/" />
+                  <LinksBackgroundImageAndText text="ABOUT" href="/about" />
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal variant="fade" delay={200} className="content-stretch flex flex-col gap-0.5 items-center relative shrink-0">
+            <p className="font-['Michelle',sans-serif] font-normal leading-relaxed relative shrink-0 text-zinc-400 text-sm">
+              <span>{`Built with Next.js & `}</span>
+              <span className="group">
+                <a
+                  className="[text-underline-position:from-font] cursor-pointer font-medium text-zinc-600 group-hover:!text-blue-500 transition-colors"
+                  href="https://cursor.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  a Cursor Pro free trial
+                </a>
+                <CursorLogo
+                  size="12px"
+                  className="ml-1 -translate-y-px text-zinc-400 group-hover:text-blue-500 transition-colors"
+                />
+              </span>
+            </p>
+          </ScrollReveal>
+        </div>
+      </div>
+    </div>
+  );
+}
+

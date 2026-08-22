@@ -1,0 +1,439 @@
+// GROQ queries for fetching projects
+
+// Query for all projects (for listing/cards)
+export const PROJECTS_QUERY = `
+  *[_type == "project"] | order(order asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    company,
+    year,
+    shortDescription,
+    logo,
+    heroImage,
+    heroVideo,
+    isPublished
+  }
+`;
+
+// ============================================
+// ART PAGE QUERIES
+// ============================================
+
+// Query for all art pieces (gallery)
+export const ART_PIECES_QUERY = `
+  *[_type == "artPiece" && isPublished == true] | order(year desc, order asc) {
+    _id,
+    title,
+    artType,
+    image {
+      asset,
+      hotspot,
+      crop,
+      "dimensions": asset->metadata.dimensions
+    },
+    medium,
+    size,
+    year,
+    description
+  }
+`;
+
+// Query for art pieces by type (painting, conceptual, graphite)
+export const ART_PIECES_BY_TYPE_QUERY = `
+  *[_type == "artPiece" && isPublished == true && artType == $artType] | order(year desc, order asc) {
+    _id,
+    title,
+    artType,
+    image {
+      asset,
+      hotspot,
+      crop,
+      "dimensions": asset->metadata.dimensions
+    },
+    medium,
+    size,
+    year,
+    description
+  }
+`;
+
+// Query for all sketchbooks
+export const SKETCHBOOKS_QUERY = `
+  *[_type == "sketchbook" && isPublished == true] | order(order asc) {
+    _id,
+    title,
+    sidebarLabel,
+    date,
+    description,
+    images[] {
+      _key,
+      asset,
+      caption
+    }
+  }
+`;
+
+// Query for flatlay sketchbook entries - ordered by date ascending (earliest first)
+export const FLATLAY_SKETCHBOOKS_QUERY = `
+  *[_type == "flatlaySketchbook" && isPublished == true] | order(date asc) {
+    _id,
+    image,
+    date,
+    location,
+    note
+  }
+`;
+
+// Query for all murals
+export const MURALS_QUERY = `
+  *[_type == "mural" && isPublished == true] | order(order asc) {
+    _id,
+    title,
+    sidebarLabel,
+    location,
+    date,
+    description,
+    images[] {
+      _key,
+      asset,
+      caption
+    }
+  }
+`;
+
+// Query for a single project by slug (with all content)
+// Note: password field is explicitly excluded for security - verification happens server-side
+export const PROJECT_BY_SLUG_QUERY = `
+  *[_type == "project" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    company,
+    year,
+    shortDescription,
+    logo,
+    heroImage,
+    heroVideo,
+    metadata[] {
+      _key,
+      label,
+      value,
+      subValue
+    },
+    content[] {
+      _key,
+      _type,
+      // Exclude password from protectedSection - verified server-side via API
+      _type == "protectedSection" => {
+        _key,
+        _type,
+        title,
+        message,
+        contactEmail,
+        showPasswordProtection,
+        unlockTargetSectionId,
+        "hasPassword": defined(password) && password != "",
+        visibility
+      },
+      _type != "protectedSection" => @
+    },
+    relatedProjects[]-> {
+      _id,
+      title,
+      "slug": slug.current,
+      company,
+      year,
+      shortDescription,
+      heroImage
+    }
+  }
+`;
+
+// Query for a single project by company (e.g., "apple", "roblox")
+// Note: password field is explicitly excluded for security - verification happens server-side
+export const PROJECT_BY_COMPANY_QUERY = `
+  *[_type == "project" && company == $company][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    company,
+    year,
+    shortDescription,
+    logo,
+    heroImage,
+    heroVideo,
+    metadata[] {
+      _key,
+      label,
+      value,
+      subValue
+    },
+    content[] {
+      _key,
+      _type,
+      // Exclude password from protectedSection - verified server-side via API
+      _type == "protectedSection" => {
+        _key,
+        _type,
+        title,
+        message,
+        contactEmail,
+        showPasswordProtection,
+        unlockTargetSectionId,
+        "hasPassword": defined(password) && password != "",
+        visibility
+      },
+      _type != "protectedSection" => @
+    },
+    relatedProjects[]-> {
+      _id,
+      title,
+      "slug": slug.current,
+      company,
+      year,
+      shortDescription,
+      heroImage
+    }
+  }
+`;
+
+// ============================================
+// ABOUT PAGE QUERIES
+// ============================================
+
+// Query for the About page singleton document
+export const ABOUT_PAGE_QUERY = `
+  *[_type == "aboutPage"][0] {
+    _id,
+    profilePhoto,
+    name,
+    tagline,
+    bio,
+    location,
+    education {
+      school,
+      degree,
+      years
+    },
+    socialLinks {
+      linkedIn,
+      twitter,
+      email,
+      goodreads,
+      spotify,
+      letterboxd
+    },
+    experienceTitle,
+    communityTitle,
+    shelfTitle,
+    loreTitle
+  }
+`;
+
+// Query for all experience items
+export const EXPERIENCES_QUERY = `
+  *[_type == "experience" && isPublished == true] | order(order asc) {
+    _id,
+    company,
+    role,
+    logo,
+    period,
+    description
+  }
+`;
+
+// Query for all community items
+export const COMMUNITIES_QUERY = `
+  *[_type == "community" && isPublished == true] | order(order asc) {
+    _id,
+    title,
+    sidebarName,
+    logo,
+    description,
+    instagramUrl,
+    photos[] {
+      _key,
+      image,
+      caption,
+      rotation,
+      orientation,
+      yOffset,
+      xOffset
+    }
+  }
+`;
+
+// Query for shelf items (books, music, movies)
+export const SHELF_ITEMS_QUERY = `
+  *[_type == "shelfItem" && isPublished == true] | order(isFeatured desc, order asc) {
+    _id,
+    title,
+    mediaType,
+    cover,
+    externalCoverUrl,
+    author,
+    year,
+    rating,
+    isFeatured,
+    goodreadsUrl,
+    letterboxdSlug,
+    spotifyUrl,
+    dateRead,
+    dateStarted,
+    dateWatched,
+    _createdAt
+  }
+`;
+
+// Query for shelf items by media type
+export const SHELF_ITEMS_BY_TYPE_QUERY = `
+  *[_type == "shelfItem" && isPublished == true && mediaType == $mediaType] | order(order asc) {
+    _id,
+    title,
+    mediaType,
+    cover,
+    externalCoverUrl,
+    author,
+    year,
+    rating,
+    isFeatured
+  }
+`;
+
+// Query for featured shelf items only (for default/collapsed state)
+export const FEATURED_SHELF_ITEMS_QUERY = `
+  *[_type == "shelfItem" && isPublished == true && isFeatured == true] | order(order asc) {
+    _id,
+    title,
+    mediaType,
+    cover,
+    externalCoverUrl,
+    author,
+    year,
+    rating
+  }
+`;
+
+// Query for all lore items
+export const LORE_ITEMS_QUERY = `
+  *[_type == "loreItem" && isPublished == true] | order(order asc) {
+    _id,
+    headline,
+    image,
+    imageBackground,
+    date,
+    description,
+    link,
+    fullStory
+  }
+`;
+
+// Query for all startups
+export const STARTUPS_QUERY = `
+  *[_type == "startup" && isPublished == true] | order(order asc) {
+    _id,
+    name,
+    logo,
+    link
+  }
+`;
+
+// Query for all quotes
+export const QUOTES_QUERY = `
+  *[_type == "aboutQuote" && isPublished == true] | order(order asc) {
+    _id,
+    emoji,
+    title,
+    text,
+    underlinedText,
+    author
+  }
+`;
+
+// ============================================
+// LIBRARY PAGE QUERIES
+// ============================================
+
+// Query for shelf items that are books (uses shelfItem schema)
+export const SHELF_BOOKS_QUERY = `
+  *[_type == "shelfItem" && isPublished == true && mediaType == "book"] | order(isLibraryFavorite desc, year desc, order asc) {
+    _id,
+    title,
+    author,
+    cover,
+    externalCoverUrl,
+    rating,
+    year,
+    isLibraryFavorite,
+    goodreadsUrl,
+    review,
+    dateRead,
+    dateStarted,
+    dateFinished
+  }
+`;// Query to get all unique years from shelf books
+export const BOOK_YEARS_QUERY = `
+  array::unique(*[_type == "shelfItem" && isPublished == true && mediaType == "book" && year != null].year) | order(@ desc)
+`;// ============================================
+// EXPERIMENT PROJECT QUERIES
+// ============================================// Query for all experiment projects (side projects like Polaroid, Library, etc.)
+export const EXPERIMENT_PROJECTS_QUERY = `
+  *[_type == "experimentProject" && isPublished == true] | order(order asc) {
+    _id,
+    projectId,
+    title,
+    year,
+    description,
+    muxPlaybackIdClip,
+    muxPlaybackId,
+    fallbackThumbnail {
+      asset,
+      hotspot,
+      crop
+    },
+    xLink,
+    tryItOutHref,
+    backgroundColor,
+    toolCategories[] {
+      label,
+      tools
+    }
+  }
+`;
+
+// Query for a single experiment project by projectId
+export const EXPERIMENT_PROJECT_BY_ID_QUERY = `
+  *[_type == "experimentProject" && projectId == $projectId][0] {
+    _id,
+    projectId,
+    title,
+    year,
+    description,
+    muxPlaybackIdClip,
+    muxPlaybackId,
+    fallbackThumbnail {
+      asset,
+      hotspot,
+      crop
+    },
+    xLink,
+    tryItOutHref,
+    backgroundColor,
+    toolCategories[] {
+      label,
+      tools
+    }
+  }
+`;
+
+// ============================================
+// OWNER LOCATION
+// ============================================
+
+export const OWNER_LOCATION_QUERY = `
+  *[_type == "ownerLocation"][0]{
+    city,
+    timezone
+  }
+`;

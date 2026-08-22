@@ -1,0 +1,690 @@
+@import "tailwindcss";
+
+/* Squircle corners with compensated border-radius.
+   Full squircle visually shrinks corners, so we bump up border-radius
+   by ~1.3x when supported to maintain the same perceived roundness.
+   Unsupported browsers fall through to original border-radius values. */
+@supports (corner-shape: squircle) {
+  *, *::before, *::after {
+    corner-shape: squircle;
+  }
+
+  /* Circles and pills: stay perfectly round */
+  .rounded-full,
+  .\!rounded-full,
+  .rounded-\[999px\],
+  .rounded-\[1000px\],
+  .rounded-\[100px\],
+  .gallery-composer-morph,
+  .ghost-icon-button,
+  /* `.button.rectangular` keeps the squircle; only the circular recipe is a pill. */
+  .button:not(.rectangular),
+  .filter-pill,
+  .filter-pill-indicator,
+  /* `globals.css` recipes: their own `corner-shape: round` sits in
+     `@layer components`, so it loses to the unlayered `*` rule above. */
+  .field-shell,
+  .filter-dropdown-trigger,
+  .contact-badge,
+  .loading-spinner-ring,
+  [style*="border-radius: 50%"],
+  [style*="border-radius:50%"],
+  [style*="border-radius: 9999"],
+  [style*="border-radius:9999"] {
+    corner-shape: round;
+  }
+
+  /* Compensate border-radius to preserve visual size (~1.7x) */
+  .rounded-xl                { border-radius: 20px; }   /* 12px */
+  .rounded-2xl               { border-radius: 27px; }   /* 16px */
+  .rounded-3xl               { border-radius: 41px; }   /* 24px */
+  .rounded-\[12px\]          { border-radius: 20px; }
+  .rounded-\[16px\]          { border-radius: 27px; }
+  .rounded-\[20px\]          { border-radius: 34px; }
+  .rounded-\[24px\]          { border-radius: 41px; }
+  .rounded-\[26px\]          { border-radius: 44px; }
+
+  .tooltip                   { border-radius: 14px; }   /* 8px */
+}
+
+/* Michelle font (Figtree variable font, self-hosted) */
+@font-face {
+  font-family: 'Michelle';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/figtree-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Michelle';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/figtree-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Michelle';
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/figtree-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Michelle';
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/fonts/figtree-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Direction utilities for reversing column fill */
+@media (max-width: 1023px) {
+  .max-lg\:direction-rtl {
+    direction: rtl;
+  }
+  .max-lg\:direction-ltr {
+    direction: ltr;
+  }
+}
+
+/* Canonical shadow tokens (≤6). Prefer these over arbitrary shadow-[…] values.
+   Defined in @theme so Tailwind variants (hover:, md:, etc.) work. */
+@theme {
+  /* Between sm (640) and md (768) — seal / sticky-header clearance. */
+  --breakpoint-mid: 660px;
+
+  /* Prefer SF Mono for all font-mono / code surfaces. */
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-default: 0px 4px 16px 0px rgba(212, 212, 216, 0.65);
+  --shadow-media: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-glass: 0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.02);
+}
+
+/* Hover companion for .shadow-default — add class alongside, not a separate elevation */
+.shadow-default-hover:hover {
+  box-shadow: 0px 4px 16px 0px rgba(161, 161, 170, 0.4) !important;
+}
+
+/* Prevent horizontal scrolling on the page - use clip instead of hidden to preserve sticky */
+body {
+  overflow-x: clip;
+  max-width: 100vw;
+}
+
+/* Aesthetic focus rings - subtle offset for keyboard navigation.
+   Deliberately no border-radius here: this rule is unlayered, so it outranks
+   Tailwind's layered `rounded-*` utilities and would flatten every focused
+   rounded control (and, under corner-shape: squircle, square it off outright).
+   Outlines already follow the element's own radius. */
+*:focus-visible {
+  outline: 2px solid #d4d4d8; /* zinc-300 */
+  outline-offset: 2px;
+}
+
+/* Controls in the gallery's floating bar draw focus as a ring instead, so the
+   indicator hugs their rounded corners. The rule above is unlayered, so it
+   outranks Tailwind's `outline-none` utility and would otherwise sit outside
+   the ring as a second boundary — which is exactly what "two stacked rings"
+   looked like. Opting out here leaves the ring as the single indicator. */
+.gallery-focus:focus-visible {
+  outline: none;
+}
+
+/* Remove focus outline from text inputs */
+input[type="text"]:focus,
+input[type="text"]:focus-visible,
+input[type="email"]:focus,
+input[type="email"]:focus-visible,
+input[type="password"]:focus,
+input[type="password"]:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+  outline: none;
+}
+
+/* Hide ALL native video controls and play buttons across all browsers/WebViews */
+/* WebKit (Safari, iOS, Instagram/Facebook in-app browsers) */
+video::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+video::-webkit-media-controls-panel {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+video::-webkit-media-controls-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+video::-webkit-media-controls-enclosure {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display,
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-mute-button,
+video::-webkit-media-controls-fullscreen-button {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* Mozilla Firefox */
+video::-moz-media-controls {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* Microsoft Edge / IE */
+video::-ms-media-controls {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* General video element - prevent any default UI */
+video {
+  -webkit-media-controls-panel: none;
+  -webkit-media-controls-play-button: none;
+  -webkit-media-controls-start-playback-button: none;
+}
+
+/* Wrapper class for extra protection - use on video containers */
+.video-no-controls video,
+.video-no-controls {
+  pointer-events: none;
+}
+
+.video-no-controls video::before,
+.video-no-controls video::after {
+  display: none !important;
+}
+
+/* Page entrance — global so remounts don't redefine @keyframes mid-animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 400ms ease-out forwards;
+}
+
+/* Modal animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Shimmer loading animation for images */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    105deg,
+    #e4e4e7 0%,
+    #e4e4e7 28%,
+    #ececee 40%,
+    #f4f4f5 46%,
+    #fafafa 50%,
+    #f4f4f5 54%,
+    #ececee 60%,
+    #e4e4e7 72%,
+    #e4e4e7 100%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 2.2s ease-in-out infinite;
+  /* Optimize for better performance */
+  will-change: background-position;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Shelf item fade up animation */
+@keyframes shelfItemFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-shelf-item-fade-up {
+  opacity: 0;
+  animation: shelfItemFadeUp 400ms ease-out forwards;
+}
+
+/* Modal open animation - smooth slide down with scale */
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal-in {
+  animation: modalSlideIn 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+
+.animate-modal-out {
+  animation: modalSlideOut 180ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+/* Modal scale animation that preserves existing translate */
+@keyframes modalScaleInPreserve {
+  0% {
+    opacity: 0;
+    scale: 0.95;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.animate-modal-scale-in {
+  animation: modalScaleInPreserve 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Overlay fade in */
+@keyframes overlayFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-overlay-in {
+  animation: overlayFadeIn 200ms ease-out both;
+}
+
+@keyframes modalScaleOutPreserve {
+  0% {
+    opacity: 1;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
+
+.animate-modal-scale-out {
+  animation: modalScaleOutPreserve 200ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* Overlay fade out */
+@keyframes overlayFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-overlay-out {
+  animation: overlayFadeOut 200ms ease-in forwards;
+}
+
+/* Experiment modal embed styles - adjust fixed positioning within modal */
+.experiment-modal-embed {
+  position: relative;
+  height: 100%;
+  /* Contain layout to prevent reflows from affecting parent */
+  contain: layout style;
+}
+
+/* Modal scrollbar styling - prevent scrollbar from being cut off by rounded corners */
+.modal-scroll-container {
+  /* Add padding at top and bottom so scrollbar doesn't touch rounded corners */
+  scrollbar-gutter: stable;
+  /* Prevent horizontal scrolling - content should scale down instead */
+  overflow-x: hidden !important;
+}
+
+
+.modal-scroll-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+  /* Add margin to prevent scrollbar track from being cut off by rounded corners */
+  margin-top: 26px;
+  margin-bottom: 26px;
+  border-radius: 6px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.3s ease;
+}
+
+.modal-scroll-container.is-scrolling::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal-scroll-container::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Fullscreen mode - no margin needed since no rounded corners, and no scrollbar-gutter */
+.modal-scroll-container.fullscreen {
+  scrollbar-gutter: auto;
+}
+
+.modal-scroll-container.fullscreen::-webkit-scrollbar-track {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/*
+  Fullscreen case studies sit their body copy on 8 of 12 columns, so the outer
+  2 columns each side stay clear for the fixed section nav (left-16). Popups
+  keep the flat 175px gutter, hence the .fullscreen scope. Matches the shared
+  section gutter in ProjectModal — keep the two in sync if that class changes.
+*/
+@media (min-width: 1280px) {
+  .modal-scroll-container.fullscreen [class*="xl:px-[175px]"] {
+    padding-left: 16.6667%;
+    padding-right: 16.6667%;
+  }
+}
+
+/* Site-embed mobile popup: no scrollbar gutter (content fits without scrolling) */
+.experiment-modal-embed:has(.site-embed-mobile) {
+  scrollbar-gutter: auto !important;
+}
+
+.experiment-modal-embed:has(.site-embed-mobile)::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+/* Prevent vertical scrolling on sketchbook page in modal and hide scrollbar */
+.experiment-modal-embed:has(.sketchbook-page-container) {
+  overflow: hidden !important;
+  scrollbar-gutter: auto !important;
+}
+
+.experiment-modal-embed:has(.sketchbook-page-container)::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Prevent vertical scrolling on sketchbook page on mobile (fullscreen mode) */
+.sketchbook-page-container {
+  overflow: hidden !important;
+  touch-action: pan-x !important;
+}
+
+/* Also prevent body scroll when sketchbook is open on mobile */
+@media (max-width: 640px) {
+  body:has(.sketchbook-page-container) {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+  }
+}
+
+/* Prevent vertical scrolling on polaroid page in popup mode (not fullscreen) and hide scrollbar */
+.experiment-modal-embed:not(.fullscreen):has(.polaroid-page-container) {
+  overflow: hidden !important;
+  scrollbar-gutter: auto !important;
+}
+
+.experiment-modal-embed:not(.fullscreen):has(.polaroid-page-container)::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Prevent vertical scrolling on screentime generate screen in popup mode (not fullscreen) and hide scrollbar */
+.experiment-modal-embed:not(.fullscreen):has(.screentime-page-container):not(:has(.receipt-screen-container)) {
+  overflow: hidden !important;
+  scrollbar-gutter: auto !important;
+}
+
+.experiment-modal-embed:not(.fullscreen):has(.screentime-page-container):not(:has(.receipt-screen-container))::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Receipt screen should be scrollable - let the modal-scroll-container handle scrolling */
+.experiment-modal-embed:has(.receipt-screen-container) {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.experiment-modal-embed:has(.receipt-screen-container) .screentime-page-container {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 100%;
+  justify-content: flex-start !important;
+  align-items: center !important;
+}
+
+/* Hide the logo/back button and info button that come FROM the embedded experiment pages (not the modal's own buttons) */
+/* In fullscreen mode, allow the embedded page's info button to show (it has createPortal for proper centering) */
+.experiment-modal-embed:not(.fullscreen) button[aria-label="Back to home"],
+.experiment-modal-embed:not(.fullscreen) button[aria-label="Go back to home"],
+.experiment-modal-embed:not(.fullscreen) button[aria-label="Project info"]:not([data-info-button]) {
+  display: none !important;
+}
+
+/*
+  Library popup: compact book sizing on typical screens only.
+  On huge monitors the popup (~10/12 viewport) is wide enough to use the same
+  book size / gap behavior as /library/full on a laptop — skip the downscale.
+*/
+@media (max-width: 1919px) {
+  /* Fixed columns in popup mode only (fullscreen uses the page's default grid) */
+  .experiment-modal-embed:not(.fullscreen) .library-book-grid {
+    grid-template-columns: repeat(6, auto) !important;
+    justify-content: space-between !important;
+    gap: 40px 0 !important;
+  }
+
+  /* Scale down book cards in popup mode */
+  .experiment-modal-embed:not(.fullscreen) .library-book-grid > button {
+    width: 100px !important;
+    height: 200px !important;
+    transition: all 500ms ease-out !important;
+  }
+
+  .experiment-modal-embed:not(.fullscreen) .library-book-grid > button > div:first-child {
+    width: 100px !important;
+    height: 154px !important;
+    background: transparent !important;
+    transition: all 500ms ease-out !important;
+  }
+
+  .experiment-modal-embed:not(.fullscreen) .library-book-grid > button > div:first-child img {
+    width: 100px !important;
+    height: 154px !important;
+    transition: all 500ms ease-out !important;
+  }
+
+  /* Scale down hover text in popup mode */
+  .experiment-modal-embed:not(.fullscreen) .library-book-grid > button > div:last-child {
+    top: 155px !important;
+    width: 100px !important;
+    font-size: 12px !important;
+  }
+
+  /* Reduce book cover hover movement in popup mode */
+  .experiment-modal-embed:not(.fullscreen) .library-book-grid > button:hover > div:first-child {
+    top: -8px !important;
+  }
+
+  .experiment-modal-embed:not(.fullscreen) .library-book-grid > button > div:last-child p {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+  }
+}
+
+/* Ensure smooth transition for fullscreen mode too */
+.library-book-grid > button {
+  transition: all 500ms ease-out;
+}
+
+.library-book-grid > button > div:first-child {
+  transition: all 500ms ease-out;
+}
+
+.library-book-grid > button > div:first-child img {
+  transition: all 500ms ease-out;
+}
+
+/* Popover animation - smooth scale and fade */
+@keyframes popoverIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes blink {
+  0%, 40%, 100% { opacity: 1; }
+  60%, 80% { opacity: 0; }
+}
+
+/* Blueprint logo — soft breathe while resting in gray/rails mode.
+   Morph timing/easing lives in BlueprintLogo.tsx (framer-motion). */
+.blueprint-logo--always.blueprint-logo--blueprint .blueprint-frame {
+  animation: blueprint-frame-breathe 4.5s ease-in-out 700ms infinite;
+}
+
+@keyframes blueprint-frame-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blueprint-logo--always.blueprint-logo--blueprint .blueprint-frame {
+    animation: none;
+  }
+}

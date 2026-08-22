@@ -1,0 +1,137 @@
+import React from "react";
+import clsx from "clsx";
+import ShimmerImage from "../shared/ShimmerImage";
+import { HorizontalLine } from "../shared/HorizontalLine";
+
+type MetadataItem = {
+  label: string;
+  value: string | string[];
+  subValue?: string;
+};
+
+type ProjectHeroHeaderProps = {
+  device?: "Default" | "Mobile";
+  /** Company/project logo URL */
+  logoSrc: string;
+  /** Project title */
+  title: string;
+  /** Metadata fields (Timeline, Org, Role, With, Location, etc.) */
+  metadata: MetadataItem[];
+  /** Hero image URL */
+  heroImageSrc: string;
+};
+
+export default function ProjectHeroHeader({
+  device = "Default",
+  logoSrc,
+  title,
+  metadata,
+  heroImageSrc,
+}: ProjectHeroHeaderProps) {
+  const isDesktop = device === "Default";
+  const isMobile = device === "Mobile";
+
+  return (
+    <div
+      className={clsx(
+        "content-stretch flex flex-col gap-8 items-start justify-center py-16 relative",
+        isDesktop && "px-[175px] w-[1440px]",
+        isMobile && "px-8 w-[640px]"
+      )}
+    >
+      {/* Logo */}
+      <div className="relative shrink-0 size-20">
+        <img
+          className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
+          alt=""
+          src={logoSrc}
+        />
+      </div>
+
+      {/* Title and Metadata */}
+      <div
+        className={clsx(
+          "content-stretch flex flex-col gap-10 items-start relative shrink-0",
+          isMobile && "w-full"
+        )}
+      >
+        {/* Title */}
+        <p className="font-normal leading-normal relative shrink-0 text-4xl text-zinc-900">
+          {title}
+        </p>
+
+        {/* Metadata Grid */}
+        <div
+          className={clsx(
+            "relative shrink-0",
+            isDesktop && "content-stretch flex gap-5 items-start w-[1090px]",
+            isMobile && "gap-4 grid grid-cols-2 grid-rows-[repeat(3,_fit-content(100%))] w-full"
+          )}
+        >
+          {metadata.map((item, index) => (
+            <div
+              key={item.label}
+              className={clsx(
+                "content-stretch flex flex-col gap-3 items-start leading-normal relative shrink-0 text-base",
+                isDesktop && "w-[202px]",
+                isMobile && index % 2 === 0 && "col-[1] self-start",
+                isMobile && index % 2 === 1 && "col-[2] self-start",
+                isMobile && index < 2 && "row-[1]",
+                isMobile && index >= 2 && index < 4 && "row-[2]",
+                isMobile && index >= 4 && "row-[3]",
+                "whitespace-pre-wrap"
+              )}
+            >
+              <p className="font-medium relative shrink-0 text-zinc-400">
+                {item.label}
+              </p>
+              <p className="font-normal relative leading-relaxed shrink-0 text-zinc-900">
+                {Array.isArray(item.value) ? (
+                  item.value.map((v, i) => (
+                    <React.Fragment key={i}>
+                      {v}
+                      {i < item.value.length - 1 && <br />}
+                    </React.Fragment>
+                  ))
+                ) : (
+                  item.value
+                )}
+                {item.subValue && (
+                  <>
+                    <br />
+                    <span className="italic">{item.subValue}</span>
+                  </>
+                )}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Separator Line */}
+      <HorizontalLine />
+
+      {/* Hero Image */}
+      <div className="content-stretch flex flex-col items-start overflow-clip relative rounded-[26px] shrink-0 w-full">
+        <div
+          className={clsx(
+            "relative rounded-[26px] shrink-0",
+            isDesktop && "h-[591px] w-[1090px]",
+            isMobile && "aspect-[678/367.625] w-full"
+          )}
+        >
+          <ShimmerImage
+            wrapperClassName="absolute inset-0 size-full"
+            rounded="rounded-[26px]"
+            className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
+            alt=""
+            src={heroImageSrc}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
