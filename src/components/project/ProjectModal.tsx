@@ -95,6 +95,13 @@ function applyLucasProjectOverrides(
     };
   }
 
+  if (projectId === "apple" || projectId === "warframe" || project.company === "apple") {
+    return {
+      ...project,
+      title: "Warframe",
+    };
+  }
+
   return project;
 }
 
@@ -106,6 +113,7 @@ function getBreadcrumbProjectName(projectId: string, project: Project | null): s
   if (projectId === "adobe" || projectId === "ripple") return "Ripple";
   if (projectId === "nasa" || projectId === "shufflr") return "Shufflr";
   if (projectId === "parrot") return "Parrot";
+  if (projectId === "apple" || projectId === "warframe") return "Warframe";
 
   if (
     project?.title &&

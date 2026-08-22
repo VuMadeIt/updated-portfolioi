@@ -34,7 +34,8 @@ test("uses large contact text and deeper intro fade on Work", () => {
 });
 
 test("updates the work hero copy and links company names out", () => {
-  assert.match(homeSource, /Designing tools for human connection & creativity\./);
+  assert.match(homeSource, /Building quality products for causes that matter at/);
+  assert.doesNotMatch(homeSource, /Designing tools for human connection/);
   assert.doesNotMatch(homeSource, /Designing to spark/);
   assert.doesNotMatch(homeSource, /Designing products to spark/);
   assert.match(homeSource, /Clients include /);
@@ -48,15 +49,15 @@ test("updates the work hero copy and links company names out", () => {
     homeSource,
     /<br className="md:hidden" aria-hidden="true" \/>[\s\S]*?Previously at /,
   );
-  assert.match(homeSource, /APPLE_LOGO_PATH/);
-  assert.match(homeSource, /viewBox="0 0 814 1000"/);
-  assert.match(homeSource, /ariaLabel="Apple"/);
-  assert.match(homeSource, /apple: "https:\/\/www\.apple\.com"/);
-  assert.match(homeSource, /roblox: "https:\/\/about\.roblox\.com\/"/);
-  assert.match(homeSource, /nasa: "https:\/\/www\.jpl\.nasa\.gov\/"/);
-  assert.match(homeSource, /cognition: "https:\/\/cognition\.ai"/);
-  assert.match(homeSource, /luma: "https:\/\/luma\.com"/);
-  assert.match(homeSource, /pika: "https:\/\/pika\.art"/);
+  assert.match(homeSource, /waterloo-crest\.png/);
+  assert.match(homeSource, /ariaLabel="University of Waterloo"/);
+  assert.match(homeSource, /parrot: "https:\/\/www\.ycombinator\.com\/companies\/parrot"/);
+  assert.match(
+    homeSource,
+    /systematicStorytelling: "https:\/\/www\.systematicstorytelling\.com\/"/,
+  );
+  assert.match(homeSource, /digitalExtremes: "https:\/\/www\.digitalextremes\.com\/"/);
+  assert.match(homeSource, /waterloo: "https:\/\/uwaterloo\.ca\/"/);
   assert.match(homeSource, /target="_blank"/);
   assert.match(homeSource, /rel="noopener noreferrer"/);
   assert.match(homeSource, /INLINE_LINK_CLASS/);
