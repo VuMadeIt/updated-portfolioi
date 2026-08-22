@@ -5,6 +5,7 @@ import { FieldInput, FieldShell, fieldIconSlotClassName } from "../shared/FieldI
 import { ArrowRightIcon } from "../icons/Arrow";
 import { iconSize } from "../shared/iconSizes";
 import { INLINE_LINK_CLASS } from "../shared/inlineLink";
+import { toInternalProjectId } from "../../lib/projectSlugs";
 
 // Lock icon with circular background and shadow (matches Figma exactly)
 const LockIcon = () => (
@@ -82,7 +83,7 @@ export default function ProtectedContent({
                 {isPassword ? "This case study is password-protected." : "Confidential"}
               </p>
               <p className="leading-normal relative shrink-0 text-[#71717a] text-lg">
-                {projectSlug === "apple" ? (
+                {toInternalProjectId(projectSlug || "") === "apple" ? (
                   <>
                     Please{" "}
                     <a

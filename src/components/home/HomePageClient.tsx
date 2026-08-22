@@ -75,6 +75,8 @@ type Project = {
   year: string;
   description: string;
   imageSrc: string;
+  /** Optional hover media (e.g. GIF) shown over imageSrc while the card is hovered. */
+  hoverImageSrc?: string;
   videoSrc?: string;
   /** Full/uncropped Mux assets for ExperimentModal / ExperimentSiteEmbed. */
   popupImageSrc?: string;
@@ -115,11 +117,12 @@ const designMeetupFull = getMuxUrls(
 
 const staticProjects: Project[] = [
   {
-    id: "apple",
-    title: "Apple",
-    year: "2025",
+    id: "warframe",
+    title: "Warframe",
+    year: "2026",
     description: "Designing new features to drive engagement and user delight.",
-    imageSrc: "",
+    imageSrc: "/images/apple-still.jpg",
+    hoverImageSrc: "/images/apple-hover.gif",
     videoSrc: "",
   },
   {
@@ -176,69 +179,6 @@ const staticProjects: Project[] = [
     backgroundColor: "#ffffff",
   },
   {
-    id: "sketchbook",
-    title: "Digital Sketchbook",
-    year: "2025",
-    description: "A digital home for sketches and visual journaling.",
-    imageSrc: "https://image.mux.com/iEo013MYI028Zit3nPTJetFvqbgweCC8e2NHbY702qsQBg/thumbnail.png?width=1920",
-    videoSrc: "https://stream.mux.com/iEo013MYI028Zit3nPTJetFvqbgweCC8e2NHbY702qsQBg.m3u8",
-    backgroundColor: "#ffffff",
-    toolCategories: [
-      { label: 'Design', tools: ['Figma'] },
-      { label: 'Frontend', tools: ['TypeScript', 'React', 'Vite'] },
-      { label: 'Styling', tools: ['Tailwind CSS'] },
-      { label: 'AI', tools: ['Figma Make', 'Cursor'] },
-    ],
-  },
-  {
-    id: "film",
-    title: "Film Diary",
-    year: "2025",
-    description: "A scroll-driven photo strip of life moments.",
-    imageSrc: "https://image.mux.com/p66bkVMzjdu5wUtVpCZX41TwUzNOwWEfbSdtVefW9Vw/thumbnail.png?width=1920",
-    videoSrc: "https://stream.mux.com/p66bkVMzjdu5wUtVpCZX41TwUzNOwWEfbSdtVefW9Vw.m3u8",
-    xLink: "https://x.com/michelletliu/status/1925775994930327773",
-    backgroundColor: "#ffffff",
-    toolCategories: [
-      { label: 'Design', tools: ['Figma'] },
-      { label: 'Frontend', tools: ['TypeScript', 'React', 'Framer Motion', 'Tailwind CSS'] },
-      { label: 'Data', tools: ['Notion API'] },
-      { label: 'AI', tools: ['Cursor', 'Opus 4.6'] },
-    ],
-  },
-  {
-    id: "library",
-    title: "Personal Library",
-    year: "2025",
-    description: "My dream digital bookshelf",
-    imageSrc: "https://image.mux.com/a3NxNdblQi02JVCg0177eEWZRycP1BduGb2pt7o00FUPfo/thumbnail.png?width=1920",
-    videoSrc: "https://stream.mux.com/a3NxNdblQi02JVCg0177eEWZRycP1BduGb2pt7o00FUPfo.m3u8",
-    xLink: "https://x.com/michelletliu/status/1981030966044061894",
-    backgroundColor: "#ffffff",
-    toolCategories: [
-      { label: 'Design', tools: ['Figma'] },
-      { label: 'Frontend', tools: ['TypeScript', 'React', 'Vite'] },
-      { label: 'Styling', tools: ['Tailwind CSS'] },
-      { label: 'AI', tools: ['Figma Make', 'Cursor'] },
-    ],
-  },
-  {
-    id: "polaroid",
-    title: "Polaroid Studio",
-    year: "2025",
-    description: "A digital way to customize your own polaroid.",
-    imageSrc: "https://image.mux.com/XJFJ1P3u9pKsFYvH9lTtOp4gPRydSpMkRrX9dRmNE5w/thumbnail.png?width=1920",
-    videoSrc: "https://stream.mux.com/XJFJ1P3u9pKsFYvH9lTtOp4gPRydSpMkRrX9dRmNE5w.m3u8",
-    xLink: "https://x.com/michelletliu/status/1991201412072734777",
-    backgroundColor: "#eff6ff",
-    toolCategories: [
-      { label: 'Design', tools: ['Figma'] },
-      { label: 'Frontend', tools: ['TypeScript', 'React', 'Vite'] },
-      { label: 'Styling', tools: ['Tailwind CSS'] },
-      { label: 'AI', tools: ['Figma Make', 'Cursor'] },
-    ],
-  },
-  {
     id: "gallery",
     title: "Gallery",
     year: "2026",
@@ -274,9 +214,10 @@ const staticProjects: Project[] = [
 type ProjectMediaProps = {
   imageSrc: string;
   videoSrc?: string;
+  hoverImageSrc?: string;
 };
 
-const ProjectMedia = React.memo(function ProjectMedia({ imageSrc, videoSrc }: ProjectMediaProps) {
+const ProjectMedia = React.memo(function ProjectMedia({ imageSrc, videoSrc, hoverImageSrc }: ProjectMediaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -400,12 +341,24 @@ const ProjectMedia = React.memo(function ProjectMedia({ imageSrc, videoSrc }: Pr
     <div ref={containerRef} className="aspect-[678/367.625] relative isolate rounded-[26px] shrink-0 w-full overflow-hidden">
       <ShimmerImage
         alt=""
-        className="absolute max-w-none object-cover size-full"
+        className={clsx(
+          "absolute max-w-none object-cover size-full transition-opacity duration-300 ease-out",
+          hoverImageSrc && "group-hover:opacity-0",
+        )}
         wrapperClassName="absolute inset-0"
         rounded="rounded-[26px]"
         src={imageSrc}
         loading="lazy"
       />
+      {hoverImageSrc && (
+        <img
+          src={hoverImageSrc}
+          alt=""
+          decoding="async"
+          loading="lazy"
+          className="absolute inset-0 max-w-none object-cover size-full rounded-[26px] opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 pointer-events-none"
+        />
+      )}
     </div>
   );
 });
@@ -433,29 +386,19 @@ type ProjectCardProps = {
   index?: number;
 };
 
-const SIDE_PROJECT_IDS = ["design-meetup", "parrot", "sketchbook", "film", "library", "polaroid", "gallery", "sundays"];
+const SIDE_PROJECT_IDS = ["design-meetup", "parrot", "gallery", "sundays"];
 /** Experiments kept in data/routes but omitted from the home experiments grid. */
 const HIDDEN_EXPERIMENT_IDS: string[] = [];
 /** Experiments that skip the preview modal and navigate straight to their page. */
 const DIRECT_NAV_EXPERIMENT_IDS = ["gallery"];
-const MAIN_PROJECT_IDS = ["apple", "maple-leaf-foods", "ripple", "shufflr"];
+const MAIN_PROJECT_IDS = ["warframe", "maple-leaf-foods", "ripple", "shufflr"];
 
 function isVisibleOnHomeGrid(project: Project): boolean {
   return !HIDDEN_EXPERIMENT_IDS.includes(project.id);
 }
 
-/** Library before sketchbook on small screens, without a non-transitive sort. */
 function projectsForMobileHomeGrid(projects: Project[]): Project[] {
-  const visible = projects.filter(isVisibleOnHomeGrid);
-  const sketchIndex = visible.findIndex((project) => project.id === "sketchbook");
-  const libraryIndex = visible.findIndex((project) => project.id === "library");
-  if (sketchIndex === -1 || libraryIndex === -1 || libraryIndex < sketchIndex) {
-    return visible;
-  }
-  const ordered = visible.slice();
-  const [library] = ordered.splice(libraryIndex, 1);
-  ordered.splice(sketchIndex, 0, library);
-  return ordered;
+  return projects.filter(isVisibleOnHomeGrid);
 }
 
 const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, featured = false, index = 0 }: ProjectCardProps) {
@@ -510,7 +453,11 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
         <div 
           className="content-stretch flex flex-col items-start justify-end overflow-clip relative rounded-[26px] shrink-0 w-full transition-transform duration-300 group-hover:scale-[0.99]"
         >
-          <ProjectMedia imageSrc={project.imageSrc} videoSrc={project.videoSrc} />
+          <ProjectMedia
+            imageSrc={project.imageSrc}
+            videoSrc={project.videoSrc}
+            hoverImageSrc={project.hoverImageSrc}
+          />
           <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
           <div className="absolute bottom-0 left-0 p-3 hidden md:block">
             <div className="bg-white border border-[#f4f4f5] border-solid flex items-center justify-center px-3 pt-[5px] pb-[4.8px] rounded-full">
@@ -581,7 +528,11 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
       <div 
         className="content-stretch flex flex-col items-start overflow-clip relative rounded-[26px] shrink-0 w-full transition-transform duration-300 group-hover:scale-[0.99]"
       >
-        <ProjectMedia imageSrc={project.imageSrc} videoSrc={project.videoSrc} />
+        <ProjectMedia
+          imageSrc={project.imageSrc}
+          videoSrc={project.videoSrc}
+          hoverImageSrc={project.hoverImageSrc}
+        />
         <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
       </div>
       <div className="content-stretch flex font-['Michelle',sans-serif] md:-mt-1.5 md:-mb-0.5 font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.005em] w-full project-hover-text">
@@ -869,6 +820,13 @@ function mergeWorkProjects(
       if (project.videoSrc && !project.videoSrc.includes("stream.mux.com")) {
         return project;
       }
+      // Keep local still + hover GIF (Apple) instead of Sanity Mux.
+      if (
+        project.hoverImageSrc ||
+        (project.imageSrc.startsWith("/") && !project.imageSrc.includes("image.mux.com"))
+      ) {
+        return project;
+      }
       const internalId = toInternalProjectId(project.id);
       const heroVideo = heroVideoMap[internalId] ?? heroVideoMap[project.id];
       if (heroVideo) {
@@ -930,16 +888,11 @@ function mergeWorkProjects(
 }
 
 const HERO_COMPANY_HREFS = {
-  apple: "https://www.apple.com",
-  roblox: "https://about.roblox.com/",
-  nasa: "https://www.jpl.nasa.gov/",
-  cognition: "https://cognition.ai",
-  luma: "https://luma.com",
-  pika: "https://pika.art",
+  parrot: "https://www.ycombinator.com/companies/parrot",
+  systematicStorytelling: "https://www.systematicstorytelling.com/",
+  digitalExtremes: "https://www.digitalextremes.com/",
+  waterloo: "https://uwaterloo.ca/",
 } as const;
-
-const APPLE_LOGO_PATH =
-  "M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z";
 
 function HeroCompanyLink({
   href,
@@ -1238,7 +1191,16 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
                     isContactBadgeExpanded ? "opacity-20" : "opacity-100",
                   )}
                 >
-                  Designing tools for human connection & creativity.
+                  Building quality products for causes that matter at{" "}
+                  <HeroCompanyLink href={HERO_COMPANY_HREFS.waterloo} ariaLabel="University of Waterloo">
+                    <img
+                      src="/images/waterloo-crest.png"
+                      alt=""
+                      aria-hidden="true"
+                      className="inline-block h-[1.15em] w-auto align-[-0.2em]"
+                    />
+                  </HeroCompanyLink>
+                  .
                 </span>
                 <span
                   className={clsx(
@@ -1248,31 +1210,17 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
                 >
                   <br aria-hidden="true" />
                   {`Clients include `}
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.cognition}>Cognition</HeroCompanyLink>
-                  <span>{`, `}</span>
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.luma}>Luma</HeroCompanyLink>
-                  <span>{`, & `}</span>
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.pika}>Pika</HeroCompanyLink>
+                  <HeroCompanyLink href={HERO_COMPANY_HREFS.parrot}>Parrot</HeroCompanyLink>
+                  <span>{` & `}</span>
+                  <HeroCompanyLink href={HERO_COMPANY_HREFS.systematicStorytelling}>
+                    Systematic Storytelling
+                  </HeroCompanyLink>
                   <span>{`. `}</span>
                   <br className="md:hidden" aria-hidden="true" />
                   <span>{`Previously at `}</span>
-                  <span style={{ fontVariationSettings: "'wdth' 100" }}>
-                    <HeroCompanyLink href={HERO_COMPANY_HREFS.apple} ariaLabel="Apple">
-                      <svg
-                        className="inline w-[0.9em] h-[0.9em]"
-                        style={{ verticalAlign: "-0.075em" }}
-                        viewBox="0 0 814 1000"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path d={APPLE_LOGO_PATH} />
-                      </svg>
-                    </HeroCompanyLink>
-                  </span>
-                  <span>{`, `}</span>
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.roblox}>Roblox</HeroCompanyLink>
-                  <span>{`, & `}</span>
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.nasa}>NASA</HeroCompanyLink>
+                  <HeroCompanyLink href={HERO_COMPANY_HREFS.digitalExtremes}>
+                    Digital Extremes
+                  </HeroCompanyLink>
                   <span>.</span>
                 </span>
                 <ContactBadge
