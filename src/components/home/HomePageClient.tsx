@@ -139,7 +139,7 @@ const staticProjects: Project[] = [
     id: "ripple",
     title: "Ripple",
     year: "2026",
-    description: "Imagining a cleaner alternative to conventional LLMs.",
+    description: "Sustainable AI through reuse, not regeneration.",
     imageSrc: "",
     videoSrc: "/videos/ripple.mp4",
   },

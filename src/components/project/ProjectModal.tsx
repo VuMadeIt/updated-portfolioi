@@ -83,7 +83,37 @@ function applyLucasProjectOverrides(
     return {
       ...project,
       title: "Ripple",
+      year: "2026",
+      shortDescription: RIPPLE_TAGLINE,
       heroVideo: LOCAL_HERO_VIDEOS.ripple,
+      logo: undefined,
+      metadata: [
+        {
+          _key: "role",
+          label: "Role",
+          value: ["Product Designer"],
+          subValue: null,
+        },
+        {
+          _key: "team",
+          label: "Team",
+          value: ["4 Designers"],
+          subValue: null,
+        },
+        {
+          _key: "timeline",
+          label: "Timeline",
+          value: ["8 hours"],
+          subValue: null,
+        },
+        {
+          _key: "tools",
+          label: "Tools",
+          value: ["Figma"],
+          subValue: null,
+        },
+      ],
+      content: [],
     };
   }
 
@@ -160,6 +190,12 @@ import { HorizontalLine } from "../shared/HorizontalLine";
 import { ghostIconButtonClass } from "../shared/ghostIconButton";
 import ProjectCaseStudySidebar from "./ProjectCaseStudySidebar";
 import { getCaseStudyNavItems } from "./caseStudyNavItems";
+import RippleCaseStudy from "./ripple/RippleCaseStudy";
+import {
+  isRippleProject,
+  RIPPLE_NAV_ITEMS,
+  RIPPLE_TAGLINE,
+} from "./ripple/rippleContent";
 
 // Helper to render text with highlighted portion
 function renderHighlightedText(text: string, highlightedText?: string, highlightColor?: string): React.ReactNode {
@@ -925,8 +961,10 @@ export default function ProjectModal({
   const [activeNavId, setActiveNavId] = useState<string | undefined>();
   const pendingUnlockTargetRef = React.useRef<string | null>(null);
 
+  const isRipple = isRippleProject(projectId, project?.company);
+
   const visibleSections = useMemo(() => {
-    if (!project?.content) return [];
+    if (isRipple || !project?.content) return [];
 
     return project.content.filter((section) => {
       if (section._type === "protectedSection") return !isUnlocked;
@@ -937,11 +975,11 @@ export default function ProjectModal({
       if (visibility === "unlocked") return isUnlocked;
       return true;
     });
-  }, [project, isUnlocked]);
+  }, [project, isUnlocked, isRipple]);
 
   const navItems = useMemo(
-    () => getCaseStudyNavItems(visibleSections),
-    [visibleSections],
+    () => (isRipple ? RIPPLE_NAV_ITEMS : getCaseStudyNavItems(visibleSections)),
+    [isRipple, visibleSections],
   );
 
   // Fetch project data from Sanity (uses preloaded cache if available)
@@ -1416,7 +1454,7 @@ export default function ProjectModal({
           {!loading && !error && project && (
             <div className="flex flex-col pb-16 w-full">
               {/* Mobile not available message - shown only after unlocking on mobile (NASA is allowed) */}
-              {isUnlocked && isMobile && projectId !== 'nasa' && (
+              {isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && (
                 <div className="mx-auto flex w-full max-w-[800px] flex-col items-center justify-center min-h-[60vh] px-8 text-center">
                   <LaptopIcon />
                   <p className="text-[#71717a] text-base leading-normal px-12 mt-4">
@@ -1426,7 +1464,7 @@ export default function ProjectModal({
               )}
 
               {/* Project Hero Header - hidden on mobile when unlocked (NASA is allowed) */}
-              {!(isUnlocked && isMobile && projectId !== 'nasa') && (
+              {!(isUnlocked && isMobile && projectId !== 'nasa' && !isRipple) && (
               <>
               <div className="mx-auto w-full max-w-[800px]">
               <div
@@ -1466,9 +1504,16 @@ export default function ProjectModal({
                 <div className="content-stretch flex flex-col gap-10 items-start relative shrink-0 w-full">
                   {/* Title */}
                   <ScrollReveal variant="fade" delay={80} rootMargin="0px">
-                    <p className="font-normal leading-normal relative shrink-0 text-4xl text-zinc-900">
-                      {project.title}
-                    </p>
+                    <div className="flex flex-col gap-3">
+                      <p className="font-normal leading-normal relative shrink-0 text-4xl text-zinc-900">
+                        {project.title}
+                      </p>
+                      {isRipple && (
+                        <p className="max-w-[28ch] font-['Michelle',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
+                          {RIPPLE_TAGLINE}
+                        </p>
+                      )}
+                    </div>
                   </ScrollReveal>
 
                   {/* Metadata Grid */}
@@ -1560,7 +1605,10 @@ export default function ProjectModal({
 
               {/* Dynamic Content Sections.
                   TOC / header bars keep a full-bleed bg; everything else stays in the 800px column. */}
-              {visibleSections.map((section, index) => {
+              {isRipple ? (
+                <RippleCaseStudy />
+              ) : (
+              visibleSections.map((section, index) => {
                   const sectionNumber =
                     section._type === "sectionTitleSection" ? section.number : undefined;
                   const sectionHeading = getSectionAnchorHeading(section);
@@ -1620,7 +1668,8 @@ export default function ProjectModal({
                     </div>
                   )
                   );
-                })}
+                })
+              )}
 
               {/* Also Check Out Section */}
               {project.relatedProjects && project.relatedProjects.length > 0 && (
