@@ -417,7 +417,7 @@ export default function ArtPage() {
         variant="art"
         heroAnimationPlayed={heroAnimationPlayed}
         nameAddon={
-          <p className="font-['Michelle',sans-serif] font-normal text-zinc-500 text-xl whitespace-pre-wrap">
+          <p className="font-['Lucas',sans-serif] font-normal text-zinc-500 text-xl whitespace-pre-wrap">
             b. 2004
           </p>
         }

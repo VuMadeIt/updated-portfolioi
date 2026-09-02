@@ -7,6 +7,7 @@ import {
   type SyntheticEvent,
 } from "react";
 import Tooltip from "../shared/Tooltip";
+import { letterboxdFilmUrl } from "@/lib/site";
 
 export type MediaCardData = {
   id: string;
@@ -169,14 +170,14 @@ export default function MediaCard({
         )}>
           {/* Emoji */}
           {data?.emoji && (
-            <p className="font-['Michelle'] text-4xl">
+            <p className="font-['Lucas'] text-4xl">
               {data.emoji}
             </p>
           )}
 
           {/* Quote Title */}
           {data?.quoteTitle && (
-            <p className="whitespace-pre-wrap font-['Michelle'] -mb-1 text-2xl tracking-[0.01em] font-medium text-zinc-700">
+            <p className="whitespace-pre-wrap font-['Lucas'] -mb-1 text-2xl tracking-[0.01em] font-medium text-zinc-700">
               {data.quoteTitle}
             </p>
           )}
@@ -184,7 +185,7 @@ export default function MediaCard({
           {/* Quote Text & Author */}
           <div className="flex flex-col items-start text-base tracking-[0.005em] md:text-base">
             {data?.quoteText && (
-              <p className="font-['Michelle'] font-normal text-zinc-500 mb-0.5">
+              <p className="font-['Lucas'] font-normal text-zinc-500 mb-0.5">
                 <QuoteTextWithUnderline
                   text={data.quoteText}
                   underlinedText={data.quoteUnderlinedText}
@@ -193,7 +194,7 @@ export default function MediaCard({
               </p>
             )}
             {data?.quoteAuthor && (
-              <p className="font-['Michelle'] font-normal text-zinc-400">
+              <p className="font-['Lucas'] font-normal text-zinc-400">
                 {data.quoteAuthor}
               </p>
             )}
@@ -210,7 +211,7 @@ export default function MediaCard({
     } else if (type === "Music" && data?.spotifyUrl) {
       return data.spotifyUrl;
     } else if (type === "Movie" && data?.letterboxdSlug) {
-      return `https://letterboxd.com/liumichelle/film/${data.letterboxdSlug}/`;
+      return letterboxdFilmUrl(data.letterboxdSlug);
     }
     return undefined;
   };

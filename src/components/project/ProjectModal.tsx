@@ -121,7 +121,37 @@ function applyLucasProjectOverrides(
     return {
       ...project,
       title: "Shufflr",
+      year: "2026",
+      shortDescription: SHUFFLR_TAGLINE,
       heroVideo: LOCAL_HERO_VIDEOS.shufflr,
+      logo: undefined,
+      metadata: [
+        {
+          _key: "type",
+          label: "Project type",
+          value: ["Figma prototype"],
+          subValue: null,
+        },
+        {
+          _key: "role",
+          label: "Role",
+          value: ["Product Manager / Designer"],
+          subValue: null,
+        },
+        {
+          _key: "team",
+          label: "Team",
+          value: ["Four people"],
+          subValue: null,
+        },
+        {
+          _key: "timeline",
+          label: "Year",
+          value: ["2026"],
+          subValue: null,
+        },
+      ],
+      content: [],
     };
   }
 
@@ -191,11 +221,17 @@ import { ghostIconButtonClass } from "../shared/ghostIconButton";
 import ProjectCaseStudySidebar from "./ProjectCaseStudySidebar";
 import { getCaseStudyNavItems } from "./caseStudyNavItems";
 import RippleCaseStudy from "./ripple/RippleCaseStudy";
+import ShufflrCaseStudy from "./shufflr/ShufflrCaseStudy";
 import {
   isRippleProject,
   RIPPLE_NAV_ITEMS,
   RIPPLE_TAGLINE,
 } from "./ripple/rippleContent";
+import {
+  isShufflrProject,
+  SHUFFLR_NAV_ITEMS,
+  SHUFFLR_TAGLINE,
+} from "./shufflr/shufflrContent";
 
 // Helper to render text with highlighted portion
 function renderHighlightedText(text: string, highlightedText?: string, highlightColor?: string): React.ReactNode {
@@ -379,7 +415,7 @@ function Breadcrumb({ projectName, onWorkClick, isScrolled = false, isPastHero =
           isScrolled ? "opacity-0 pointer-events-none w-0 px-0 overflow-hidden" : "opacity-100 px-1.5 ml-2"
         )}
       >
-        <span className="font-['Michelle:Medium',sans-serif] font-medium text-sm leading-normal text-[#52525b] whitespace-nowrap">
+        <span className="font-['Lucas:Medium',sans-serif] font-medium text-sm leading-normal text-[#52525b] whitespace-nowrap">
           Work
         </span>
       </button>
@@ -389,7 +425,7 @@ function Breadcrumb({ projectName, onWorkClick, isScrolled = false, isPastHero =
 
       {/* Project name - not clickable */}
       <div className="flex items-center justify-center px-1 py-0.5">
-        <span className="font-['Michelle:Medium',sans-serif] font-medium text-sm leading-normal text-[#27272a]">
+        <span className="font-['Lucas:Medium',sans-serif] font-medium text-sm leading-normal text-[#27272a]">
           {projectName}
         </span>
       </div>
@@ -962,9 +998,10 @@ export default function ProjectModal({
   const pendingUnlockTargetRef = React.useRef<string | null>(null);
 
   const isRipple = isRippleProject(projectId, project?.company);
+  const isShufflr = isShufflrProject(projectId, project?.company);
 
   const visibleSections = useMemo(() => {
-    if (isRipple || !project?.content) return [];
+    if (isRipple || isShufflr || !project?.content) return [];
 
     return project.content.filter((section) => {
       if (section._type === "protectedSection") return !isUnlocked;
@@ -975,12 +1012,13 @@ export default function ProjectModal({
       if (visibility === "unlocked") return isUnlocked;
       return true;
     });
-  }, [project, isUnlocked, isRipple]);
+  }, [project, isUnlocked, isRipple, isShufflr]);
 
-  const navItems = useMemo(
-    () => (isRipple ? RIPPLE_NAV_ITEMS : getCaseStudyNavItems(visibleSections)),
-    [isRipple, visibleSections],
-  );
+  const navItems = useMemo(() => {
+    if (isRipple) return RIPPLE_NAV_ITEMS;
+    if (isShufflr) return SHUFFLR_NAV_ITEMS;
+    return getCaseStudyNavItems(visibleSections);
+  }, [isRipple, isShufflr, visibleSections]);
 
   // Fetch project data from Sanity (uses preloaded cache if available)
   useEffect(() => {
@@ -1454,7 +1492,7 @@ export default function ProjectModal({
           {!loading && !error && project && (
             <div className="flex flex-col pb-16 w-full">
               {/* Mobile not available message - shown only after unlocking on mobile (NASA is allowed) */}
-              {isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && (
+              {isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr && (
                 <div className="mx-auto flex w-full max-w-[800px] flex-col items-center justify-center min-h-[60vh] px-8 text-center">
                   <LaptopIcon />
                   <p className="text-[#71717a] text-base leading-normal px-12 mt-4">
@@ -1464,7 +1502,7 @@ export default function ProjectModal({
               )}
 
               {/* Project Hero Header - hidden on mobile when unlocked (NASA is allowed) */}
-              {!(isUnlocked && isMobile && projectId !== 'nasa' && !isRipple) && (
+              {!(isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr) && (
               <>
               <div className="mx-auto w-full max-w-[800px]">
               <div
@@ -1509,8 +1547,13 @@ export default function ProjectModal({
                         {project.title}
                       </p>
                       {isRipple && (
-                        <p className="max-w-[28ch] font-['Michelle',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
+                        <p className="max-w-[28ch] font-['Lucas',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
                           {RIPPLE_TAGLINE}
+                        </p>
+                      )}
+                      {isShufflr && (
+                        <p className="max-w-[32ch] font-['Lucas',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
+                          {SHUFFLR_TAGLINE}
                         </p>
                       )}
                     </div>
@@ -1607,6 +1650,8 @@ export default function ProjectModal({
                   TOC / header bars keep a full-bleed bg; everything else stays in the 800px column. */}
               {isRipple ? (
                 <RippleCaseStudy />
+              ) : isShufflr ? (
+                <ShufflrCaseStudy />
               ) : (
               visibleSections.map((section, index) => {
                   const sectionNumber =

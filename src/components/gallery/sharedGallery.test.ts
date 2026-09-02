@@ -36,14 +36,14 @@ test("sanitizeGalleryName enforces max length", () => {
 });
 
 test("sanitizeCreatorName mirrors gallery name cleaning", () => {
-  assert.equal(sanitizeCreatorName("  Michelle\n "), "Michelle");
+  assert.equal(sanitizeCreatorName("  Lucas\n "), "Lucas");
   assert.equal(sanitizeCreatorName("   "), null);
 });
 
 test("formatGalleryAttribution appends creator when present", () => {
   assert.equal(
-    formatGalleryAttribution("Sunset Room", "Michelle"),
-    "Sunset Room by Michelle",
+    formatGalleryAttribution("Sunset Room", "Lucas"),
+    "Sunset Room by Lucas",
   );
   assert.equal(formatGalleryAttribution("Sunset Room", ""), "Sunset Room");
   assert.equal(formatGalleryAttribution("Sunset Room", null), "Sunset Room");
@@ -80,28 +80,28 @@ test("createEditToken is longer than share id and URL-safe", () => {
 
 test("isValidShareId accepts legacy opaque ids and name slugs", () => {
   assert.equal(isValidShareId("vvapHY3AIE"), true);
-  assert.equal(isValidShareId("michelle"), true);
-  assert.equal(isValidShareId("michelle-2"), true);
+  assert.equal(isValidShareId("lucas"), true);
+  assert.equal(isValidShareId("lucas-2"), true);
   assert.equal(isValidShareId(""), false);
   assert.equal(isValidShareId("bad id"), false);
   assert.equal(isValidShareId("a".repeat(MAX_SHARE_ID_LENGTH + 1)), false);
 });
 
 test("slugifyGalleryShareId builds readable path segments", () => {
-  assert.equal(slugifyGalleryShareId("Michelle"), "michelle");
-  assert.equal(slugifyGalleryShareId("Michelle's Room"), "michelle-s-room");
+  assert.equal(slugifyGalleryShareId("Lucas"), "lucas");
+  assert.equal(slugifyGalleryShareId("Lucas's Room"), "lucas-s-room");
   assert.equal(slugifyGalleryShareId("  Sunset / Gallery  "), "sunset-gallery");
   assert.equal(slugifyGalleryShareId("***"), null);
 });
 
 test("allocateShareSlug returns base then numbered suffixes", async () => {
-  const taken = new Set(["michelle", "michelle-2"]);
+  const taken = new Set(["lucas", "lucas-2"]);
   const id = await allocateShareSlug(
-    "Michelle",
+    "Lucas",
     async (candidate) => taken.has(candidate),
     (n) => new Uint8Array(n),
   );
-  assert.equal(id, "michelle-3");
+  assert.equal(id, "lucas-3");
 });
 
 test("allocateShareSlug falls back to gallery when name cannot slugify", async () => {
@@ -116,7 +116,7 @@ test("allocateShareSlug falls back to gallery when name cannot slugify", async (
 test("allocateShareSlug caps sequential probes before opaque fallback", async () => {
   let probes = 0;
   const id = await allocateShareSlug(
-    "Michelle",
+    "Lucas",
     async () => {
       probes += 1;
       return true;
@@ -133,5 +133,5 @@ test("allocateShareSlug caps sequential probes before opaque fallback", async ()
     `expected at most ${MAX_SHARE_SLUG_PROBES + 8} probes, got ${probes}`,
   );
   assert.equal(id.length, SHARE_ID_LENGTH);
-  assert.ok(!id.startsWith("michelle"));
+  assert.ok(!id.startsWith("lucas"));
 });

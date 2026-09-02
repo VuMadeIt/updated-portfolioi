@@ -35,7 +35,7 @@ function ToolsSection({ categories }: { categories: ToolCategory[] }) {
   return (
     <div className="flex w-full flex-col gap-4 max-md:mt-1">
       <HorizontalLine />
-      <div className="font-['Michelle',sans-serif] font-normal gap-3 grid-cols-4 relative shrink-0 text-base w-full hidden md:grid">
+      <div className="font-['Lucas',sans-serif] font-normal gap-3 grid-cols-4 relative shrink-0 text-base w-full hidden md:grid">
         {categories.map((category, idx) => (
           <div key={idx} className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0">
             <p className="leading-normal text-sm relative shrink-0 text-[#a1a1aa]">
@@ -51,7 +51,7 @@ function ToolsSection({ categories }: { categories: ToolCategory[] }) {
           </div>
         ))}
       </div>
-      <div className="font-['Michelle',sans-serif] font-normal flex flex-col gap-1.5 relative shrink-0 text-sm w-full md:hidden">
+      <div className="font-['Lucas',sans-serif] font-normal flex flex-col gap-1.5 relative shrink-0 text-sm w-full md:hidden">
         {categories.map((category, idx) => (
           <div key={idx} className="flex items-baseline gap-6">
             <p className="leading-normal shrink-0 text-[#a1a1aa] w-[72px]">
@@ -195,19 +195,19 @@ export default function InfoButton({ project }: InfoButtonProps) {
                 <div className="flex flex-col min-w-0 gap-1">
                   {/* Title row */}
                   <div className="content-stretch flex gap-[6px] items-center relative shrink-0">
-                    <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-base text-zinc-900">
+                    <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-base text-zinc-900">
                       {project.title}
                     </p>
-                    <p className="font-['Michelle',sans-serif] font-medium leading-snug relative shrink-0 text-[#a1a1aa] text-base">
+                    <p className="font-['Lucas',sans-serif] font-medium leading-snug relative shrink-0 text-[#a1a1aa] text-base">
                       •
                     </p>
-                    <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-base">
+                    <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-base">
                       {project.year}
                     </p>
                   </div>
 
                   {/* Description */}
-                  <p className="font-['Michelle',sans-serif] font-normal leading-normal relative text-[#71717a] max-md:text-sm md:text-base">
+                  <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] max-md:text-sm md:text-base">
                     {project.description}
                   </p>
                 </div>

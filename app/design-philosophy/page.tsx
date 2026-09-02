@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DesignPhilosophyPage from "@/components/design-philosophy/DesignPhilosophyPage";
+import { siteUrl } from "@/lib/site";
 
 const description =
   "Why I'm excited to be a designer in 2026 — Lucas Vu's design philosophy on taste, curiosity, and the privilege of building.";
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Design Philosophy | lucas vu",
     description,
-    url: "https://www.liumichelle.com/design-philosophy",
+    url: siteUrl("/design-philosophy"),
   },
   twitter: {
     title: "Design Philosophy | lucas vu",

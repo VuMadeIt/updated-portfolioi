@@ -243,7 +243,7 @@ export function BookDetailModal({ book, onClose, isPopupMode = false }: BookDeta
                 >
                   Rating
                 </span>
-                <span className="font-['Michelle',sans-serif] text-base">
+                <span className="font-['Lucas',sans-serif] text-base">
                   <span className="text-zinc-600">{"★".repeat(book.rating)}</span>
                   <span className="text-zinc-200">{"★".repeat(5 - book.rating)}</span>
                 </span>
@@ -362,7 +362,7 @@ export function BookDetailModal({ book, onClose, isPopupMode = false }: BookDeta
                   >
                     Rating
                   </span>
-                  <span className="font-['Michelle',sans-serif] text-xl">
+                  <span className="font-['Lucas',sans-serif] text-xl">
                     <span className="text-zinc-600">{"★".repeat(book.rating)}</span>
                     <span className="text-zinc-200">{"★".repeat(5 - book.rating)}</span>
                   </span>

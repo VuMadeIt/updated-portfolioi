@@ -25,6 +25,7 @@ import { KEEP_BAR_OPEN_ATTR } from "./GalleryActionBar";
 import { GALLERY_DIALOG_ATTR, useGalleryDialogKeys } from "./galleryDialog";
 import { GALLERY_FOCUS_RING } from "./galleryFocus";
 import { GALLERY_INFO_TEXT } from "./metArtworks";
+import { X_PROFILE_URL } from "@/lib/site";
 
 const CLOSE_ANIMATION_MS = 300;
 
@@ -35,8 +36,7 @@ const GALLERY_INFO_IMAGE_SRC = muxPosterUrl(GALLERY_INFO_MUX_PLAYBACK_ID, {
   width: 1920,
 });
 const GALLERY_INFO_VIDEO_SRC = `https://stream.mux.com/${GALLERY_INFO_MUX_PLAYBACK_ID}.m3u8`;
-const GALLERY_X_LINK =
-  "https://x.com/michelletliu/status/2084772214164148607";
+const GALLERY_X_LINK = X_PROFILE_URL;
 
 function ViewOnXButton({
   className,
@@ -91,7 +91,7 @@ function GalleryStackMetadata() {
   return (
     <div className="flex w-full flex-col gap-4">
       <HorizontalLine />
-      <div className="hidden w-full grid-cols-4 gap-3 font-['Michelle',sans-serif] text-base font-normal md:grid">
+      <div className="hidden w-full grid-cols-4 gap-3 font-['Lucas',sans-serif] text-base font-normal md:grid">
         {GALLERY_STACK_METADATA.map((item) => (
           <div key={item.label} className="flex min-w-0 flex-col gap-2">
             <p className="text-sm leading-normal text-[#a1a1aa]">
@@ -107,7 +107,7 @@ function GalleryStackMetadata() {
           </div>
         ))}
       </div>
-      <div className="flex w-full flex-col gap-1.5 font-['Michelle',sans-serif] text-sm font-normal md:hidden">
+      <div className="flex w-full flex-col gap-1.5 font-['Lucas',sans-serif] text-sm font-normal md:hidden">
         {GALLERY_STACK_METADATA.map((item) => (
           <div key={item.label} className="flex items-baseline gap-6">
             <p className="w-[76px] shrink-0 leading-normal text-[#a1a1aa]">
@@ -302,7 +302,7 @@ export default function GalleryInfoButton({
                     <Link
                       ref={createOwnRef}
                       href="/gallery"
-                      className={`col-start-2 row-start-1 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-solid border-blue-400 bg-blue-500 px-4 py-1.5 font-['Michelle',sans-serif] text-sm font-semibold text-white transition-colors duration-200 ease-out hover:border-blue-300 hover:bg-blue-400 ${GALLERY_FOCUS_RING}`}
+                      className={`col-start-2 row-start-1 inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-solid border-blue-400 bg-blue-500 px-4 py-1.5 font-['Lucas',sans-serif] text-sm font-semibold text-white transition-colors duration-200 ease-out hover:border-blue-300 hover:bg-blue-400 ${GALLERY_FOCUS_RING}`}
                     >
                       Create your own
                     </Link>

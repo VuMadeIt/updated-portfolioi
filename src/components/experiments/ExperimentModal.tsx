@@ -114,7 +114,7 @@ function GenericExperimentEmbed({ project }: { project: ExperimentProject }) {
   );
 
   return (
-    <div className="font-['Michelle',sans-serif] min-h-full w-full box-border flex flex-col gap-6 px-6 py-16 md:px-16 md:py-20 text-[#18181b]">
+    <div className="font-['Lucas',sans-serif] min-h-full w-full box-border flex flex-col gap-6 px-6 py-16 md:px-16 md:py-20 text-[#18181b]">
       <header className="flex flex-col gap-2 max-w-2xl">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <h1 className="text-2xl md:text-3xl font-normal">{project.title}</h1>
@@ -659,20 +659,20 @@ function InfoPopover({ project, onClose, isMobile = false, isFullscreen = false 
           {/* Left column: title and description stacked vertically */}
           <div className="flex flex-col min-w-0 gap-0">
             <div className="content-stretch flex gap-[6px] items-center relative shrink-0">
-              <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-base text-zinc-900">
+              <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-base text-zinc-900">
                 {project.title}
               </p>
-              <p className="font-['Michelle',sans-serif] font-normal leading-snug relative shrink-0 text-[#a1a1aa] text-base">
+              <p className="font-['Lucas',sans-serif] font-normal leading-snug relative shrink-0 text-[#a1a1aa] text-base">
                 •
               </p>
-              <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-base">
+              <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-base">
                 {project.year}
               </p>
             </div>
 
             {/* Description - hidden in popup mode, shown in fullscreen */}
             {isFullscreen && (
-              <p className="font-['Michelle',sans-serif] font-normal leading-normal relative text-[#71717a] text-base">
+              <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base">
                 {project.description}
               </p>
             )}
@@ -727,7 +727,7 @@ function ToolsSectionCompact({ categories, isFullscreen = false }: { categories:
     <div className={clsx("flex w-full flex-col", isFullscreen ? "gap-2" : "gap-3")}>
       <HorizontalLine />
       <div className={clsx(
-        "font-['Michelle',sans-serif] font-normal grid grid-cols-4 relative shrink-0 w-full",
+        "font-['Lucas',sans-serif] font-normal grid grid-cols-4 relative shrink-0 w-full",
         isFullscreen ? "gap-3 text-base" : "gap-2 text-sm"
       )}>
         {categories.map((category, idx) => (

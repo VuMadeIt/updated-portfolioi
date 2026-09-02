@@ -20,6 +20,7 @@ import { useExperimentProject } from '../../hooks/useExperimentProject';
 import { FilterDropdown } from '../shared/FilterDropdown';
 import type { FilterDropdownOption } from '../shared/FilterDropdown';
 import { posthog, posthogEnabled } from '../../lib/posthog';
+import { X_PROFILE_URL } from '@/lib/site';
 
 // Default project info (fallback if Sanity fetch fails)
 const DEFAULT_LIBRARY_PROJECT = {
@@ -29,7 +30,7 @@ const DEFAULT_LIBRARY_PROJECT = {
   description: 'My dream digital bookshelf',
   imageSrc: 'https://image.mux.com/a3NxNdblQi02JVCg0177eEWZRycP1BduGb2pt7o00FUPfo/thumbnail.png',
   videoSrc: 'https://stream.mux.com/a3NxNdblQi02JVCg0177eEWZRycP1BduGb2pt7o00FUPfo.m3u8',
-  xLink: 'https://x.com/michelletliu/status/1981030966044061894',
+  xLink: X_PROFILE_URL,
   tryItOutHref: '/library',
   backgroundColor: '#ffffff',
   toolCategories: [

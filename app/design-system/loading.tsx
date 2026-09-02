@@ -1,7 +1,7 @@
 /** Instant DS doorway shell while the route chunk arrives (cold nav). */
 export default function DesignSystemLoading() {
   return (
-    <div className="min-h-dvh bg-white font-['Michelle',sans-serif] text-base text-zinc-500">
+    <div className="min-h-dvh bg-white font-['Lucas',sans-serif] text-base text-zinc-500">
       <div
         aria-hidden
         className="fixed left-6 top-8 z-50 size-8 animate-pulse rounded-lg bg-zinc-100 mid:left-16 mid:size-11"
@@ -25,7 +25,7 @@ export default function DesignSystemLoading() {
         </aside>
         <main className="relative mx-auto min-w-0 w-full max-w-[720px]">
           <div className="pb-8">
-            <h1 className="max-w-3xl font-['Michelle',sans-serif] text-4xl font-normal leading-normal tracking-[0.0125em] text-[#3f3f46]">
+            <h1 className="max-w-3xl font-['Lucas',sans-serif] text-4xl font-normal leading-normal tracking-[0.0125em] text-[#3f3f46]">
               Design System
             </h1>
             <div className="mt-8 h-48 animate-pulse rounded-xl bg-zinc-50 ring-1 ring-inset ring-zinc-100" />

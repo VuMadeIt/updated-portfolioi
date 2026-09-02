@@ -8,6 +8,7 @@ import imgLogo from '../../assets/logo.png';
 import InfoButton from '../shared/InfoButton';
 import { SegmentedPill } from '../shared/SegmentedPill';
 import { useExperimentProject } from '../../hooks/useExperimentProject';
+import { X_PROFILE_URL } from '@/lib/site';
 
 
 // Default project info (fallback if Sanity fetch fails)
@@ -18,7 +19,7 @@ const DEFAULT_SCREENTIME_PROJECT = {
   description: 'A receipt for your daily or weekly screentime.',
   imageSrc: 'https://image.mux.com/AdZWDHKkfyhXntZy01keNYtPB7Q6w8GxeaUWmP8501SLI/thumbnail.png',
   videoSrc: 'https://stream.mux.com/AdZWDHKkfyhXntZy01keNYtPB7Q6w8GxeaUWmP8501SLI.m3u8',
-  xLink: 'https://x.com/michelletliu/status/2000987498550383032',
+  xLink: X_PROFILE_URL,
   tryItOutHref: '/screentime',
   backgroundColor: '#f4f4f5',
   toolCategories: [

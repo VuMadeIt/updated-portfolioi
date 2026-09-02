@@ -86,7 +86,7 @@ export function Section({
     <section id={id} className="scroll-mt-24 pt-16 pb-4">
       <div className="mb-5">
         <div className="flex items-center gap-2.5">
-          <h2 className="font-['Michelle',sans-serif] text-xl font-medium leading-relaxed text-zinc-900">
+          <h2 className="font-['Lucas',sans-serif] text-xl font-medium leading-relaxed text-zinc-900">
             {title}
           </h2>
           {tag && <TagChip tag={tag} />}
@@ -189,7 +189,7 @@ export function TokenCard({
         ) : null}
       </div>
       <div className="flex flex-col gap-0 pl-2">
-        <span className="font-['Michelle',sans-serif] text-base font-medium text-zinc-700">
+        <span className="font-['Lucas',sans-serif] text-base font-medium text-zinc-700">
           {name}
         </span>
         {usage ? (

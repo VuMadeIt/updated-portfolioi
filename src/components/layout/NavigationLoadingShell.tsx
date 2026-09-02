@@ -4,11 +4,6 @@ type NavigationLoadingShellProps = {
   activeTab: "art" | "about";
 };
 
-const tabs = [
-  { id: "work", label: "Work" },
-  { id: "about", label: "About" },
-] as const;
-
 function ArtContentSkeleton() {
   return (
     <>
@@ -106,33 +101,13 @@ export default function NavigationLoadingShell({
       </div>
 
       {/* Navigation band */}
-      <div className="content-stretch flex flex-col items-center pb-4 max-md:pb-1.75 pt-0 px-0 relative shrink-0 w-full">
-        <div className="content-stretch flex flex-col gap-3 items-start pb-0 pt-4 px-16 max-md:px-6 relative w-full">
-          <div className="content-stretch flex gap-1 items-start relative shrink-0">
-            {tabs.map((tab) => (
-              <div
-                key={tab.id}
-                className={
-                  tab.id === activeTab
-                    ? "content-stretch z-10 flex items-center justify-center px-3.5 pt-[5px] pb-[4px] relative rounded-full shrink-0 border border-white/50 bg-zinc-200/60"
-                    : "content-stretch z-10 flex items-center justify-center px-3.5 pt-[5px] pb-[4px] relative rounded-full shrink-0 border border-transparent"
-                }
-              >
-                <p
-                  className={
-                    tab.id === activeTab
-                      ? "font-['Michelle',sans-serif] font-medium leading-normal tracking-[0.005em] relative z-10 shrink-0 text-lg text-nowrap text-[#52525b]"
-                      : "font-['Michelle',sans-serif] font-medium leading-normal tracking-[0.005em] relative z-10 shrink-0 text-lg text-nowrap text-[#a1a1aa]"
-                  }
-                >
-                  {tab.label}
-                </p>
-              </div>
-            ))}
+      <div className="content-stretch flex flex-col items-center pb-4 max-md:pb-2 pt-0 px-0 relative shrink-0 w-full">
+        <div className="flex w-full items-center justify-between gap-4 px-16 max-md:px-6 pt-2">
+          <div className="h-9 w-56 max-w-[55%] animate-pulse rounded-full bg-zinc-50" />
+          <div className="flex items-center gap-5">
+            <div className="h-4 w-10 animate-pulse rounded bg-zinc-50" />
+            <div className="h-4 w-12 animate-pulse rounded bg-zinc-50" />
           </div>
-        </div>
-        <div className="px-16 max-md:px-6 w-full pt-3">
-          <div className="bg-zinc-100 h-px shrink-0 w-full" />
         </div>
       </div>
 

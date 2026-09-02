@@ -179,7 +179,7 @@ function GlassButtonSample({
         GLASS_RADIUS_CLASS[radius],
         GLASS_TEXT_SIZE_CLASS[size],
         variant === "primary"
-          ? "font-['Michelle',sans-serif] font-semibold"
+          ? "font-['Lucas',sans-serif] font-semibold"
           : "font-medium",
         tone,
       )}

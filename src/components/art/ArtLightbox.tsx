@@ -171,7 +171,7 @@ export default function ArtLightbox({ item, onClose }: ArtLightboxProps) {
 
           {(item.title || item.detail) && showImage && (
             <p
-              className={`mt-4 sm:mt-6 max-w-[min(100%,600px)] px-2 text-center font-['Michelle',sans-serif] text-sm sm:text-base tracking-[0.005em] font-normal leading-relaxed ${
+              className={`mt-4 sm:mt-6 max-w-[min(100%,600px)] px-2 text-center font-['Lucas',sans-serif] text-sm sm:text-base tracking-[0.005em] font-normal leading-relaxed ${
                 isClosing
                   ? ""
                   : "animate-[fadeSlideUp_300ms_ease-out_100ms_both]"

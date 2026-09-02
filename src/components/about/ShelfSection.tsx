@@ -103,7 +103,7 @@ export default function ShelfSection({
                 )}
               >
                 <span className={clsx(
-                  "font-['Michelle',sans-serif] font-medium text-base tracking-wide whitespace-nowrap",
+                  "font-['Lucas',sans-serif] font-medium text-base tracking-wide whitespace-nowrap",
                   !activeYear ? "text-zinc-500" : "text-zinc-400"
                 )}>
                   {title}
@@ -139,7 +139,7 @@ export default function ShelfSection({
                 rel="noopener noreferrer"
                 className="cursor-pointer transition-colors bg-white"
               >
-                <span className="inline-flex items-center font-['Michelle',sans-serif] text-sm md:text-base font-medium tracking-wide text-zinc-400 hover:text-blue-500 transition-colors whitespace-nowrap">
+                <span className="inline-flex items-center font-['Lucas',sans-serif] text-sm md:text-base font-medium tracking-wide text-zinc-400 hover:text-blue-500 transition-colors whitespace-nowrap">
                   {externalLink.label}<ArrowUpRight className="ml-1.5" />
                 </span>
               </a>

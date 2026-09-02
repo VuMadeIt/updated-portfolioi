@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import GalleryPage from "@/components/gallery/GalleryPage";
+import { siteUrl } from "@/lib/site";
 
 const galleryDescription =
   "An interactive art gallery to visualize your ideas — generate paintings inspired by The Met.";
 
 const galleryOgImage = {
-  url: "https://www.liumichelle.com/gallery-og.png?v=4",
+  url: siteUrl("/gallery-og.png?v=4"),
   width: 1200,
   height: 630,
   alt: "Lucas Vu’s interactive Gallery — framed AI paintings in a 3D room",
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     title: "gallery · lucas vu",
     description: galleryDescription,
     type: "website",
-    url: "https://www.liumichelle.com/gallery",
+    url: siteUrl("/gallery"),
     images: [galleryOgImage],
   },
   twitter: {

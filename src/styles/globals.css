@@ -1,8 +1,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --font-sans: 'Michelle', sans-serif;
-  --default-font-family: 'Michelle', sans-serif;
+  --font-sans: 'Lucas', sans-serif;
+  --default-font-family: 'Lucas', sans-serif;
   --font-size: 16px;
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
@@ -141,7 +141,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -177,7 +177,7 @@
     border-color: #60a5fa; /* blue-400 */
     background-color: #3b82f6; /* blue-500 */
     color: #fff;
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     font-weight: 600;
   }
 
@@ -460,7 +460,7 @@
   }
 
   .filter-pill-label {
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     font-size: 1rem;
     font-weight: 500;
     letter-spacing: 0.025em;
@@ -521,7 +521,7 @@
   }
 
   .filter-dropdown-trigger-label {
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     font-size: 1rem;
     font-weight: 500;
     letter-spacing: 0.01em;
@@ -596,7 +596,7 @@
   }
 
   .filter-dropdown-option-label {
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     font-size: 1rem;
     font-weight: 500;
     letter-spacing: 0.01em;
@@ -736,7 +736,7 @@
     z-index: 10;
     overflow: hidden;
     text-wrap: nowrap;
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     font-weight: 400;
     letter-spacing: 0.005em;
     color: #10b981;
@@ -874,7 +874,7 @@
 
   .section-heading-title {
     flex-shrink: 0;
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     font-weight: 500;
     font-size: 1.875rem;
     line-height: 1.5;
@@ -882,7 +882,7 @@
   }
 
   .section-heading-subtitle {
-    font-family: 'Michelle', sans-serif;
+    font-family: 'Lucas', sans-serif;
     font-weight: 400;
     font-size: 1.125rem;
     letter-spacing: 0.025em;
@@ -910,9 +910,9 @@
 
 body, a {
   /* Try larger cursor first (works on macOS) */
-  cursor: url("../assets/cursor-default.svg") 20 20,
+  cursor: url("../assets/cursor-default.svg") 8 8,
           /* Fallback to smaller cursor (works on Windows) */
-          url("../assets/cursor-default-small.svg") 16 16,
+          url("../assets/cursor-default-small.svg") 6 6,
           /* Final fallback to system cursor */
           auto;
 }
@@ -924,9 +924,9 @@ input[type="submit"]:hover,
 input[type="button"]:hover,
 .cursor-pointer:hover {
   /* Try larger cursor first (works on macOS) */
-  cursor: url("../assets/cursor-hover.svg") 23 23,
+  cursor: url("../assets/cursor-hover.svg") 9 9,
           /* Fallback to smaller cursor (works on Windows) */
-          url("../assets/cursor-hover-small.svg") 16 16,
+          url("../assets/cursor-hover-small.svg") 6 6,
           /* Final fallback to system pointer */
           pointer;
 }
@@ -998,7 +998,7 @@ input[type="button"]:hover,
 
 html {
   font-size: var(--font-size);
-  font-family: 'Michelle', sans-serif;
+  font-family: 'Lucas', sans-serif;
 }
 
 /* Fixed white top-edge gradient (à la benji.org) - desktop only */
@@ -1031,14 +1031,14 @@ html {
   }
 }
 
-/* Ensure Michelle font is applied to all elements */
+/* Ensure Lucas font is applied to all elements */
 *, *::before, *::after {
-  font-family: 'Michelle', sans-serif;
+  font-family: 'Lucas', sans-serif;
 }
 
 /* Override any inline font styles from components */
 [class*="font-["] {
-  font-family: 'Michelle', sans-serif !important;
+  font-family: 'Lucas', sans-serif !important;
 }
 
 /* Custom Highlight Color */

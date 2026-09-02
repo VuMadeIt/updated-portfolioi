@@ -2,17 +2,17 @@
 
 import clsx from "clsx";
 import { ScrollReveal } from "../../shared/ScrollReveal";
-import ShimmerImage from "../../shared/ShimmerImage";
-import ShimmerVideo from "../../shared/ShimmerVideo";
 import {
-  RIPPLE_DECISIONS,
-  RIPPLE_EDITORIAL_BLOCKS,
-  RIPPLE_FEATURES,
-  RIPPLE_FIGMA_EMBED_URL,
-  RIPPLE_LEARNINGS,
-  type RippleEditorialBlock,
-  type RippleFeatureBlock,
-} from "./rippleContent";
+  SHUFFLR_DECISIONS,
+  SHUFFLR_EDITORIAL_BLOCKS,
+  SHUFFLR_FEATURES,
+  SHUFFLR_FIGMA_EMBED_URL,
+  SHUFFLR_LEARNINGS,
+  SHUFFLR_PERSONAS,
+  SHUFFLR_PROBLEM_STATEMENT,
+  type ShufflrEditorialBlock,
+  type ShufflrFeatureBlock,
+} from "./shufflrContent";
 
 type SectionProps = {
   id: string;
@@ -22,7 +22,7 @@ type SectionProps = {
   className?: string;
 };
 
-function RippleSection({ id, eyebrow, title, children, className }: SectionProps) {
+function ShufflrSection({ id, eyebrow, title, children, className }: SectionProps) {
   return (
     <section
       id={id}
@@ -76,20 +76,10 @@ function PullQuote({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FeatureVideo({ src, title }: { src: string; title: string }) {
+function MediaPlaceholder({ label }: { label: string }) {
   return (
-    <div className="w-full overflow-hidden rounded-[26px] bg-zinc-50">
-      <ShimmerVideo
-        src={src}
-        className="h-auto w-full object-contain"
-        wrapperClassName="w-full"
-        rounded="rounded-[26px]"
-        autoPlay
-        muted
-        loop
-        controls={false}
-        playerName={`Ripple ${title}`}
-      />
+    <div className="flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[26px] border border-dashed border-zinc-200 bg-zinc-50">
+      <p className="font-['Lucas',sans-serif] text-sm text-zinc-400">{label}</p>
     </div>
   );
 }
@@ -98,7 +88,7 @@ function EditorialBlock({
   block,
   showTitle = true,
 }: {
-  block: RippleEditorialBlock;
+  block: ShufflrEditorialBlock;
   showTitle?: boolean;
 }) {
   return (
@@ -113,24 +103,12 @@ function EditorialBlock({
           <BodyText key={paragraph}>{paragraph}</BodyText>
         ))}
       </div>
-      {block.images.map((image) => (
-        <ShimmerImage
-          key={image.src}
-          src={image.src}
-          alt={image.alt}
-          className="h-auto w-full object-contain"
-          wrapperClassName="w-full"
-          rounded="rounded-[26px]"
-          loading="lazy"
-        />
-      ))}
+      {block.placeholder && <MediaPlaceholder label={block.placeholder} />}
     </div>
   );
 }
 
-function FeatureShowcase({ feature }: { feature: RippleFeatureBlock }) {
-  const images = feature.images ?? [];
-
+function FeatureShowcase({ feature }: { feature: ShufflrFeatureBlock }) {
   return (
     <div className="flex w-full flex-col gap-6">
       <h3 className="font-['Lucas',sans-serif] text-2xl text-zinc-900">
@@ -141,58 +119,36 @@ function FeatureShowcase({ feature }: { feature: RippleFeatureBlock }) {
           <BodyText key={paragraph}>{paragraph}</BodyText>
         ))}
       </div>
-      {feature.video && <FeatureVideo src={feature.video} title={feature.title} />}
-      {images.length > 0 && (
-        <div
-          className={clsx(
-            "flex w-full gap-6",
-            feature.layout === "pair" ? "flex-col md:flex-row md:items-end" : "flex-col",
-          )}
-        >
-          {images.map((image) => (
-            <ShimmerImage
-              key={image.src}
-              src={image.src}
-              alt={image.alt}
-              className="h-auto w-full object-contain"
-              wrapperClassName="w-full flex-1"
-              rounded="rounded-[26px]"
-              loading="lazy"
-            />
-          ))}
-        </div>
-      )}
+      {feature.placeholder && <MediaPlaceholder label={feature.placeholder} />}
     </div>
   );
 }
 
 const EDITORIAL_SECTION_IDS = ["approach", "problem", "solution", "ambition", "system"] as const;
 
-export default function RippleCaseStudy() {
+export default function ShufflrCaseStudy() {
   const showFigmaEmbed =
-    Boolean(RIPPLE_FIGMA_EMBED_URL) && RIPPLE_FIGMA_EMBED_URL.includes("figma.com");
+    Boolean(SHUFFLR_FIGMA_EMBED_URL) && SHUFFLR_FIGMA_EMBED_URL.includes("figma.com");
 
   return (
     <div className="w-full bg-white">
-      <RippleSection id="challenge" eyebrow="The challenge" title="BLOOM Designathon 2026">
+      <ShufflrSection id="challenge" eyebrow="The challenge" title="Bringing back the social energy of 2016">
         <ScrollReveal>
           <div className="flex flex-col gap-6">
             <BodyText>
-              For BLOOM Designathon 2026, our team of four designers tackled:
+              University students want deeper friendships, but coordinating unstructured
+              social time has become high-friction. We asked:
             </BodyText>
-            <PullQuote>
-              How might we use design and technology to make climate awareness and
-              sustainable action easier to understand and practice in everyday life?
-            </PullQuote>
+            <PullQuote>{SHUFFLR_PROBLEM_STATEMENT}</PullQuote>
             <BodyText>
-              We focused on the part of the challenge that felt most actionable:
-              sustainable action people could practice in everyday life.
+              Shufflr is our answer: a concept for spontaneous, low-stakes hangout moments
+              that feel more like 2016 than another group chat debate.
             </BodyText>
           </div>
         </ScrollReveal>
-      </RippleSection>
+      </ShufflrSection>
 
-      {RIPPLE_EDITORIAL_BLOCKS.map((block, index) => {
+      {SHUFFLR_EDITORIAL_BLOCKS.map((block, index) => {
         const sectionId = EDITORIAL_SECTION_IDS[index];
         const eyebrow =
           sectionId === "approach"
@@ -208,7 +164,7 @@ export default function RippleCaseStudy() {
                     : undefined;
 
         return (
-          <RippleSection
+          <ShufflrSection
             key={sectionId}
             id={sectionId}
             eyebrow={eyebrow}
@@ -216,35 +172,49 @@ export default function RippleCaseStudy() {
             className="border-t border-zinc-100"
           >
             <ScrollReveal>
-              <EditorialBlock block={block} showTitle={false} />
+              <div className="flex flex-col gap-10">
+                <EditorialBlock block={block} showTitle={false} />
+                {sectionId === "problem" && (
+                  <div className="flex flex-col gap-10">
+                    {SHUFFLR_PERSONAS.map((persona) => (
+                      <div key={persona.name} className="flex flex-col gap-3">
+                        <p className="font-['Lucas',sans-serif] text-sm uppercase tracking-[0.12em] text-zinc-400">
+                          {persona.name}
+                        </p>
+                        <PullQuote className="text-lg md:text-xl">{persona.quote}</PullQuote>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </ScrollReveal>
-          </RippleSection>
+          </ShufflrSection>
         );
       })}
 
-      <RippleSection
+      <ShufflrSection
         id="features"
         eyebrow="Core features"
         title="Four surfaces, one idea."
         className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-16 md:gap-20">
-          {RIPPLE_FEATURES.map((feature, index) => (
+          {SHUFFLR_FEATURES.map((feature, index) => (
             <ScrollReveal key={feature.title} delay={index * 60}>
               <FeatureShowcase feature={feature} />
             </ScrollReveal>
           ))}
         </div>
-      </RippleSection>
+      </ShufflrSection>
 
-      <RippleSection
+      <ShufflrSection
         id="decisions"
         eyebrow="Design decisions"
-        title="A familiar, clean, and emotionally effective design"
+        title="What makes Shufflr different"
         className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-10">
-          {RIPPLE_DECISIONS.map((decision, index) => (
+          {SHUFFLR_DECISIONS.map((decision, index) => (
             <ScrollReveal key={decision.title} delay={index * 60}>
               <div className="flex flex-col gap-4">
                 <h3 className="font-['Lucas',sans-serif] text-xl text-zinc-900">
@@ -257,9 +227,9 @@ export default function RippleCaseStudy() {
             </ScrollReveal>
           ))}
         </div>
-      </RippleSection>
+      </ShufflrSection>
 
-      <RippleSection
+      <ShufflrSection
         id="prototype"
         eyebrow="Prototype"
         title="Try it out"
@@ -269,30 +239,30 @@ export default function RippleCaseStudy() {
           {showFigmaEmbed ? (
             <div className="w-full overflow-hidden rounded-[26px] border border-zinc-200">
               <iframe
-                title="Ripple Figma prototype"
+                title="Shufflr Figma prototype"
                 className="aspect-[16/10] w-full"
-                src={RIPPLE_FIGMA_EMBED_URL}
+                src={SHUFFLR_FIGMA_EMBED_URL}
                 allowFullScreen
               />
             </div>
-          ) : null}
+          ) : (
+            <MediaPlaceholder label="Figma prototype embed" />
+          )}
         </ScrollReveal>
-      </RippleSection>
+      </ShufflrSection>
 
-      <RippleSection
+      <ShufflrSection
         id="learnings"
         eyebrow="Key learnings"
-        title="What we learned"
+        title="How we measure success"
         className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-10">
           <BodyText>
-            Ripple probably isn&apos;t feasible at this time. To implement it in the
-            real world, you&apos;d need to collect and store data from millions of
-            prompts being asked every day. But Ripple was made to ideate on a hopeful
-            future in which LLMs might be more sustainable.
+            The north star metric and key drivers that tell us whether Shufflr is
+            actually getting people off their phones and into real life.
           </BodyText>
-          {RIPPLE_LEARNINGS.map((item) => (
+          {SHUFFLR_LEARNINGS.map((item) => (
             <ScrollReveal key={item.number}>
               <div className="flex flex-col gap-2">
                 <h3 className="font-['Lucas',sans-serif] text-xl text-zinc-900">
@@ -303,20 +273,21 @@ export default function RippleCaseStudy() {
             </ScrollReveal>
           ))}
         </div>
-      </RippleSection>
+      </ShufflrSection>
 
-      <RippleSection
+      <ShufflrSection
         id="reflection"
         eyebrow="Reflection"
         title="Looking back"
         className="border-t border-zinc-100 pb-24"
       >
         <BodyText>
-          Ripple was a team project built in eight hours at BLOOM Designathon 2026.
-          The biggest takeaway for me: before designing, it&apos;s worth spending
-          time on the problem and a unique solution, even when the clock is running.
+          Shufflr started as a product concept for university students who miss the
+          spontaneity of pre-algorithm social life. The biggest takeaway: reducing
+          activation energy matters more than adding another feature. If hanging out
+          is easier than staying in, connection becomes the default.
         </BodyText>
-      </RippleSection>
+      </ShufflrSection>
     </div>
   );
 }

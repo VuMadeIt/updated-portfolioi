@@ -197,7 +197,7 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
           {photo.caption && (
             <p
               className={clsx(
-                "mt-2 font-['Michelle',sans-serif] text-sm font-normal leading-tight text-zinc-500",
+                "mt-2 font-['Lucas',sans-serif] text-sm font-normal leading-tight text-zinc-500",
                 getPhotoCaptionClass(photo, sizeClasses),
               )}
               style={{ fontVariationSettings: "'opsz' 9" }}
@@ -258,7 +258,7 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
                 {photo.caption && (
                   <p
                     className={clsx(
-                      "mt-2 font-['Michelle',sans-serif] text-sm font-normal leading-tight text-zinc-500",
+                      "mt-2 font-['Lucas',sans-serif] text-sm font-normal leading-tight text-zinc-500",
                       getPhotoCaptionClass(photo, sizeClasses),
                     )}
                     style={{ fontVariationSettings: "'opsz' 9" }}
@@ -498,7 +498,7 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
                     {photo.caption && (
                       <p
                         className={clsx(
-                          "mt-2 font-['Michelle',sans-serif] text-sm font-normal leading-tight text-zinc-500",
+                          "mt-2 font-['Lucas',sans-serif] text-sm font-normal leading-tight text-zinc-500",
                           getPhotoCaptionClass(photo, desktopSizeClasses),
                         )}
                         style={{ fontVariationSettings: "'opsz' 9" }}
@@ -562,7 +562,7 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
                 </div>
                 {expandedPhoto.caption && (
                   <p
-                    className={`mt-6 max-w-[600px] text-center font-['Michelle',sans-serif] text-base tracking-[0.005em] font-normal leading-relaxed text-zinc-600 ${isClosingPhoto ? '' : 'animate-[fadeSlideUp_300ms_ease-out_100ms_both]'}`}
+                    className={`mt-6 max-w-[600px] text-center font-['Lucas',sans-serif] text-base tracking-[0.005em] font-normal leading-relaxed text-zinc-600 ${isClosingPhoto ? '' : 'animate-[fadeSlideUp_300ms_ease-out_100ms_both]'}`}
                     style={{ fontVariationSettings: "'opsz' 9" }}
                   >
                     {expandedPhoto.caption}

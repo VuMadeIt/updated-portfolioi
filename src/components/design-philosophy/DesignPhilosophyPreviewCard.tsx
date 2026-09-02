@@ -22,16 +22,16 @@ export default function DesignPhilosophyPreviewCard({
       )}
     >
       <div className="flex w-full flex-col gap-4 px-8 py-10 md:px-12 md:py-12">
-        <p className="font-['Michelle',sans-serif] text-sm font-normal text-zinc-400">
+        <p className="font-['Lucas',sans-serif] text-sm font-normal text-zinc-400">
           {DESIGN_PHILOSOPHY_META.date}
         </p>
 
         <div className="flex w-full items-start justify-between gap-4">
           <div className="flex min-w-0 flex-col gap-3">
-            <h3 className="text-balance font-['Michelle',sans-serif] text-2xl font-medium text-zinc-700 md:text-3xl">
+            <h3 className="text-balance font-['Lucas',sans-serif] text-2xl font-medium text-zinc-700 md:text-3xl">
               {DESIGN_PHILOSOPHY_META.title}
             </h3>
-            <p className="text-pretty font-['Michelle',sans-serif] text-base leading-relaxed text-zinc-500">
+            <p className="text-pretty font-['Lucas',sans-serif] text-base leading-relaxed text-zinc-500">
               {DESIGN_PHILOSOPHY_META.previewExcerpt}
             </p>
           </div>

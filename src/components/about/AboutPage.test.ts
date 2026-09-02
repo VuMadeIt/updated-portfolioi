@@ -40,7 +40,6 @@ test("replaces Sundays in LA community with the designers section", () => {
   assert.match(source, /imageSrc: designersCreateathonPhoto/);
   assert.match(source, /caption: "Socratica Sunday Sessions >>"/);
   assert.match(source, /applyLucasCommunityOverrides/);
-  assert.match(source, /isSundaysCommunityEntry/);
 });
 
 test("replaces UCLA Product Space with The Cadet Community section", () => {
@@ -53,8 +52,6 @@ test("replaces UCLA Product Space with The Cadet Community section", () => {
   assert.match(source, /PEAK aura farming/);
   assert.match(source, /rotation: 3/);
   assert.match(source, /buildCadetCommunity/);
-  assert.match(source, /isLegacySanityCommunityEntry/);
-  assert.match(source, /executive board/);
   assert.doesNotMatch(source, /I help lead UCLA's product club/);
 });
 
@@ -82,8 +79,6 @@ test("replaces Nexus with The Sidequesters section", () => {
   assert.match(source, /representing Waterloo Engineering as a panellist at Hack the Ridge/);
   assert.match(source, /rafting with my dear friends!/);
   assert.match(source, /buildSidequestersCommunity/);
-  assert.match(source, /isNexusEntry/);
-  assert.match(source, /isLegacySanityCommunityEntry/);
 });
 
 test("replaces favorite quotes with a design philosophy preview card", () => {

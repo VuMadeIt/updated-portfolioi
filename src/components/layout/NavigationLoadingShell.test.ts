@@ -23,9 +23,6 @@ const navigationTabsSource = readFileSync(
   "utf8",
 );
 const combinedSource = `${shellSource}\n${artSource}\n${aboutSource}`;
-const tabMapSource = shellSource.match(
-  /\{tabs\.map\(\(tab\) => \(([\s\S]*?)\)\)\}/,
-)?.[1];
 
 function assertSharedGeometry(productionSource: string, snippet: string) {
   assert.ok(
@@ -50,19 +47,15 @@ test("route loading shells align to production geometry without spinners", () =>
   );
   assertSharedGeometry(
     navigationTabsSource,
-    "content-stretch flex flex-col items-center pb-4 max-md:pb-1.75 pt-0 px-0 relative shrink-0 w-full",
+    "content-stretch flex flex-col items-center pb-4 max-md:pb-2 pt-0 px-0 relative shrink-0 w-full",
   );
   assertSharedGeometry(
     navigationTabsSource,
-    "content-stretch flex flex-col gap-3 items-start pb-0 pt-4 px-16 max-md:px-6 relative w-full",
+    "flex w-full items-center justify-between gap-4 px-16 max-md:px-6 pt-2",
   );
   assertSharedGeometry(
     navigationTabsSource,
-    "px-16 max-md:px-6 w-full pt-3",
-  );
-  assertSharedGeometry(
-    navigationTabsSource,
-    "bg-zinc-100 h-px shrink-0 w-full",
+    "seeking summer 2027 internships",
   );
 
   assert.match(shellSource, /Rectangle Grain 1\.png/);
@@ -70,16 +63,8 @@ test("route loading shells align to production geometry without spinners", () =>
   assert.match(shellSource, /backgroundSize: "auto"/);
   assert.match(shellSource, /opacity: 0\.8/);
 
-  assert.match(shellSource, /id: "work".*id: "about"/s);
-  assert.doesNotMatch(shellSource, /id: "art"/);
-  assert.match(shellSource, /tab\.id === activeTab/);
-  assert.match(shellSource, /\{tab\.label\}/);
-  assert.match(
-    shellSource,
-    /px-3\.5 pt-\[5px\] pb-\[4px\][\s\S]*font-\['Michelle',sans-serif\][\s\S]*text-lg text-nowrap/,
-  );
-  assert.ok(tabMapSource);
-  assert.doesNotMatch(tabMapSource, /\bw-(?:\[[^\]]+\]|\d+(?:\.\d+)?)\b/);
+  assert.match(shellSource, /seeking summer 2027 internships/);
+  assert.match(shellSource, /h-9 w-56/);
   assert.match(shellSource, /w-\[202px\]/);
   assert.match(
     shellSource,

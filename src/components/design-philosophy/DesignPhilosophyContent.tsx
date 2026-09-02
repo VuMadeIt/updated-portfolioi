@@ -20,7 +20,7 @@ function ArticleImage({
         className="aspect-[16/10] w-full rounded-2xl bg-zinc-100 sm:rounded-3xl"
         role="img"
       />
-      <figcaption className="font-['Michelle',sans-serif] text-sm font-normal text-zinc-400">
+      <figcaption className="font-['Lucas',sans-serif] text-sm font-normal text-zinc-400">
         {caption}
       </figcaption>
     </figure>
@@ -49,12 +49,12 @@ export default function DesignPhilosophyContent({
       )}
     >
       <header className={clsx("flex flex-col gap-4", isModal ? "mb-8" : "mb-10")}>
-        <p className="font-['Michelle',sans-serif] text-sm font-normal text-zinc-400">
+        <p className="font-['Lucas',sans-serif] text-sm font-normal text-zinc-400">
           {DESIGN_PHILOSOPHY_META.date}
         </p>
         <h1
           className={clsx(
-            "text-balance font-['Michelle',sans-serif] font-medium text-zinc-700",
+            "text-balance font-['Lucas',sans-serif] font-medium text-zinc-700",
             isModal ? "text-3xl md:text-4xl" : "text-3xl md:text-4xl",
           )}
         >
@@ -62,7 +62,7 @@ export default function DesignPhilosophyContent({
         </h1>
       </header>
 
-      <div className="flex flex-col gap-6 font-['Michelle',sans-serif] text-base leading-relaxed text-zinc-600">
+      <div className="flex flex-col gap-6 font-['Lucas',sans-serif] text-base leading-relaxed text-zinc-600">
         <p className="text-pretty">
           Tonight, I just came back from the gym, and I&apos;m exhausted. I did core for the
           first time in a long time and almost threw up lol. (Pro tip; I should&apos;ve eaten

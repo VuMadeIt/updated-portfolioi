@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Providers from "@/components/layout/Providers";
 import HomeScrollRestoreScript from "@/components/shared/HomeScrollRestoreScript";
+import { SITE_OWNER, siteUrl } from "@/lib/site";
 import "@/index.css";
 import "@/styles/globals.css";
 
@@ -8,24 +9,24 @@ const siteDescription =
   "Designing tools for human connection & creativity. Clients include Cognition, Luma, & Pika. Previously at Apple, Roblox, & NASA.";
 
 const siteOgImage = {
-  url: "https://www.liumichelle.com/og-image.jpg?v=6",
+  url: siteUrl("/og-image.jpg?v=6"),
   width: 1200,
   height: 628,
-  alt: "Lucas Vu",
+  alt: SITE_OWNER,
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.liumichelle.com"),
+  metadataBase: new URL(siteUrl()),
   title: "lucas vu",
   description: siteDescription,
   keywords:
     "Lucas Vu, Product Designer, UX Designer, UI Designer, Design Portfolio",
-  authors: [{ name: "Lucas Vu" }],
+  authors: [{ name: SITE_OWNER }],
   openGraph: {
     title: "lucas vu",
     description: siteDescription,
     type: "website",
-    url: "https://www.liumichelle.com",
+    url: siteUrl(),
     images: [siteOgImage],
   },
   twitter: {

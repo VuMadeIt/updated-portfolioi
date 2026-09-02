@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PaintingGalleryPage from "@/components/gallery/PaintingGalleryPage";
+import { siteUrl } from "@/lib/site";
 import { client, urlFor } from "@/sanity/client";
 import { ART_PIECES_QUERY } from "@/sanity/queries";
 import type { ArtPiece } from "@/sanity/types";
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     title: "Art | lucas vu",
     description: galleryDescription,
     type: "website",
-    url: "https://www.liumichelle.com/art/gallery",
+    url: siteUrl("/art/gallery"),
   },
   twitter: {
     card: "summary_large_image",

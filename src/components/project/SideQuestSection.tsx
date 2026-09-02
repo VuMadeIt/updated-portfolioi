@@ -224,7 +224,7 @@ export default function SideQuestSection({
               
               {imageCaption && (
                 <p
-                  className={`mt-6 max-w-[600px] text-center font-['Michelle'] text-base font-normal leading-relaxed text-zinc-600 ${isClosing ? '' : 'animate-[fadeSlideUp_300ms_ease-out_100ms_both]'}`}
+                  className={`mt-6 max-w-[600px] text-center font-['Lucas'] text-base font-normal leading-relaxed text-zinc-600 ${isClosing ? '' : 'animate-[fadeSlideUp_300ms_ease-out_100ms_both]'}`}
                   style={{ fontVariationSettings: "'opsz' 9" }}
                 >
                   {imageCaption}

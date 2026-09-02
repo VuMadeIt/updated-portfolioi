@@ -47,9 +47,9 @@
   .tooltip                   { border-radius: 14px; }   /* 8px */
 }
 
-/* Michelle font (Figtree variable font, self-hosted) */
+/* Lucas font (Figtree variable font, self-hosted) */
 @font-face {
-  font-family: 'Michelle';
+  font-family: 'Lucas';
   font-style: normal;
   font-weight: 300 900;
   font-display: swap;
@@ -58,7 +58,7 @@
 }
 
 @font-face {
-  font-family: 'Michelle';
+  font-family: 'Lucas';
   font-style: normal;
   font-weight: 300 900;
   font-display: swap;
@@ -67,7 +67,7 @@
 }
 
 @font-face {
-  font-family: 'Michelle';
+  font-family: 'Lucas';
   font-style: italic;
   font-weight: 300 900;
   font-display: swap;
@@ -76,7 +76,7 @@
 }
 
 @font-face {
-  font-family: 'Michelle';
+  font-family: 'Lucas';
   font-style: italic;
   font-weight: 300 900;
   font-display: swap;

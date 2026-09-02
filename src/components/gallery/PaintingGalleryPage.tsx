@@ -33,7 +33,7 @@ export type PaintingGalleryPageProps = {
 };
 
 /**
- * Fine Art 3D room — same physics as `/gallery`, but hangs are Michelle's
+ * Fine Art 3D room — same physics as `/gallery`, but hangs are Lucas's
  * paintings. No generate, no download; lightbox-style metadata under focus.
  */
 export default function PaintingGalleryPage({
@@ -307,7 +307,7 @@ function PaintingGalleryRoom({
       {showPlaque && captionPainting && plaqueAnchor && (
         <div
           data-gallery-no-drag
-          className="pointer-events-none absolute z-40 flex w-max max-w-[min(90vw,560px)] flex-col items-center px-2 text-center font-['Michelle',sans-serif] text-xs sm:text-sm tracking-[0.005em] font-normal leading-relaxed transition-opacity ease-out motion-reduce:transition-none"
+          className="pointer-events-none absolute z-40 flex w-max max-w-[min(90vw,560px)] flex-col items-center px-2 text-center font-['Lucas',sans-serif] text-xs sm:text-sm tracking-[0.005em] font-normal leading-relaxed transition-opacity ease-out motion-reduce:transition-none"
           style={{
             left: plaqueAnchor.x,
             top: plaqueAnchor.y,

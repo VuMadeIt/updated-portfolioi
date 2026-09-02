@@ -162,7 +162,7 @@ export function createEditToken(randomBytes: (n: number) => Uint8Array): string 
 
 /**
  * True when `id` is a safe public share path segment.
- * Accepts legacy opaque ids and newer name-derived slugs (`michelle`, `michelle-2`).
+ * Accepts legacy opaque ids and newer name-derived slugs (`lucas`, `lucas-2`).
  */
 export function isValidShareId(id: string): boolean {
   return (
@@ -173,7 +173,7 @@ export function isValidShareId(id: string): boolean {
 }
 
 /**
- * Turn a gallery display name into a URL slug (`Michelle's Room` → `michelles-room`).
+ * Turn a gallery display name into a URL slug (`Lucas's Room` → `lucas-s-room`).
  * Returns `null` when nothing URL-safe remains (emoji-only names, etc.).
  */
 export function slugifyGalleryShareId(
@@ -192,7 +192,7 @@ export function slugifyGalleryShareId(
 }
 
 /**
- * Pick the first free slug for `name`: `michelle`, then `michelle-2`, …
+ * Pick the first free slug for `name`: `lucas`, then `lucas-2`, …
  * Falls back to an opaque id when the name cannot slugify, after
  * `MAX_SHARE_SLUG_PROBES` collisions, or when suffixes are exhausted.
  *

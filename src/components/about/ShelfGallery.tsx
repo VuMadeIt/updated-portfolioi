@@ -90,7 +90,7 @@ export default function ShelfGallery({
                   >
                     <span
                       className={clsx(
-                        "font-['Michelle',sans-serif] text-base font-semibold tracking-wide",
+                        "font-['Lucas',sans-serif] text-base font-semibold tracking-wide",
                         isActive ? "text-zinc-500" : "text-zinc-400"
                       )}
                     >
@@ -117,7 +117,7 @@ export default function ShelfGallery({
                 >
                   <span
                     className={clsx(
-                      "font-['Michelle',sans-serif] text-base font-semibold tracking-wide",
+                      "font-['Lucas',sans-serif] text-base font-semibold tracking-wide",
                       isActive ? "text-zinc-500" : "text-zinc-400"
                     )}
                   >

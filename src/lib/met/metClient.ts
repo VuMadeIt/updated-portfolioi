@@ -37,7 +37,7 @@ export const HYDRATE_CONCURRENCY = 6;
  * client with 403 rather than 429. Sending a real UA and backing off on the
  * throttle response is what keeps a page of results from failing outright.
  */
-const USER_AGENT = "michelle-liu-gallery/1.0 (personal site; Met Open Access)";
+const USER_AGENT = "lucas-vu-gallery/1.0 (personal site; Met Open Access)";
 const THROTTLE_RETRY_DELAYS_MS = [300, 900];
 /** Search is one request the page cannot proceed without, so it waits longer. */
 const SEARCH_TIMEOUT_MS = 8000;

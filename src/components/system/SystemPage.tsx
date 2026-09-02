@@ -848,7 +848,7 @@ export default function SystemPage() {
   };
 
   return (
-    <div className="design-system-page min-h-dvh bg-white font-['Michelle',sans-serif] text-base text-zinc-500">
+    <div className="design-system-page min-h-dvh bg-white font-['Lucas',sans-serif] text-base text-zinc-500">
       <style>{`
         .design-system-page code,
         .design-system-page .font-mono {
@@ -969,10 +969,10 @@ export default function SystemPage() {
               /* Intro */
               <section key="intro" id="intro" className="scroll-mt-24 pb-8">
                 <div className="flex flex-col gap-1">
-                  <h1 className="max-w-3xl font-['Michelle',sans-serif] text-2xl font-normal leading-none tracking-[0.0125em] text-[#3f3f46] text-balance mid:text-4xl mid:leading-normal">
+                  <h1 className="max-w-3xl font-['Lucas',sans-serif] text-2xl font-normal leading-none tracking-[0.0125em] text-[#3f3f46] text-balance mid:text-4xl mid:leading-normal">
                     Design System
                   </h1>
-                  <p className="font-['Michelle',sans-serif] text-2xl font-normal leading-none tracking-[0.0125em] text-zinc-400 mid:-mt-3 mid:text-4xl mid:leading-normal">
+                  <p className="font-['Lucas',sans-serif] text-2xl font-normal leading-none tracking-[0.0125em] text-zinc-400 mid:-mt-3 mid:text-4xl mid:leading-normal">
                     lucas vu
                   </p>
                 </div>

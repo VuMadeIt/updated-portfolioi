@@ -16,6 +16,7 @@ import InfoButton from '../shared/InfoButton';
 import Tooltip from '../shared/Tooltip';
 import { useExperimentProject } from '../../hooks/useExperimentProject';
 import { Close } from '../icons/Close';
+import { X_PROFILE_URL } from '@/lib/site';
 
 
 // Default project info (fallback if Sanity fetch fails)
@@ -26,7 +27,7 @@ const DEFAULT_POLAROID_PROJECT = {
   description: 'A digital way to customize your own polaroid.',
   imageSrc: 'https://image.mux.com/XJFJ1P3u9pKsFYvH9lTtOp4gPRydSpMkRrX9dRmNE5w/thumbnail.png',
   videoSrc: 'https://stream.mux.com/XJFJ1P3u9pKsFYvH9lTtOp4gPRydSpMkRrX9dRmNE5w.m3u8',
-  xLink: 'https://x.com/michelletliu/status/1991201412072734777',
+  xLink: X_PROFILE_URL,
   tryItOutHref: '/polaroid',
   backgroundColor: '#eff6ff',
   toolCategories: [

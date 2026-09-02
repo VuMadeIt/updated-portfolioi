@@ -8,6 +8,7 @@ import {
   isValidShareId,
 } from "@/components/gallery/sharedGallery";
 import { getShareMeta } from "@/lib/gallery/shareBlob";
+import { siteUrl } from "@/lib/site";
 
 /** Always read latest meta — update-existing must show regenerated hangs. */
 export const dynamic = "force-dynamic";
@@ -34,7 +35,7 @@ export async function generateMetadata({
     : "An interactive art gallery to visualize your ideas.";
 
   const ogImage = {
-    url: "https://www.liumichelle.com/gallery-og.png?v=4",
+    url: siteUrl("/gallery-og.png?v=4"),
     width: 1200,
     height: 630,
     alt: title,
@@ -48,7 +49,7 @@ export async function generateMetadata({
       title,
       description,
       type: "website",
-      url: `https://www.liumichelle.com/gallery/s/${shareId}`,
+      url: siteUrl(`/gallery/s/${shareId}`),
       images: [ogImage],
     },
     twitter: {
@@ -118,7 +119,7 @@ function SharedGalleryError({ message }: { message: string }) {
         href="/gallery"
         className="text-base text-zinc-700 transition-colors duration-200 hover:text-blue-500"
       >
-        www.liumichelle.com/gallery
+        lucasvu.com/gallery
       </Link>
     </div>
   );

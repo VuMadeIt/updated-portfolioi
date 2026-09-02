@@ -21,10 +21,10 @@ export default function NotFound() {
           404
         </p>
         <div className="flex flex-col gap-1">
-          <p className="font-['Michelle',sans-serif] text-lg text-zinc-400">
+          <p className="font-['Lucas',sans-serif] text-lg text-zinc-400">
             Oh no!
           </p>
-          <p className="font-['Michelle',sans-serif] text-lg text-zinc-400">
+          <p className="font-['Lucas',sans-serif] text-lg text-zinc-400">
             Please <a href="mailto:lucasvu.work@gmail.com" className="text-zinc-600 font-medium hover:text-blue-500 transition-colors duration-200">email me</a> if there was an error :')
           </p>
         </div>

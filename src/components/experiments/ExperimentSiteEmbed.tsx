@@ -35,7 +35,7 @@ export function ToolsSection({ categories, large = false, noLine = false }: { ca
   const grids = (
     <>
       <div className={clsx(
-        "font-['Michelle',sans-serif] font-normal relative shrink-0 w-full hidden md:grid",
+        "font-['Lucas',sans-serif] font-normal relative shrink-0 w-full hidden md:grid",
         large ? "flex gap-5 text-base grid-cols-4" : "gap-3 grid-cols-4 text-base"
       )}>
         {categories.map((category, idx) => (
@@ -62,7 +62,7 @@ export function ToolsSection({ categories, large = false, noLine = false }: { ca
           </div>
         ))}
       </div>
-      <div className="font-['Michelle',sans-serif] font-normal flex flex-col gap-1.5 relative shrink-0 text-sm w-full md:hidden">
+      <div className="font-['Lucas',sans-serif] font-normal flex flex-col gap-1.5 relative shrink-0 text-sm w-full md:hidden">
         {categories.map((category, idx) => (
           <div key={idx} className="flex items-baseline gap-6">
             <p className="leading-normal shrink-0 text-[#a1a1aa] w-[72px]">
@@ -99,7 +99,7 @@ export function ViewOnXButton({ href, className }: { href: string; className?: s
         className: clsx("whitespace-nowrap", className),
       })}
     >
-      <span className="font-['Michelle',sans-serif] font-medium leading-normal text-sm text-white whitespace-nowrap">
+      <span className="font-['Lucas',sans-serif] font-medium leading-normal text-sm text-white whitespace-nowrap">
         View on
       </span>
       <XLogo size="12px" className="text-white" />
@@ -134,7 +134,7 @@ export function SiteTextLink({ href, label }: { href: string; label: string }) {
       rel="noopener noreferrer"
       className="group inline-flex gap-1 items-center justify-center px-3 py-1 rounded-full shrink-0 cursor-pointer transition-colors duration-200 ease-out"
     >
-      <span className="font-['Michelle',sans-serif] font-medium leading-normal text-sm text-zinc-500 group-hover:text-blue-500 whitespace-nowrap">
+      <span className="font-['Lucas',sans-serif] font-medium leading-normal text-sm text-zinc-500 group-hover:text-blue-500 whitespace-nowrap">
         {label}
       </span>
       <span className="text-zinc-500 group-hover:text-blue-500 inline-flex items-center">
@@ -180,7 +180,7 @@ function Breadcrumb({ projectName, onWorkClick, isScrolled = false, isPastHero =
           isScrolled ? "opacity-0 pointer-events-none w-0 px-0 overflow-hidden" : "opacity-100 px-1.5 ml-2"
         )}
       >
-        <span className="font-['Michelle:Medium',sans-serif] font-medium text-sm leading-normal text-[#52525b] whitespace-nowrap">
+        <span className="font-['Lucas:Medium',sans-serif] font-medium text-sm leading-normal text-[#52525b] whitespace-nowrap">
           Work
         </span>
       </button>
@@ -188,7 +188,7 @@ function Breadcrumb({ projectName, onWorkClick, isScrolled = false, isPastHero =
       <Chevron direction="right" className="size-4 shrink-0 text-zinc-500" />
 
       <div className="flex items-center justify-center px-1 py-0.5">
-        <span className="font-['Michelle:Medium',sans-serif] font-medium text-sm leading-normal text-[#27272a]">
+        <span className="font-['Lucas:Medium',sans-serif] font-medium text-sm leading-normal text-[#27272a]">
           {projectName}
         </span>
       </div>
@@ -327,7 +327,7 @@ export function ExperimentSiteEmbed({
   return (
     <>
     <div className={clsx(
-      "font-['Michelle',sans-serif] w-full box-border flex flex-col text-[#18181b]",
+      "font-['Lucas',sans-serif] w-full box-border flex flex-col text-[#18181b]",
       isFullscreen ? 'min-h-screen' : 'min-h-full px-6 pt-6 pb-8 md:px-[8%] md:py-32 xl:px-[175px]'
     )}>
       {isFullscreen && resolvedFullscreenHeader}
@@ -399,17 +399,17 @@ export function ExperimentSiteMobileEmbed({
     <div className="site-embed-mobile content-stretch flex flex-col gap-4 px-6 py-5 relative shrink-0 w-full">
       <div className="flex flex-col min-w-0 gap-0.5">
         <div className="content-stretch flex gap-[6px] items-center relative shrink-0">
-          <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-base text-zinc-900">
+          <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-base text-zinc-900">
             {project.title}
           </p>
-          <p className="font-['Michelle',sans-serif] font-normal leading-snug relative shrink-0 text-[#a1a1aa] text-base">
+          <p className="font-['Lucas',sans-serif] font-normal leading-snug relative shrink-0 text-[#a1a1aa] text-base">
             •
           </p>
-          <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-base">
+          <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-base">
             {project.year}
           </p>
         </div>
-        <p className="font-['Michelle',sans-serif] font-normal leading-normal relative text-[#71717a] text-sm">
+        <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-sm">
           {project.description}
         </p>
       </div>

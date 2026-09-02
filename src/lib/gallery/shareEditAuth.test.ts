@@ -61,14 +61,14 @@ test("editTokenFromRequest reads the write-capability header", () => {
 test("mintShareEditToken is bound to shareId via HMAC", () => {
   process.env.BLOB_READ_WRITE_TOKEN ??=
     "vercel_blob_rw_teststore_dummytokenfortests";
-  const token = mintShareEditToken("michelle", (n) => randomBytes(n));
+  const token = mintShareEditToken("lucas", (n) => randomBytes(n));
   assert.match(token, /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
-  assert.equal(verifyShareEditTokenHmac("michelle", token), true);
+  assert.equal(verifyShareEditTokenHmac("lucas", token), true);
   assert.equal(verifyShareEditTokenHmac("other-slug", token), false);
-  assert.equal(verifyShareEditTokenHmac("michelle", "not-a-hmac-token"), false);
+  assert.equal(verifyShareEditTokenHmac("lucas", "not-a-hmac-token"), false);
   // Tamper mac
   const tampered = `${token.slice(0, -1)}${token.endsWith("a") ? "b" : "a"}`;
-  assert.equal(verifyShareEditTokenHmac("michelle", tampered), false);
+  assert.equal(verifyShareEditTokenHmac("lucas", tampered), false);
   // Hash still works for edit.json storage
   assert.match(hashEditToken(token), /^[a-f0-9]{64}$/);
   assert.notEqual(

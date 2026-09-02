@@ -33,7 +33,7 @@ export function BookCard({ book, onClick }: BookCardProps) {
         <div className="flex flex-col font-['SF_Pro:Regular',sans-serif] font-normal justify-center relative shrink-0 text-base text-zinc-500" style={{ fontVariationSettings: "'wdth' 100" }}>
           <p className="leading-normal">{book.author}</p>
         </div>
-        <p className="font-['Michelle',sans-serif] leading-normal not-italic relative shrink-0 text-sm sm:text-base lg:text-lg text-zinc-900 text-nowrap">
+        <p className="font-['Lucas',sans-serif] leading-normal not-italic relative shrink-0 text-sm sm:text-base lg:text-lg text-zinc-900 text-nowrap">
           <span className="text-zinc-500">{"★".repeat(book.rating)}</span>
           <span className="text-zinc-200">{"★".repeat(5 - book.rating)}</span>
         </p>

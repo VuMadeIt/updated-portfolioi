@@ -185,7 +185,7 @@ export const fontFamilies: {
   {
     name: "Figtree",
     stack: "'Figtree', sans-serif",
-    fontFamily: "'Michelle', sans-serif",
+    fontFamily: "'Lucas', sans-serif",
     usage: "",
     tag: "canonical",
   },
@@ -205,7 +205,7 @@ export const typeScale: TypeToken[] = [
   { name: "text-4xl", className: "text-4xl", px: "36px", usage: "Project hero, large display sizes (base size for Display name)", tag: "canonical", role: "heading" },
   {
     name: "Display name",
-    className: "font-['Michelle',sans-serif] text-4xl font-medium leading-normal tracking-[0.0125em] text-[#3f3f46]",
+    className: "font-['Lucas',sans-serif] text-4xl font-medium leading-normal tracking-[0.0125em] text-[#3f3f46]",
     px: "36px",
     sample: "Text",
     usage: "Home hero name, Design System title",

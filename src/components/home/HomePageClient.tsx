@@ -18,6 +18,7 @@ import {
   pushPathPreservingSearch,
   replacePathPreservingSearch,
 } from "@/lib/shallowPath";
+import { X_PROFILE_URL } from "@/lib/site";
 import clsx from "clsx";
 import { ArrowUpRight } from "../icons/ArrowUpRight";
 import { TouchIcon } from "../icons/TouchIcon";
@@ -104,19 +105,6 @@ function projectForExperimentModal(project: Project): Project {
   };
 }
 
-const DESIGN_MEETUP_CLIP_PLAYBACK_ID =
-  "cwG7dhOYn4rCjWNSPxUFuUMSzdh6wv9qFNG00xjHs4pU";
-const DESIGN_MEETUP_FULL_PLAYBACK_ID =
-  "J17VrkI9XmtbUJLyqPhw7Z8mXa1YNxQS02Rk97uSet2s";
-const designMeetupClip = getMuxUrls(
-  DESIGN_MEETUP_CLIP_PLAYBACK_ID,
-  "design-meetup",
-);
-const designMeetupFull = getMuxUrls(
-  DESIGN_MEETUP_FULL_PLAYBACK_ID,
-  "design-meetup",
-);
-
 const staticProjects: Project[] = [
   {
     id: "warframe",
@@ -148,28 +136,9 @@ const staticProjects: Project[] = [
     title: "Shufflr",
     year: "2026",
     description:
-      "Lowering the activation energy of spending quality time with your loved ones.",
+      "A fun way for university students to create spontaneous, low-stakes hangout moments, like the good ol' days.",
     imageSrc: "",
     videoSrc: "/videos/shufflr.mp4",
-  },
-  {
-    id: "design-meetup",
-    title: "Hack Canada",
-    year: "2026",
-    description: "A nationwide community I help run for builders & creatives.",
-    imageSrc: designMeetupClip.imageSrc,
-    videoSrc: designMeetupClip.videoSrc,
-    popupImageSrc: designMeetupFull.imageSrc,
-    popupVideoSrc: designMeetupFull.videoSrc,
-    tryItOutHref: "https://designmeetup.info",
-    xLink: "https://x.com/michelletliu/status/2087998088409653321?s=20",
-    backgroundColor: "#ffffff",
-    toolCategories: [
-      { label: 'UI & Motion', tools: ['Tailwind CSS', 'Motion'] },
-      { label: 'Frontend', tools: ['Next.js', 'React', 'TypeScript'] },
-      { label: 'Data', tools: ['Supabase'] },
-      { label: 'AI', tools: ['Cursor', 'Opus 4.6'] },
-    ],
   },
   {
     id: "parrot",
@@ -381,7 +350,6 @@ function getExperimentLink(projectId: string): { href: string; label: string; ex
     case 'library': return { href: '/library', label: 'Try It Out!', external: false };
     case 'film': return { href: '/film', label: 'Try It Out!', external: false };
     case 'creators-collective': return null;
-    case 'design-meetup': return { href: 'https://designmeetup.info', label: 'Visit Site', external: true };
     case 'gallery': return { href: '/gallery', label: 'Try It Out!', external: false };
     default: return null;
   }
@@ -395,7 +363,7 @@ type ProjectCardProps = {
   index?: number;
 };
 
-const SIDE_PROJECT_IDS = ["design-meetup", "parrot", "gallery", "creators-collective"];
+const SIDE_PROJECT_IDS = ["parrot", "gallery", "creators-collective"];
 /** Experiments kept in data/routes but omitted from the home experiments grid. */
 const HIDDEN_EXPERIMENT_IDS: string[] = [];
 /** Experiments that skip the preview modal and navigate straight to their page. */
@@ -471,7 +439,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
           <div className="absolute bottom-0 left-0 p-3 hidden md:block">
             <div className="bg-white border border-[#f4f4f5] border-solid flex items-center justify-center px-3 pt-[5px] pb-[4.8px] rounded-full">
-              <p className="font-['Michelle',sans-serif] font-medium tracking-[0.005em] leading-snug text-[#18181b] text-base">
+              <p className="font-['Lucas',sans-serif] font-medium tracking-[0.005em] leading-snug text-[#18181b] text-base">
                 <span>{project.title}</span>
                 {!hasTryItOut && (
                   <span className="text-[#a1a1aa]"> • {project.year}</span>
@@ -494,9 +462,9 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           </div>
         </div>
         <div className="hidden md:flex content-stretch items-start px-[13px] py-0 -mt-1.5 -mb-0.5 relative shrink-0 w-full">
-          <p className="font-['Michelle',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{project.description}</p>
+          <p className="font-['Lucas',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{project.description}</p>
         </div>
-        <div className="md:hidden content-stretch flex flex-col font-['Michelle',sans-serif] font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.01em] gap-1">
+        <div className="md:hidden content-stretch flex flex-col font-['Lucas',sans-serif] font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.01em] gap-1">
           <div className="flex items-center w-full">
             <p className="relative shrink-0 text-[#18181b] text-left project-hover-text">
               <span>{project.title}</span>
@@ -546,7 +514,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
         />
         <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
       </div>
-      <div className="content-stretch flex font-['Michelle',sans-serif] md:-mt-1.5 md:-mb-0.5 font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.005em] w-full project-hover-text">
+      <div className="content-stretch flex font-['Lucas',sans-serif] md:-mt-1.5 md:-mb-0.5 font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.005em] w-full project-hover-text">
         <p className="relative text-[#18181b] text-left">
           <span>{project.title}</span>
           <span className="text-[#a1a1aa]"> • {project.year}</span>
@@ -582,7 +550,7 @@ function ToolsSection({ categories }: { categories: ToolCategory[] }) {
   return (
     <div className="flex w-full flex-col gap-2">
       <HorizontalLine />
-      <div className="font-['Michelle',sans-serif] font-normal gap-4 grid-cols-4 relative shrink-0 text-base w-full hidden md:grid">
+      <div className="font-['Lucas',sans-serif] font-normal gap-4 grid-cols-4 relative shrink-0 text-base w-full hidden md:grid">
         {categories.map((category, idx) => (
           <div key={idx} className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0">
             <p className="leading-normal relative shrink-0 text-[#a1a1aa]">
@@ -598,7 +566,7 @@ function ToolsSection({ categories }: { categories: ToolCategory[] }) {
           </div>
         ))}
       </div>
-      <div className="font-['Michelle',sans-serif] font-normal flex flex-col gap-1.5 relative shrink-0 text-sm w-full md:hidden">
+      <div className="font-['Lucas',sans-serif] font-normal flex flex-col gap-1.5 relative shrink-0 text-sm w-full md:hidden">
         {categories.map((category, idx) => (
           <div key={idx} className="flex items-baseline gap-6">
             <p className="leading-normal shrink-0 text-[#a1a1aa] w-[72px]">
@@ -679,20 +647,20 @@ function SimpleProjectModal({ project, onClose }: ProjectModalProps) {
             <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-h-px min-w-px relative shrink-0">
               <div className="content-stretch flex items-start relative shrink-0 w-full">
                 <div className="content-stretch flex gap-[6px] items-center relative shrink-0">
-                  <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-xl text-zinc-900">
+                  <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-xl text-zinc-900">
                     {project.title}
                   </p>
-                  <p className="font-['Michelle',sans-serif] font-medium leading-snug relative shrink-0 text-[#a1a1aa] text-base tracking-[0.005em]">
+                  <p className="font-['Lucas',sans-serif] font-medium leading-snug relative shrink-0 text-[#a1a1aa] text-base tracking-[0.005em]">
                     •
                   </p>
-                  <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-xl">
+                  <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-xl">
                     {project.year}
                   </p>
                 </div>
               </div>
               
               <div className="content-stretch flex gap-2 items-start relative w-full">
-                <p className="font-['Michelle',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
+                <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
                   {project.description}
                 </p>
               </div>
@@ -707,20 +675,20 @@ function SimpleProjectModal({ project, onClose }: ProjectModalProps) {
             <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-full">
               <div className="content-stretch flex items-start relative shrink-0 w-full">
                 <div className="content-stretch flex gap-[6px] items-center relative shrink-0">
-                  <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-xl text-zinc-900">
+                  <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-xl text-zinc-900">
                     {project.title}
                   </p>
-                  <p className="font-['Michelle',sans-serif] font-medium leading-snug relative shrink-0 text-[#a1a1aa] text-base tracking-[0.005em]">
+                  <p className="font-['Lucas',sans-serif] font-medium leading-snug relative shrink-0 text-[#a1a1aa] text-base tracking-[0.005em]">
                     •
                   </p>
-                  <p className="font-['Michelle',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-xl">
+                  <p className="font-['Lucas',sans-serif] font-normal leading-normal relative shrink-0 text-[#a1a1aa] text-xl">
                     {project.year}
                   </p>
                 </div>
               </div>
               
               <div className="content-stretch flex gap-2 items-start relative w-full">
-                <p className="font-['Michelle',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
+                <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
                   {project.description}
                 </p>
               </div>
@@ -857,10 +825,7 @@ function mergeWorkProjects(
         if (!experimentData) return project;
         return {
           ...project,
-          title:
-            project.id === "design-meetup"
-              ? "Hack Canada"
-              : experimentData.title || project.title,
+          title: experimentData.title || project.title,
           year: experimentData.year || project.year,
           description: experimentData.description || project.description,
           xLink: experimentData.xLink || project.xLink,
@@ -897,10 +862,7 @@ function mergeWorkProjects(
             : fallbackUrl || muxUrls.imageSrc;
         return {
           ...project,
-          title:
-            project.id === "design-meetup"
-              ? "Hack Canada"
-              : experimentData.title,
+          title: experimentData.title,
           year: experimentData.year,
           description: experimentData.description,
           imageSrc,
@@ -915,9 +877,6 @@ function mergeWorkProjects(
           toolCategories:
             experimentData.toolCategories || project.toolCategories,
         };
-      }
-      if (project.id === "design-meetup") {
-        return { ...project, title: "Hack Canada" };
       }
     }
 
@@ -1120,7 +1079,7 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
     }
 
     const isMobile = window.innerWidth < 768;
-    const shouldGoFullscreen = projectId === 'film' || (isMobile && projectId !== 'sketchbook' && projectId !== 'creators-collective' && projectId !== 'design-meetup');
+    const shouldGoFullscreen = projectId === 'film' || (isMobile && projectId !== 'sketchbook' && projectId !== 'creators-collective');
 
     if (posthogEnabled) {
       posthog.capture("project_opened", {

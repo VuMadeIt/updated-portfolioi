@@ -43,7 +43,7 @@ function FooterBrand({
           />
         )}
       </div>
-      <p className="font-['Michelle',sans-serif] font-medium leading-normal relative shrink-0 text-[#3f3f46] text-3xl">
+      <p className="font-['Lucas',sans-serif] font-medium leading-normal relative shrink-0 text-[#3f3f46] text-3xl">
         lucas vu
       </p>
     </a>
@@ -152,7 +152,7 @@ export default function Footer({
                   gapClassName="gap-3"
                   logoHref={logoHref}
                 />
-                <p className="font-['Michelle',sans-serif] font-normal leading-normal text-zinc-400 text-base">
+                <p className="font-['Lucas',sans-serif] font-normal leading-normal text-zinc-400 text-base">
                   <BlinkingTime time={localTime} h24={localH24} city={city} />
                 </p>
               </div>
@@ -165,7 +165,7 @@ export default function Footer({
               
               {/* Column 4: Contact + Social */}
               <div className="[grid-area:1_/_4] content-stretch flex flex-col gap-4 items-start relative shrink-0">
-                <div className="content-stretch flex flex-col font-['Michelle',sans-serif] font-normal items-start relative shrink-0 text-zinc-400 w-full">
+                <div className="content-stretch flex flex-col font-['Lucas',sans-serif] font-normal items-start relative shrink-0 text-zinc-400 w-full">
                   <p className="leading-normal min-w-full relative shrink-0 text-base w-[min-content]">Let's work together!</p>
                   <p className="leading-normal relative shrink-0 text-base break-all">
                     <a href="mailto:lucasvu.work@gmail.com" className="group/email inline-flex items-center hover:text-blue-500 text-zinc-600 font-medium transition-colors duration-200">
@@ -189,7 +189,7 @@ export default function Footer({
                   gapClassName="gap-2"
                   logoHref={logoHref}
                 />
-                <p className="font-['Michelle',sans-serif] font-normal leading-normal text-zinc-400 text-base">
+                <p className="font-['Lucas',sans-serif] font-normal leading-normal text-zinc-400 text-base">
                   <BlinkingTime time={localTime} h24={localH24} city={city} />
                 </p>
               </div>
@@ -197,7 +197,7 @@ export default function Footer({
               {/* Contact + Social + Nav */}
               <div className="content-stretch flex flex-col gap-10 items-start relative shrink-0">
                 <div className="content-stretch flex flex-col gap-4 items-start relative shrink-0">
-                  <div className="content-stretch flex flex-col font-['Michelle',sans-serif] font-normal items-start relative shrink-0 text-zinc-400 w-[326px]">
+                  <div className="content-stretch flex flex-col font-['Lucas',sans-serif] font-normal items-start relative shrink-0 text-zinc-400 w-[326px]">
                     <p className="leading-normal relative shrink-0 text-base w-full">Let's work together!</p>
                     <p className="leading-normal relative shrink-0 text-base w-full break-all">
                       <a href="mailto:lucasvu.work@gmail.com" className="group/email inline-flex items-center hover:text-blue-500 text-zinc-600 font-medium transition-colors duration-200">
@@ -218,7 +218,7 @@ export default function Footer({
             </div>
           </ScrollReveal>
           <ScrollReveal variant="fade" delay={200} className="content-stretch flex flex-col gap-0.5 items-center relative shrink-0">
-            <p className="font-['Michelle',sans-serif] font-normal leading-relaxed relative shrink-0 text-zinc-400 text-sm">
+            <p className="font-['Lucas',sans-serif] font-normal leading-relaxed relative shrink-0 text-zinc-400 text-sm">
               <span>{`Built with Next.js & `}</span>
               <span className="group">
                 <a

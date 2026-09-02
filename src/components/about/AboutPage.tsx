@@ -5,6 +5,11 @@ import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
 import { useScrollLock } from "../../utils/useScrollLock";
 import { useNavigate } from "@/lib/navigation";
+import {
+  GOODREADS_PROFILE_URL,
+  LETTERBOXD_PROFILE_URL,
+  letterboxdFilmUrl,
+} from "@/lib/site";
 import { ScrollReveal } from "../shared/ScrollReveal";
 import PageHeader from "../layout/PageHeader";
 import { useHeroAnimation } from "../../hooks/useHeroAnimation";
@@ -304,82 +309,21 @@ const THE_SIDEQUESTERS_COMMUNITY: CommunityCardData = {
   ],
 };
 
-function isSundaysCommunityEntry(
-  entry: Pick<CommunityCardData, "title" | "sidebarName">,
-): boolean {
-  const title = entry.title.toLowerCase();
-  const sidebar = entry.sidebarName?.toLowerCase() ?? "";
-  return (
-    title.includes("sundays") ||
-    sidebar.includes("sundays") ||
-    (title.includes("sunday") && title.includes("la"))
-  );
-}
-
-function isUclaProductSpaceEntry(
-  entry: Pick<CommunityCardData, "title" | "sidebarName">,
-): boolean {
-  const title = entry.title.toLowerCase();
-  const sidebar = entry.sidebarName?.toLowerCase() ?? "";
-  return (
-    title.includes("ucla") ||
-    sidebar.includes("ucla") ||
-    title.includes("product space") ||
-    sidebar.includes("product space")
-  );
-}
-
-function isNexusEntry(
-  entry: Pick<CommunityCardData, "title" | "sidebarName">,
-): boolean {
-  const title = entry.title.toLowerCase();
-  const sidebar = entry.sidebarName?.toLowerCase() ?? "";
-  return title.includes("nexus") || sidebar.includes("nexus");
-}
-
-function isLegacySanityCommunityEntry(
-  entry: Pick<CommunityCardData, "title" | "sidebarName" | "description" | "photos">,
-): boolean {
-  const title = entry.title.toLowerCase();
-  const sidebar = entry.sidebarName?.toLowerCase() ?? "";
-  const description = entry.description?.toLowerCase() ?? "";
-  const captions =
-    entry.photos?.map((photo) => photo.caption?.toLowerCase() ?? "").join(" ") ?? "";
-
-  return (
-    isSundaysCommunityEntry(entry) ||
-    isUclaProductSpaceEntry(entry) ||
-    isNexusEntry(entry) ||
-    title.includes("chess players") ||
-    sidebar.includes("chess players") ||
-    title.includes("cadet community") ||
-    sidebar.includes("cadet community") ||
-    title.includes("sidequesters") ||
-    sidebar.includes("sidequesters") ||
-    title.includes("designers") ||
-    sidebar.includes("designers") ||
-    description.includes("ucla's product club") ||
-    description.includes("product club") ||
-    captions.includes("executive board") ||
-    captions.includes("royce") ||
-    captions.includes("lake arrowhead") ||
-    captions.includes("notion x figma workshop")
-  );
-}
-
 function applyLucasCommunityOverrides(
   communities: CommunityCardData[],
 ): CommunityCardData[] {
-  const preservedCommunities = communities.filter(
-    (community) => !isLegacySanityCommunityEntry(community),
-  );
+  const findExisting = (matcher: (community: CommunityCardData) => boolean) =>
+    communities.find(matcher);
 
   return [
-    buildDesignersCommunity(),
-    buildCadetCommunity(),
-    buildChessPlayersCommunity(),
-    buildSidequestersCommunity(),
-    ...preservedCommunities,
+    buildDesignersCommunity(findExisting((community) => community.id === THE_DESIGNERS_COMMUNITY.id)),
+    buildCadetCommunity(findExisting((community) => community.id === THE_CADET_COMMUNITY.id)),
+    buildChessPlayersCommunity(
+      findExisting((community) => community.id === THE_CHESS_PLAYERS_COMMUNITY.id),
+    ),
+    buildSidequestersCommunity(
+      findExisting((community) => community.id === THE_SIDEQUESTERS_COMMUNITY.id),
+    ),
   ];
 }
 
@@ -557,7 +501,7 @@ function ProfilePhoto({ imageSrc, caption }: { imageSrc?: string; caption?: Reac
               </div>
               {caption && (
                 <p
-                  className={`mt-6 max-w-[600px] text-center font-['Michelle',sans-serif] text-base tracking-[0.005em] font-normal leading-relaxed text-zinc-500 [&_a]:text-zinc-800 [&_a:hover]:text-zinc-900 ${isClosing ? '' : 'animate-[fadeSlideUp_300ms_ease-out_100ms_both]'}`}
+                  className={`mt-6 max-w-[600px] text-center font-['Lucas',sans-serif] text-base tracking-[0.005em] font-normal leading-relaxed text-zinc-500 [&_a]:text-zinc-800 [&_a:hover]:text-zinc-900 ${isClosing ? '' : 'animate-[fadeSlideUp_300ms_ease-out_100ms_both]'}`}
                   style={{ fontVariationSettings: "'opsz' 9" }}
                 >
                   {caption}
@@ -1061,7 +1005,7 @@ export default function AboutPage() {
             {/* Bio Content */}
             <div className="flex flex-col pt-8 gap-6 flex-1 max-w-xl">
               <ScrollReveal variant="fade" delay={150}>
-                <h2 className="font-['Michelle',sans-serif] font-medium text-zinc-600 text-3xl md:text-3xl">
+                <h2 className="font-['Lucas',sans-serif] font-medium text-zinc-600 text-3xl md:text-3xl">
                   Hi, I'm Lucas!
                 </h2>
               </ScrollReveal>
@@ -1109,7 +1053,7 @@ export default function AboutPage() {
           <section ref={experienceRef} className="flex flex-col gap-16 md:flex-row md:justify-between md:gap-0 w-full scroll-mt-8">
             <ScrollReveal variant="fade">
               <div className="flex flex-col">
-                <h2 className="font-['Michelle',sans-serif] font-medium text-zinc-700 text-3xl leading-normal shrink-0">
+                <h2 className="font-['Lucas',sans-serif] font-medium text-zinc-700 text-3xl leading-normal shrink-0">
                   Experience
                 </h2>
               </div>
@@ -1130,10 +1074,10 @@ export default function AboutPage() {
           <section ref={communityRef} className="flex flex-col gap-8 w-full scroll-mt-8 max-md:mt-10">
             <ScrollReveal variant="fade">
               <div className="flex flex-col">
-                <h2 className="font-['Michelle',sans-serif] font-medium text-zinc-600 text-3xl leading-normal shrink-0">
+                <h2 className="font-['Lucas',sans-serif] font-medium text-zinc-600 text-3xl leading-normal shrink-0">
                   My Communities
                 </h2>
-                <p className="font-['Michelle',sans-serif] tracking-wide font-normal text-zinc-400 text-lg flex items-center gap-1.5">
+                <p className="font-['Lucas',sans-serif] tracking-wide font-normal text-zinc-400 text-lg flex items-center gap-1.5">
                   The people who make it all worth it
                   <img src={heartIcon} alt="" className="w-[12px] h-[12px]" style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(8%) saturate(293%) hue-rotate(177deg) brightness(91%) contrast(87%)' }} />
                 </p>
@@ -1198,7 +1142,7 @@ export default function AboutPage() {
                       yearFilters={bookYears}
                       activeYear={activeBooksYear}
                       onYearChange={(year) => setActiveBooksYear(year || undefined)}
-                      externalLink={{ label: "Goodreads", href: "https://www.goodreads.com/user/show/126741914-michelletliu" }}
+                      externalLink={{ label: "Goodreads", href: GOODREADS_PROFILE_URL }}
                       items={bookItems}
                       itemCount={5}
                       onItemClick={(item) => console.log("Book clicked:", item)}
@@ -1234,12 +1178,12 @@ export default function AboutPage() {
                       yearFilters={movieYears}
                       activeYear={activeMoviesYear}
                       onYearChange={(year) => setActiveMoviesYear(year || undefined)}
-                      externalLink={{ label: "Letterboxd", href: "https://letterboxd.com/LiuMichelle/" }}
+                      externalLink={{ label: "Letterboxd", href: LETTERBOXD_PROFILE_URL }}
                       items={movieItems}
                       itemCount={5}
                       onItemClick={(item) => {
                         if (item.letterboxdSlug) {
-                          window.open(`https://letterboxd.com/liumichelle/film/${item.letterboxdSlug}/`, '_blank');
+                          window.open(letterboxdFilmUrl(item.letterboxdSlug), '_blank');
                         }
                       }}
                     />
