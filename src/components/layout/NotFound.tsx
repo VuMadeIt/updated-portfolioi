@@ -1,18 +1,14 @@
 "use client";
 
 import { Link } from "@/lib/navigation";
-import imgLogo from "../../assets/logo.png";
+import BrandMark from "../shared/BrandMark";
 
 export default function NotFound() {
   return (
     <div className="min-h-dvh w-full bg-white flex flex-col items-center justify-center px-8">
       {/* Logo */}
       <Link to="/" className="absolute top-8 left-8 md:left-16">
-        <img
-          src={imgLogo}
-          alt="Lucas Vu Logo"
-          className="size-8 md:size-[44px] object-contain transition-opacity duration-200 hover:opacity-80"
-        />
+        <BrandMark size="lg" className="text-2xl md:text-[2.75rem] transition-opacity duration-200 hover:opacity-80" />
       </Link>
 
       {/* Content */}

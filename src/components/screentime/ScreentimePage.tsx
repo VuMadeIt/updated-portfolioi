@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from '@/lib/navigation';
 const loadDomToPng = () => import('modern-screenshot').then(m => m.domToPng);
-import imgLogo from '../../assets/logo.png';
+import BrandMark from '../shared/BrandMark';
 import InfoButton from '../shared/InfoButton';
 import { SegmentedPill } from '../shared/SegmentedPill';
 import { useExperimentProject } from '../../hooks/useExperimentProject';
@@ -1482,11 +1482,7 @@ export default function ScreentimePage() {
         }`}
         aria-label="Go back to home"
       >
-        <img 
-          src={imgLogo} 
-          alt="Lucas Vu Logo" 
-          className="w-8 h-8 md:w-[44px] md:h-[44px] object-contain"
-        />
+        <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
       </button>
 
       {/* Info Button - fixed top right */}

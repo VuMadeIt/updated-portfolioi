@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import imgFinalSealLogo1 from "../../assets/logo.png";
 import { ScrollReveal } from "../shared/ScrollReveal";
 import { ArrowUpRight } from "../icons/ArrowUpRight";
 import BlueprintLogo from "../shared/BlueprintLogo";
 import { LinksBackgroundImageAndText, SocialIconLinks } from "../SocialLinks";
 import { CursorLogo } from "../icons/CursorLogo";
+import { brandNameClass } from "../../styles/brandTypography";
 
 type FooterProps = {
   /** default: red seal; blueprint: gray outline logo (design-system) */
@@ -32,18 +32,12 @@ function FooterBrand({
         logoVariant === "default" ? "hover:opacity-80" : ""
       }`}
     >
-      <div className="relative shrink-0 size-7">
-        {logoVariant === "blueprint" ? (
+      {logoVariant === "blueprint" ? (
+        <div className="relative shrink-0 size-7">
           <BlueprintLogo mode="always" />
-        ) : (
-          <img
-            alt="Lucas Vu Logo"
-            className="object-contain size-full"
-            src={imgFinalSealLogo1}
-          />
-        )}
-      </div>
-      <p className="font-['Lucas',sans-serif] font-medium leading-normal relative shrink-0 text-[#3f3f46] text-3xl">
+        </div>
+      ) : null}
+      <p className={brandNameClass}>
         lucas vu
       </p>
     </a>

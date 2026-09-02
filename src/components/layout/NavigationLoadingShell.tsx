@@ -75,13 +75,12 @@ export default function NavigationLoadingShell({
           }}
         />
 
-        {/* Logo band */}
-        <div className="relative shrink-0 w-full" style={{ zIndex: 2 }}>
-          <div className="size-full">
-            <div className="content-stretch flex flex-col items-start px-16 pt-8 pb-8 max-md:px-6 max-md:pt-8 max-md:pb-4 relative w-full">
-              <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
-                <div className="size-8 md:size-11 animate-pulse rounded bg-zinc-100" />
-              </div>
+        {/* Navigation band */}
+        <div className="relative shrink-0 w-full" style={{ zIndex: 3 }}>
+          <div className="flex w-full items-center justify-end gap-4 px-16 pb-4 pt-8 max-md:px-6 max-md:pb-3 md:pt-10">
+            <div className="flex items-center gap-5">
+              <div className="h-4 w-10 animate-pulse rounded bg-zinc-50" />
+              <div className="h-4 w-12 animate-pulse rounded bg-zinc-50" />
             </div>
           </div>
         </div>
@@ -89,24 +88,13 @@ export default function NavigationLoadingShell({
         {/* Hero band */}
         <div className="relative shrink-0 w-full" style={{ zIndex: 2 }}>
           <div className="size-full">
-            <div className="content-stretch flex flex-col gap-4 items-start pt-14 px-16 max-md:px-6 max-md:pt-20 relative w-full max-md:min-h-[210px] md:min-h-[176px]">
-              <div className="h-10 w-48 animate-pulse rounded-lg bg-zinc-100" />
-              <div className="flex flex-col gap-2 w-full max-w-md">
-                <div className="h-4 w-full animate-pulse rounded bg-zinc-50" />
-                <div className="h-4 w-4/5 animate-pulse rounded bg-zinc-50" />
+            <div className="content-stretch flex flex-col items-center px-16 pt-8 pb-6 max-md:px-6 max-md:pb-4 relative w-full">
+              <div className="flex flex-col items-start gap-1">
+                <div className="h-3 w-40 animate-pulse rounded bg-zinc-50" />
+                <div className="h-10 w-56 max-w-[70%] animate-pulse rounded-lg bg-zinc-100" />
               </div>
+              <div className="mt-2 h-4 w-72 max-w-[90%] animate-pulse rounded bg-zinc-50" />
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation band */}
-      <div className="content-stretch flex flex-col items-center pb-4 max-md:pb-2 pt-0 px-0 relative shrink-0 w-full">
-        <div className="flex w-full items-center justify-between gap-4 px-16 max-md:px-6 pt-2">
-          <div className="h-9 w-56 max-w-[55%] animate-pulse rounded-full bg-zinc-50" />
-          <div className="flex items-center gap-5">
-            <div className="h-4 w-10 animate-pulse rounded bg-zinc-50" />
-            <div className="h-4 w-12 animate-pulse rounded bg-zinc-50" />
           </div>
         </div>
       </div>

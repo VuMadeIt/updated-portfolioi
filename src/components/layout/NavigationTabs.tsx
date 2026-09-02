@@ -47,19 +47,9 @@ export default function NavigationTabs({ activeTab }: NavigationTabsProps) {
   );
 
   return (
-    <div className="content-stretch flex flex-col items-center pb-4 max-md:pb-2 pt-0 px-0 relative shrink-0 w-full">
+    <header className="relative z-50 w-full shrink-0 bg-white pt-8 max-md:pt-8 md:pt-10">
       <ScrollReveal variant="fade" delay={280} rootMargin="0px" className="relative w-full" disabled>
-        <div className="flex w-full items-center justify-between gap-4 px-16 max-md:px-6 pt-2">
-          <div className="inline-flex min-w-0 items-center gap-2.5 rounded-full border border-zinc-200 bg-zinc-50/90 px-4 py-2">
-            <span
-              aria-hidden="true"
-              className="size-2 shrink-0 rounded-full bg-emerald-400"
-            />
-            <span className="truncate font-['Lucas',sans-serif] text-sm font-normal lowercase tracking-[0.01em] text-zinc-600">
-              seeking summer 2027 internships
-            </span>
-          </div>
-
+        <div className="flex w-full items-center justify-end gap-4 px-16 pb-4 max-md:px-6 max-md:pb-3">
           <nav className="flex shrink-0 items-center gap-5 md:gap-6">
             {NAV_LINKS.map((link) => {
               const isActive = activeTab === link.id;
@@ -87,6 +77,6 @@ export default function NavigationTabs({ activeTab }: NavigationTabsProps) {
           </nav>
         </div>
       </ScrollReveal>
-    </div>
+    </header>
   );
 }

@@ -412,6 +412,9 @@ export default function ArtPage() {
       {/* Inject fade up animation styles */}
       <style>{fadeUpStyles}</style>
       
+      {/* Navigation */}
+      <NavigationTabs activeTab="art" heroAnimationPlayed={heroAnimationPlayed} />
+
       {/* Header */}
       <PageHeader
         variant="art"
@@ -433,9 +436,6 @@ export default function ArtPage() {
           </div>
         </>
       </PageHeader>
-
-      {/* Navigation */}
-      <NavigationTabs activeTab="art" heroAnimationPlayed={heroAnimationPlayed} />
 
       {/* Main Content Area */}
       <div className="flex flex-col lg:flex-row gap-4 items-start px-16 max-md:px-6 pt-2 relative shrink-0 w-full">

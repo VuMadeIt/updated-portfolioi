@@ -1076,6 +1076,14 @@ p a:hover {
   }
 }
 
+/* Coming-soon project cards hide the default cursor on desktop. */
+@media (min-width: 768px) {
+  .project-card.cursor-none,
+  .project-card.cursor-none * {
+    cursor: none !important;
+  }
+}
+
 /* Project card entrance animation
    Runs as a CSS keyframe so it starts on the very first paint (no JS-triggered delay).
    The whole card animates as a unit so the shimmer rectangle and the pill fade in together. */

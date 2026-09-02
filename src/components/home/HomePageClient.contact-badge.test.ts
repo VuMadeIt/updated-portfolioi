@@ -3,6 +3,11 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const homeSource = readFileSync(new URL("./HomePageClient.tsx", import.meta.url), "utf8");
+const workHeroSource = readFileSync(new URL("./WorkHero.tsx", import.meta.url), "utf8");
+const brandTypographySource = readFileSync(
+  new URL("../../styles/brandTypography.ts", import.meta.url),
+  "utf8",
+);
 const badgeSource = readFileSync(
   new URL("../shared/ContactBadge.tsx", import.meta.url),
   "utf8",
@@ -19,56 +24,34 @@ const specimenSource = readFileSync(
   "utf8",
 );
 
-test("uses large contact text and deeper intro fade on Work", () => {
-  assert.match(homeSource, /isContactBadgeExpanded \? "opacity-20" : "opacity-100"/);
-  assert.match(
-    homeSource,
-    /<ContactBadge[\s\S]*?size="lg"[\s\S]*?onExpandedChange=\{setIsContactBadgeExpanded\}/,
-  );
-  assert.match(badgeSource, /resolvedSize/);
-  assert.match(badgeSource, /"contact-badge"/);
-  assert.match(cssSource, /\.contact-badge\.lg \.contact-badge-text/);
-  assert.match(cssSource, /\.contact-badge\.lg\.expanded/);
-  assert.match(badgeSource, /internships\s+<\/a>/);
-  assert.doesNotMatch(badgeSource, /touch\s+<\/a>!/);
+test("renders the nav header above the Work hero", () => {
+  assert.match(homeSource, /<NavigationTabs activeTab="work"/);
+  assert.match(homeSource, /<WorkHero \/>/);
+  const navIndex = homeSource.indexOf("<NavigationTabs activeTab=\"work\"");
+  const heroIndex = homeSource.indexOf("<WorkHero />");
+  assert.ok(navIndex < heroIndex, "NavigationTabs should render before WorkHero");
+  assert.doesNotMatch(homeSource, /A 6x hackathon winner at/);
+  assert.doesNotMatch(homeSource, /<ContactBadge/);
 });
 
-test("updates the work hero copy and links company names out", () => {
-  assert.match(homeSource, /A 6x hackathon winner at/);
-  assert.match(homeSource, /building quality products for causes that matter\./);
-  assert.doesNotMatch(homeSource, /Currently at/);
-  assert.doesNotMatch(homeSource, /Designing tools for human connection/);
-  assert.doesNotMatch(homeSource, /Designing to spark/);
-  assert.doesNotMatch(homeSource, /Designing products to spark/);
-  assert.match(homeSource, /Clients include /);
-  assert.match(homeSource, /Previously at /);
-  assert.match(
-    homeSource,
-    /Clients include [\s\S]*?Previously at /,
-  );
-  assert.match(homeSource, /<br aria-hidden="true" \/>[\s\S]*?Clients include /);
-  assert.match(
-    homeSource,
-    /<br className="md:hidden" aria-hidden="true" \/>[\s\S]*?Previously at /,
-  );
-  assert.match(homeSource, /waterloo-crest\.png/);
-  assert.match(
-    homeSource,
-    /ariaLabel="University of Waterloo Systems Design Engineering"/,
-  );
-  assert.match(homeSource, /parrot: "https:\/\/www\.ycombinator\.com\/companies\/parrot"/);
-  assert.match(
-    homeSource,
-    /systematicStorytelling: "https:\/\/www\.systematicstorytelling\.com\/"/,
-  );
-  assert.match(homeSource, /digitalExtremes: "https:\/\/www\.digitalextremes\.com\/"/);
-  assert.match(
-    homeSource,
-    /waterloo:\s*"https:\/\/uwaterloo\.ca\/future-students\/programs\/systems-design-engineering"/,
-  );
-  assert.match(homeSource, /target="_blank"/);
-  assert.match(homeSource, /rel="noopener noreferrer"/);
-  assert.match(homeSource, /INLINE_LINK_CLASS/);
+test("WorkHero uses GSAP letter-shatter animation for lucas vu", () => {
+  assert.match(workHeroSource, /lucas vu/);
+  assert.match(workHeroSource, /seeking summer 2027 internships/);
+  assert.match(workHeroSource, /grid-rows-\[1fr_auto\]/);
+  assert.match(workHeroSource, /row-span-2/);
+  assert.match(workHeroSource, /bg-emerald-400/);
+  assert.match(workHeroSource, /data-hero-letter/);
+  assert.match(workHeroSource, /from "gsap"/);
+  assert.match(workHeroSource, /six time hackathon winner/);
+  assert.match(workHeroSource, /text-center/);
+  assert.match(workHeroSource, /brandSubtextClass/);
+  assert.match(brandTypographySource, /font-medium/);
+  assert.match(brandTypographySource, /text-3xl/);
+  assert.match(brandTypographySource, /text-zinc-400/);
+  assert.match(workHeroSource, /LOAD_ANIMATION_DURATION = 3/);
+  assert.match(workHeroSource, /HOVER_REVERT_DELAY_MS = 1000/);
+  assert.match(workHeroSource, /pointerenter/);
+  assert.doesNotMatch(workHeroSource, /tracking-\[0\.32em\]/);
 });
 
 test("fades the pulse ring out instead of snapping it off", () => {

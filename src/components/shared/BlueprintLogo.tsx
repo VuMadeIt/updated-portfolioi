@@ -14,8 +14,6 @@ import {
   useRef,
   useState,
 } from "react";
-import imgFinalSealLogo from "../../assets/logo.png";
-import imgSealGlyph from "../../assets/logo-glyph.png";
 import {
   clearBlueprintDoorwaySticky,
   peekBlueprintDoorwaySticky,
@@ -287,31 +285,23 @@ export default function BlueprintLogo({
       )}
       aria-hidden="true"
     >
-      <motion.img
-        alt=""
-        src={imgFinalSealLogo}
-        className="absolute inset-0 size-full object-contain pointer-events-none"
+      <motion.span
+        className="absolute inset-0 flex items-center justify-center rounded-[24%] bg-zinc-900 font-['Lucas',sans-serif] text-[clamp(0.55rem,42%,1.1rem)] font-black uppercase leading-none tracking-[-0.08em] text-white pointer-events-none"
         initial={false}
         animate={{ opacity: showBlueprint ? 0 : 1 }}
         transition={t}
-      />
+      >
+        lv
+      </motion.span>
 
       <motion.span
-        className="absolute inset-0 bg-zinc-400 pointer-events-none"
-        style={{
-          WebkitMaskImage: `url(${imgSealGlyph})`,
-          maskImage: `url(${imgSealGlyph})`,
-          WebkitMaskSize: "contain",
-          maskSize: "contain",
-          WebkitMaskRepeat: "no-repeat",
-          maskRepeat: "no-repeat",
-          WebkitMaskPosition: "center",
-          maskPosition: "center",
-        }}
+        className="absolute inset-0 flex items-center justify-center rounded-[24%] border border-zinc-400 bg-zinc-100 font-['Lucas',sans-serif] text-[clamp(0.55rem,42%,1.1rem)] font-black uppercase leading-none tracking-[-0.08em] text-zinc-500 pointer-events-none"
         initial={false}
         animate={{ opacity: showBlueprint ? 1 : 0 }}
         transition={t}
-      />
+      >
+        lv
+      </motion.span>
 
       <svg
         className="blueprint-frame pointer-events-none absolute inset-0 text-zinc-400/60 will-change-transform"

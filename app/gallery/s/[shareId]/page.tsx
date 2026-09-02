@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import imgLogo from "@/assets/logo.png";
+import BrandMark from "@/components/shared/BrandMark";
 import GalleryPage from "@/components/gallery/GalleryPage";
 import {
   formatGalleryAttribution,
@@ -106,13 +106,7 @@ function SharedGalleryError({ message }: { message: string }) {
         aria-label="Go back to home"
         className="transition-opacity duration-200 hover:opacity-80"
       >
-        <img
-          src={imgLogo}
-          alt="Lucas Vu Logo"
-          className="size-8 object-contain md:size-[44px]"
-          loading="eager"
-          decoding="async"
-        />
+        <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
       </a>
       <p className="text-base text-zinc-500">{message}</p>
       <Link

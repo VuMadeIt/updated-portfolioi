@@ -32,10 +32,11 @@ test("does not compile every inactive tab automatically on mount", () => {
   assert.match(source, /process\.env\.NODE_ENV === "development"/);
 });
 
-test("renders internship status and lowercase work/about links", () => {
-  assert.match(source, /seeking summer 2027 internships/);
+test("renders lowercase work/about links without the internship pill in nav", () => {
+  assert.doesNotMatch(source, /seeking summer 2027 internships/);
   assert.match(source, /label: "work"/);
   assert.match(source, /label: "about"/);
+  assert.match(source, /justify-end/);
 });
 
 test("does not compile the design system automatically on mount", () => {

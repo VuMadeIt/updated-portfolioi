@@ -38,20 +38,22 @@ import {
   WORK_SANITY_PROJECTS_KEY,
   WORK_EXPERIMENT_PROJECTS_KEY,
 } from "../../sanity/preload";
-import PageHeader from "../layout/PageHeader";
-import { client, urlFor } from "../../sanity/client";
-import { PROJECTS_QUERY, EXPERIMENT_PROJECTS_QUERY } from "../../sanity/queries";
-import type { SanityImage } from "../../sanity/types";
-import { useScrollLock } from "../../utils/useScrollLock";
-import ContactBadge from "../shared/ContactBadge";
-import { INLINE_LINK_CLASS } from "../shared/inlineLink";
 import NavigationTabs from "../layout/NavigationTabs";
+import WorkHero from "./WorkHero";
+import ComingSoonCursor, { useComingSoonCursor } from "./ComingSoonCursor";
 import { HorizontalLine } from "../shared/HorizontalLine";
 import { muxPosterUrl, posterTimeForProject } from "../../lib/muxPoster";
 import { toInternalProjectId, toPublicProjectSlug } from "../../lib/projectSlugs";
+import {
+  COMING_SOON_LABEL,
+  isComingSoonProject,
+} from "../../lib/comingSoonProjects";
 import { posthog, posthogEnabled } from "../../lib/posthog";
 import { useHeroAnimation } from "../../hooks/useHeroAnimation";
 import { fadeUpStyles } from "../../styles/animations";
+import { client, urlFor } from "../../sanity/client";
+import { PROJECTS_QUERY, EXPERIMENT_PROJECTS_QUERY } from "../../sanity/queries";
+import type { SanityImage } from "../../sanity/types";
 
 // Keep Work's initial chunk light — these modals (and ExperimentModal's
 // eager experiment-page imports) made About → Work wait on ~4k+ lines of JS.
@@ -110,7 +112,7 @@ const staticProjects: Project[] = [
     id: "warframe",
     title: "Warframe",
     year: "2026",
-    description: "Designing new features to drive engagement and user delight.",
+    description: COMING_SOON_LABEL,
     imageSrc: "/images/apple-still.jpg",
     hoverImageSrc: "/images/apple-hover.gif",
     videoSrc: "",
@@ -118,7 +120,7 @@ const staticProjects: Project[] = [
   {
     id: "maple-leaf-foods",
     title: "Maple Leaf Foods",
-    year: "2026",
+    year: "2024",
     description: "Digitizing decades-old workflows at enterprise scale.",
     imageSrc: "",
     videoSrc: "/videos/maple-leaf.mp4",
@@ -148,21 +150,6 @@ const staticProjects: Project[] = [
     imageSrc: "",
     videoSrc: "/videos/parrot.mp4",
     backgroundColor: "#ffffff",
-  },
-  {
-    id: "gallery",
-    title: "Gallery",
-    year: "2026",
-    description: "An interactive art gallery to visualize your ideas.",
-    imageSrc: "https://image.mux.com/UBPHbQ7lhjoY6bt3d8OXMRNBV3FRhr2au00FALYZ02zn4/thumbnail.png?width=1920&time=0",
-    videoSrc: "https://stream.mux.com/UBPHbQ7lhjoY6bt3d8OXMRNBV3FRhr2au00FALYZ02zn4.m3u8",
-    backgroundColor: "#ffffff",
-    toolCategories: [
-      { label: 'Interface', tools: ['Next.js', 'React'] },
-      { label: 'Scene', tools: ['Three.js'] },
-      { label: 'Data', tools: ['The Met API', 'Open Access'] },
-      { label: 'Motion', tools: ['Framer Motion'] },
-    ],
   },
   {
     id: "creators-collective",
@@ -350,7 +337,6 @@ function getExperimentLink(projectId: string): { href: string; label: string; ex
     case 'library': return { href: '/library', label: 'Try It Out!', external: false };
     case 'film': return { href: '/film', label: 'Try It Out!', external: false };
     case 'creators-collective': return null;
-    case 'gallery': return { href: '/gallery', label: 'Try It Out!', external: false };
     default: return null;
   }
 }
@@ -363,11 +349,9 @@ type ProjectCardProps = {
   index?: number;
 };
 
-const SIDE_PROJECT_IDS = ["parrot", "gallery", "creators-collective"];
+const SIDE_PROJECT_IDS = ["parrot", "creators-collective"];
 /** Experiments kept in data/routes but omitted from the home experiments grid. */
 const HIDDEN_EXPERIMENT_IDS: string[] = [];
-/** Experiments that skip the preview modal and navigate straight to their page. */
-const DIRECT_NAV_EXPERIMENT_IDS = ["gallery"];
 const MAIN_PROJECT_IDS = ["warframe", "maple-leaf-foods", "ripple", "shufflr"];
 
 function isVisibleOnHomeGrid(project: Project): boolean {
@@ -381,25 +365,16 @@ function projectsForMobileHomeGrid(projects: Project[]): Project[] {
 const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, featured = false, index = 0 }: ProjectCardProps) {
   const experimentLink = getExperimentLink(project.id);
   const hasTryItOut = experimentLink !== null;
+  const isComingSoon = isComingSoonProject(project.id);
+  const displayDescription = isComingSoon ? COMING_SOON_LABEL : project.description;
+  const { cursor, handlers: comingSoonHandlers } = useComingSoonCursor(isComingSoon);
   
   const handleClick = () => {
-    const isDesktop = window.innerWidth >= 768;
+    if (isComingSoon) return;
 
-    // Gallery (and similar) skip the film-style /project preview modal.
-    if (
-      experimentLink &&
-      !experimentLink.external &&
-      DIRECT_NAV_EXPERIMENT_IDS.includes(project.id)
-    ) {
-      rememberHomeScrollForReturn();
-      window.location.href = experimentLink.href;
-      return;
-    }
+    const isDesktop = window.innerWidth >= 768;
     
     if (experimentLink && !experimentLink.external && !isDesktop) {
-      if (DIRECT_NAV_EXPERIMENT_IDS.includes(project.id)) {
-        rememberHomeScrollForReturn();
-      }
       window.location.href = experimentLink.href;
     } else {
       onProjectClick(project.id);
@@ -407,6 +382,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
   };
 
   const warmProject = () => {
+    if (isComingSoon) return;
     if (
       process.env.NODE_ENV !== "development" &&
       MAIN_PROJECT_IDS.includes(project.id)
@@ -416,17 +392,35 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
   };
 
   const enterStyle = { animationDelay: `${Math.min(index * 60, 300)}ms` };
+  const cardClassName = clsx(
+    "content-stretch flex flex-col gap-3 items-start relative shrink-0 w-full group project-card",
+    isComingSoon ? "cursor-none max-md:cursor-default" : "cursor-pointer",
+  );
+  const sharedCardProps = {
+    style: enterStyle,
+    className: cardClassName,
+    ...(isComingSoon
+      ? {
+          role: "group" as const,
+          "aria-label": `${project.title} — ${COMING_SOON_LABEL}`,
+          ...comingSoonHandlers,
+        }
+      : {
+          type: "button" as const,
+          onClick: handleClick,
+          onMouseEnter: warmProject,
+          onFocus: warmProject,
+          onTouchStart: warmProject,
+        }),
+  };
 
   if (featured) {
+    const CardTag = isComingSoon ? "div" : "button";
+
     return (
-      <button
-        onClick={handleClick}
-        onMouseEnter={warmProject}
-        onFocus={warmProject}
-        onTouchStart={warmProject}
-        style={enterStyle}
-        className="content-stretch flex flex-col gap-3 items-start relative shrink-0 w-full cursor-pointer group project-card"
-      >
+      <>
+        <ComingSoonCursor active={cursor.active} x={cursor.x} y={cursor.y} />
+        <CardTag {...sharedCardProps}>
         <div 
           className="content-stretch flex flex-col items-start justify-end overflow-clip relative rounded-[26px] shrink-0 w-full transition-transform duration-300 group-hover:scale-[0.99]"
         >
@@ -462,7 +456,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           </div>
         </div>
         <div className="hidden md:flex content-stretch items-start px-[13px] py-0 -mt-1.5 -mb-0.5 relative shrink-0 w-full">
-          <p className="font-['Lucas',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{project.description}</p>
+          <p className="font-['Lucas',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{displayDescription}</p>
         </div>
         <div className="md:hidden content-stretch flex flex-col font-['Lucas',sans-serif] font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.01em] gap-1">
           <div className="flex items-center w-full">
@@ -488,21 +482,19 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
               </a>
             )}
           </div>
-          <p className="relative shrink-0 text-[#a1a1aa] w-full text-left font-normal leading-tight">{project.description}</p>
+          <p className="relative shrink-0 text-[#a1a1aa] w-full text-left font-normal leading-tight">{displayDescription}</p>
         </div>
-      </button>
+        </CardTag>
+      </>
     );
   }
 
+  const CardTag = isComingSoon ? "div" : "button";
+
   return (
-    <button
-      onClick={handleClick}
-      onMouseEnter={warmProject}
-      onFocus={warmProject}
-      onTouchStart={warmProject}
-      style={enterStyle}
-      className="content-stretch flex flex-col gap-3 items-start relative shrink-0 w-full cursor-pointer group project-card"
-    >
+    <>
+      <ComingSoonCursor active={cursor.active} x={cursor.x} y={cursor.y} />
+      <CardTag {...sharedCardProps}>
       <div 
         className="content-stretch flex flex-col items-start overflow-clip relative rounded-[26px] shrink-0 w-full transition-transform duration-300 group-hover:scale-[0.99]"
       >
@@ -535,7 +527,8 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           </a>
         )}
       </div>
-    </button>
+      </CardTag>
+    </>
   );
 });
 
@@ -884,37 +877,6 @@ function mergeWorkProjects(
   });
 }
 
-const HERO_COMPANY_HREFS = {
-  parrot: "https://www.ycombinator.com/companies/parrot",
-  systematicStorytelling: "https://www.systematicstorytelling.com/",
-  digitalExtremes: "https://www.digitalextremes.com/",
-  waterloo:
-    "https://uwaterloo.ca/future-students/programs/systems-design-engineering",
-} as const;
-
-function HeroCompanyLink({
-  href,
-  children,
-  ariaLabel,
-}: {
-  href: string;
-  children: React.ReactNode;
-  ariaLabel?: string;
-}) {
-  return (
-    <span className="text-[#3f3f46]">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={ariaLabel}
-        className={INLINE_LINK_CLASS}
-      >
-        {children}
-      </a>
-    </span>
-  );
-}
 
 type HomePageClientProps = {
   slug?: string;
@@ -924,7 +886,6 @@ type HomePageClientProps = {
 
 export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientProps) {
   const navigate = useNavigate();
-  const [isContactBadgeExpanded, setIsContactBadgeExpanded] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>(staticProjects);
 
@@ -1059,9 +1020,23 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
     }
   }, [slug, localSlug]);
 
+  useEffect(() => {
+    const blockedSlug = slug || localSlug;
+    if (!blockedSlug) return;
+    const publicSlug = toPublicProjectSlug(blockedSlug);
+    if (!isComingSoonProject(publicSlug) && !isComingSoonProject(blockedSlug)) return;
+
+    setLocalSlug(undefined);
+    setLocalFullscreen(false);
+    setLocalBookSlug(undefined);
+    navigate("/", { replace: true });
+  }, [slug, localSlug, navigate]);
+
   const isFullscreenFromUrl = localFullscreen;
 
   const handleProjectClick = useCallback((projectId: string) => {
+    if (isComingSoonProject(projectId)) return;
+
     // Direct-nav experiments never open ExperimentModal /film-style popup routes.
     if (DIRECT_NAV_EXPERIMENT_IDS.includes(projectId)) {
       const link = getExperimentLink(projectId);
@@ -1162,6 +1137,8 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
   };
 
   const handleProjectSwitch = (projectId: string) => {
+    if (isComingSoonProject(projectId)) return;
+
     const publicSlug = toPublicProjectSlug(projectId);
     setLocalSlug(publicSlug);
     setLocalBookSlug(undefined);
@@ -1180,61 +1157,8 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
     <div className="bg-white content-stretch flex flex-col items-center relative size-full min-h-screen">
       <style>{fadeUpStyles}</style>
 
-      <PageHeader variant="work" heroAnimationPlayed={heroAnimationPlayed}>
-        <>
-          <div>
-                <span
-                  className={clsx(
-                    "transition-opacity duration-200 max-md:opacity-100",
-                    isContactBadgeExpanded ? "opacity-20" : "opacity-100",
-                  )}
-                >
-                  A 6x hackathon winner at{" "}
-                  <HeroCompanyLink
-                    href={HERO_COMPANY_HREFS.waterloo}
-                    ariaLabel="University of Waterloo Systems Design Engineering"
-                  >
-                    <img
-                      src="/images/waterloo-crest.png"
-                      alt=""
-                      aria-hidden="true"
-                      className="inline-block h-[1.15em] w-auto align-[-0.2em]"
-                    />
-                  </HeroCompanyLink>
-                  {`, building quality products for causes that matter.`}
-                </span>
-                <span
-                  className={clsx(
-                    "transition-opacity duration-200 max-md:opacity-100",
-                    isContactBadgeExpanded ? "opacity-20" : "opacity-100",
-                  )}
-                >
-                  <br aria-hidden="true" />
-                  {`Clients include `}
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.parrot}>Parrot</HeroCompanyLink>
-                  <span>{` & `}</span>
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.systematicStorytelling}>
-                    Systematic Storytelling
-                  </HeroCompanyLink>
-                  <span>{`. `}</span>
-                  <br className="md:hidden" aria-hidden="true" />
-                  <span>{`Previously at `}</span>
-                  <HeroCompanyLink href={HERO_COMPANY_HREFS.digitalExtremes}>
-                    Digital Extremes
-                  </HeroCompanyLink>
-                  <span>.</span>
-                </span>
-                <ContactBadge
-                  hoverMode
-                  size="lg"
-                  className="max-md:hidden"
-                  onExpandedChange={setIsContactBadgeExpanded}
-                />
-          </div>
-        </>
-      </PageHeader>
-
       <NavigationTabs activeTab="work" heroAnimationPlayed={heroAnimationPlayed} />
+      <WorkHero />
 
       <div className="hidden md:grid gap-6 grid-cols-2 px-16 max-md:px-8 pt-2.5 pb-2 relative shrink-0 w-full">
           {projects.filter(isVisibleOnHomeGrid).map((project, index) => (
@@ -1263,7 +1187,7 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
       <Footer />
 
       {selectedProject &&
-        !DIRECT_NAV_EXPERIMENT_IDS.includes(selectedProject.id) && (
+        !isComingSoonProject(selectedProject.id) && (
         SIDE_PROJECT_IDS.includes(selectedProject.id) ? (
           <ExperimentModal 
             key={selectedProject.id}
@@ -1289,6 +1213,7 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
               handleProjectSwitch(projectId);
             }}
             onViewAllProjects={handleViewAllProjects}
+            portfolioProjects={projects}
           />
         )
       )}

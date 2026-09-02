@@ -11,7 +11,6 @@ import {
   letterboxdFilmUrl,
 } from "@/lib/site";
 import { ScrollReveal } from "../shared/ScrollReveal";
-import PageHeader from "../layout/PageHeader";
 import { useHeroAnimation } from "../../hooks/useHeroAnimation";
 import { fadeUpStyles } from "../../styles/animations";
 import SectionHeading from "../shared/SectionHeading";
@@ -945,22 +944,6 @@ export default function AboutPage() {
     <div className="bg-white flex flex-col items-center relative size-full min-h-screen">
       {/* Inject fade up animation styles */}
       <style>{fadeUpStyles}</style>
-
-      {/* Header */}
-      <PageHeader variant="about" heroAnimationPlayed={heroAnimationPlayed}>
-        <>
-          {/* Desktop */}
-          <div className="hidden md:block">
-            <p>Product, design, &lt;dev&gt;,</p>
-            <p>&amp; everything in between.</p>
-          </div>
-          {/* Mobile */}
-          <div className="md:hidden">
-            <p className="mb-0">Product, design, &lt;dev&gt;,</p>
-            <p>&amp; everything in between.</p>
-          </div>
-        </>
-      </PageHeader>
 
       {/* Navigation */}
       <NavigationTabs activeTab="about" heroAnimationPlayed={heroAnimationPlayed} />

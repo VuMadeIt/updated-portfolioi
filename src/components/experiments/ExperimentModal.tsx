@@ -16,6 +16,7 @@ import Tooltip from '../shared/Tooltip';
 import { ghostIconButtonClass } from '../shared/ghostIconButton';
 import { FloatingPanel } from '../shared/FloatingPanel';
 import LoadingSpinner from "../shared/LoadingSpinner";
+import BrandMark from "../shared/BrandMark";
 import {
   ExperimentSiteEmbed,
   ExperimentSiteMobileEmbed,
@@ -74,14 +75,7 @@ function Logo({ onClick }: { onClick: () => void }) {
       className="cursor-pointer transition-opacity duration-200 hover:opacity-80"
       aria-label="Collapse to modal"
     >
-      <img
-        src="/logo.png"
-        alt="Lucas Vu Logo"
-        className="w-8 h-8 md:w-[44px] md:h-[44px] object-contain"
-        loading="eager"
-        fetchPriority="high"
-        decoding="async"
-      />
+      <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
     </button>
   );
 }

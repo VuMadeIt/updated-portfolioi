@@ -5,7 +5,7 @@ import { motion, useMotionValue, useTransform, animate, PanInfo, AnimatePresence
 import clsx from 'clsx';
 import { useNavigate } from '@/lib/navigation';
 import InfoButton from '../shared/InfoButton';
-import imgLogo from '../../assets/logo.png';
+import BrandMark from '../shared/BrandMark';
 import { useExperimentProject } from '../../hooks/useExperimentProject';
 import { client, urlFor } from '../../sanity/client';
 import { FLATLAY_SKETCHBOOKS_QUERY } from '../../sanity/queries';
@@ -688,11 +688,7 @@ export default function SketchbookPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <img 
-          src={imgLogo} 
-          alt="Lucas Vu Logo" 
-          className="w-8 h-8 md:w-[44px] md:h-[44px] object-contain"
-        />
+        <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
       </motion.button>
 
       {/* Info Button - only in fullscreen (popup uses ExperimentModal header info button) */}

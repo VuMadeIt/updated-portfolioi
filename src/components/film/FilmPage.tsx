@@ -18,7 +18,7 @@ import {
 } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import imgLogo from '../../assets/logo.png';
+import BrandMark from '../shared/BrandMark';
 import InfoButton from '../shared/InfoButton';
 import {
   FILM_DOT_STYLE,
@@ -2214,11 +2214,7 @@ export default function FilmPage({ initialPhotos = [], onCollapse, isFullscreen 
         }}
         className={`${isPopupMode ? 'absolute' : 'fixed'} top-8 left-6 z-[100] cursor-pointer hover:opacity-80 md:left-16`}
       >
-        <img
-          src={imgLogo}
-          alt=""
-          className="relative z-[100] h-8 w-8 object-contain md:h-[44px] md:w-[44px]"
-        />
+        <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
       </Link>
 
       <InfoButton project={projectInfo} />

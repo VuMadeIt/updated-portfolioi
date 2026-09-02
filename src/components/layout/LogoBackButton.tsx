@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import imgLogo from "../../assets/logo.png";
 import { warmWorkPage } from "../shared/doorwayWarm";
 import { navigateHomeWithScrollReturn } from "../shared/homeScrollReturn";
+import BrandMark from "../shared/BrandMark";
 
 type LogoBackButtonProps = {
   /**
@@ -86,14 +86,7 @@ export default function LogoBackButton({
       } ${className}`}
       aria-label="Go back to home"
     >
-      <img
-        src={imgLogo}
-        alt="Lucas Vu Logo"
-        className="w-8 h-8 md:w-[44px] md:h-[44px] object-contain"
-        loading="eager"
-        fetchPriority="high"
-        decoding="async"
-      />
+      <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
     </a>
   );
 }

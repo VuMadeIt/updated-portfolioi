@@ -36,8 +36,8 @@ export const metadata: Metadata = {
     images: [siteOgImage.url],
   },
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 
@@ -59,7 +59,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preload" as="image" href="/logo.png" fetchPriority="high" />
         {/* Must stay blocking and ahead of the body to beat the first paint. */}
         <HomeScrollRestoreScript />
       </head>

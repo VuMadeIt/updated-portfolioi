@@ -9,23 +9,10 @@ import {
   getCachedData,
   WORK_SANITY_PROJECTS_KEY,
 } from "../../sanity/preload";
-import type { Project, ContentSection, TestimonialSection } from "../../sanity/types";
+import type { Project, ContentSection } from "../../sanity/types";
 import { ICON_STROKE_WIDTH } from "../shared/iconSizes";
 import { LoadingText } from "../shared/LoadingSpinner";
-import craigWellerPhoto from "../../assets/testimonials/craig-weller.png";
-
-const CRAIG_WELLER_FULL_QUOTE = [
-  "Lucas joined my team through Waterloo’s co-op program and quickly became an invaluable part of the team. He brings a rare combination of strong design skills, product thinking, technical ability, and, most importantly, initiative.",
-  "During his term, Lucas took on an impressive range of work, serving as a Product Manager for the Service Penalty App and the companywide Neighbourhood Volunteering App. He also played a critical role as a Business Analyst and QA for the launch of the Maple Leaf Market, worked as a Design Engineer on our internal Task Tracking App, helped recruit our next generation of co-ops, and wrote AI-assisted articles for Oneleaf, reaching thousands of employees.",
-  "What impressed me most was how easily Lucas moved between disciplines. He communicated early and often, handled ambiguity with confidence, and consistently took ownership of problems rather than waiting for direction. He also brought a strong design perspective to technical and product challenges, always looking for ways to make the end result clearer and more effective.",
-  "Lucas is driven, thoughtful, and thoroughly enjoyable to work with. He made a meaningful impact during his time at Maple Leaf Foods, and I would strongly recommend him to any team looking for someone who can design, build, and take ownership.",
-] as const;
-
-const ROBLOX_SECTIONS_TO_REMOVE = new Set([
-  "957cbc029da1", // yellow character illustration
-  "481736ca00b3606e0731c145fc172451", // "Designs are blurred due to confidentiality."
-  "c74666b24f42", // Roblox Summer ‘24 thank-you collage/video
-]);
+import BrandMark from "../shared/BrandMark";
 
 const LOCAL_HERO_VIDEOS: Record<string, string> = {
   roblox: "/videos/maple-leaf.mp4",
@@ -58,23 +45,48 @@ function applyLucasProjectOverrides(
     return {
       ...project,
       title: "Maple Leaf Foods",
-      heroVideo: LOCAL_HERO_VIDEOS.roblox,
+      year: "2024",
+      shortDescription: MAPLE_LEAF_TAGLINE,
+      heroVideo: undefined,
+      heroImage: undefined,
+      logo: undefined,
+      metadata: [
+        {
+          _key: "year",
+          label: "Year",
+          value: ["2024"],
+          subValue: null,
+        },
+        {
+          _key: "role",
+          label: "Role",
+          value: ["Product Manager / Designer"],
+          subValue: null,
+        },
+        {
+          _key: "team",
+          label: "Team",
+          value: ["Digital Innovation and User Experience"],
+          subValue: null,
+        },
+        {
+          _key: "with",
+          label: "With",
+          value: ["Craig Weller"],
+          subValue: null,
+        },
+      ],
       content: (project.content || [])
-        .filter((section) => !ROBLOX_SECTIONS_TO_REMOVE.has(section._key))
+        .filter((section) => section._type === "protectedSection")
         .map((section) => {
-          if (section._type !== "testimonialSection") return section;
-
-          const testimonial: TestimonialSection = {
+          if (section._type !== "protectedSection") return section;
+          return {
             ...section,
-            authorName: "Craig Weller",
-            authorTitle: "Digital Innovation Manager",
-            authorCompany: "MLF",
-            quote:
-              "What impressed me most was how easily Lucas moved between disciplines. He communicated early and often, handled ambiguity with confidence, and consistently took ownership of problems rather than waiting for direction.",
-            fullQuote: [...CRAIG_WELLER_FULL_QUOTE],
-            authorImage: craigWellerPhoto as unknown as TestimonialSection["authorImage"],
+            title: "These projects are protected.",
+            message: "Want to learn more? Feel free to ",
+            contactEmail: "lucasvu.work@gmail.com",
+            unlockTargetSectionId: "Service Penalty App",
           };
-          return testimonial;
         }),
     };
   }
@@ -196,6 +208,7 @@ function getBreadcrumbProjectName(projectId: string, project: Project | null): s
   // Last resort: uppercase so acronyms like NASA don't flash "Nasa" → "NASA".
   return projectId.toUpperCase();
 }
+import { getAlsoCheckOutFromPortfolio } from "../../lib/alsoCheckOutProjects";
 import Footer from "../layout/Footer";
 import ShimmerImage from "../shared/ShimmerImage";
 import ShimmerVideo from "../shared/ShimmerVideo";
@@ -222,6 +235,7 @@ import ProjectCaseStudySidebar from "./ProjectCaseStudySidebar";
 import { getCaseStudyNavItems } from "./caseStudyNavItems";
 import RippleCaseStudy from "./ripple/RippleCaseStudy";
 import ShufflrCaseStudy from "./shufflr/ShufflrCaseStudy";
+import MapleLeafCaseStudy from "./maple-leaf/MapleLeafCaseStudy";
 import {
   isRippleProject,
   RIPPLE_NAV_ITEMS,
@@ -232,6 +246,12 @@ import {
   SHUFFLR_NAV_ITEMS,
   SHUFFLR_TAGLINE,
 } from "./shufflr/shufflrContent";
+import {
+  isMapleLeafProject,
+  MAPLE_LEAF_LOGO_VIDEO,
+  MAPLE_LEAF_NAV_ITEMS,
+  MAPLE_LEAF_TAGLINE,
+} from "./maple-leaf/mapleLeafContent";
 
 // Helper to render text with highlighted portion
 function renderHighlightedText(text: string, highlightedText?: string, highlightColor?: string): React.ReactNode {
@@ -783,10 +803,12 @@ const PASSWORD_ERROR_MESSAGES: Record<PasswordErrorKind, string> = {
 // Password input component - verifies password server-side via /api/password
 function PasswordInput({ 
   projectId, 
-  onUnlock 
+  onUnlock,
+  placeholder = "Enter",
 }: { 
   projectId: string; 
   onUnlock?: () => void;
+  placeholder?: string;
 }) {
   const [passwordValue, setPasswordValue] = useState("");
   // `kind` outlives `visible` so the message doesn't blank out mid fade-out.
@@ -857,7 +879,7 @@ function PasswordInput({
       <FieldShell error={error.visible} className="justify-between">
         <FieldInput
           type={showPassword ? "text" : "password"}
-          placeholder="Enter"
+          placeholder={placeholder}
           value={passwordValue}
           onChange={handleInputChange}
           disabled={isLoading}
@@ -926,16 +948,8 @@ function PasswordInput({
   );
 }
 
-// Logo component for fullscreen header
-const LogoIcon = () => (
-  <img
-    src="/logo.png"
-    alt="Lucas Vu"
-    className="size-[44px] object-cover"
-    loading="eager"
-    fetchPriority="high"
-    decoding="async"
-  />
+const LogoIcon = ({ className }: { className?: string }) => (
+  <BrandMark size="lg" className={clsx("text-[2.75rem]", className)} />
 );
 
 type ProjectModalProps = {
@@ -947,6 +961,13 @@ type ProjectModalProps = {
   initialFullscreen?: boolean;
   onProjectClick?: (projectId: string) => void;
   onViewAllProjects?: () => void;
+  portfolioProjects?: Array<{
+    id: string;
+    title: string;
+    year: string;
+    description: string;
+    imageSrc: string;
+  }>;
 };
 
 export default function ProjectModal({
@@ -958,6 +979,7 @@ export default function ProjectModal({
   initialFullscreen = false,
   onProjectClick,
   onViewAllProjects,
+  portfolioProjects = [],
 }: ProjectModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -999,9 +1021,10 @@ export default function ProjectModal({
 
   const isRipple = isRippleProject(projectId, project?.company);
   const isShufflr = isShufflrProject(projectId, project?.company);
+  const isMapleLeaf = isMapleLeafProject(projectId, project?.company);
 
   const visibleSections = useMemo(() => {
-    if (isRipple || isShufflr || !project?.content) return [];
+    if (isRipple || isShufflr || isMapleLeaf || !project?.content) return [];
 
     return project.content.filter((section) => {
       if (section._type === "protectedSection") return !isUnlocked;
@@ -1012,13 +1035,33 @@ export default function ProjectModal({
       if (visibility === "unlocked") return isUnlocked;
       return true;
     });
-  }, [project, isUnlocked, isRipple, isShufflr]);
+  }, [project, isUnlocked, isRipple, isShufflr, isMapleLeaf]);
 
   const navItems = useMemo(() => {
     if (isRipple) return RIPPLE_NAV_ITEMS;
     if (isShufflr) return SHUFFLR_NAV_ITEMS;
+    if (isMapleLeaf) return MAPLE_LEAF_NAV_ITEMS;
     return getCaseStudyNavItems(visibleSections);
-  }, [isRipple, isShufflr, visibleSections]);
+  }, [isRipple, isShufflr, isMapleLeaf, visibleSections]);
+
+  const alsoCheckOutProjects = useMemo(
+    () => getAlsoCheckOutFromPortfolio(portfolioProjects, projectId),
+    [portfolioProjects, projectId],
+  );
+
+  const mapleLeafProtectedSections = useMemo(() => {
+    if (!isMapleLeaf || !project?.content) return [];
+
+    return project.content.filter((section) => {
+      if (section._type !== "protectedSection") return false;
+
+      const visibility = section.visibility || "locked";
+      if (visibility === "both") return true;
+      if (visibility === "locked") return !isUnlocked;
+      if (visibility === "unlocked") return isUnlocked;
+      return !isUnlocked;
+    });
+  }, [isMapleLeaf, project, isUnlocked]);
 
   // Fetch project data from Sanity (uses preloaded cache if available)
   useEffect(() => {
@@ -1437,13 +1480,10 @@ export default function ProjectModal({
                     isScrolled ? "size-7" : "size-8 md:size-[44px]"
                   )}
                 >
-                  <img
-                    src="/logo.png"
-                    alt="Lucas Vu"
-                    className="size-full object-cover"
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="async"
+                  <LogoIcon
+                    className={clsx(
+                      isScrolled ? "text-2xl" : "text-2xl md:text-[2.75rem]",
+                    )}
                   />
                 </button>
                 
@@ -1492,7 +1532,7 @@ export default function ProjectModal({
           {!loading && !error && project && (
             <div className="flex flex-col pb-16 w-full">
               {/* Mobile not available message - shown only after unlocking on mobile (NASA is allowed) */}
-              {isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr && (
+              {isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr && !isMapleLeaf && (
                 <div className="mx-auto flex w-full max-w-[800px] flex-col items-center justify-center min-h-[60vh] px-8 text-center">
                   <LaptopIcon />
                   <p className="text-[#71717a] text-base leading-normal px-12 mt-4">
@@ -1502,7 +1542,7 @@ export default function ProjectModal({
               )}
 
               {/* Project Hero Header - hidden on mobile when unlocked (NASA is allowed) */}
-              {!(isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr) && (
+              {!(isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr && !isMapleLeaf) && (
               <>
               <div className="mx-auto w-full max-w-[800px]">
               <div
@@ -1515,8 +1555,25 @@ export default function ProjectModal({
                   isFullscreen ? "pt-1" : "pt-32",
                 )}
               >
-                {/* Logo - skip animation for Apple on mobile since logo is visible from homepage */}
-                {project.logo && (
+                {/* Logo */}
+                {isMapleLeaf ? (
+                  <ScrollReveal variant="fade" rootMargin="0px">
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-white">
+                      <ShimmerVideo
+                        src={MAPLE_LEAF_LOGO_VIDEO}
+                        className="size-full object-cover"
+                        wrapperClassName="size-full"
+                        rounded="rounded-2xl"
+                        autoPlay
+                        muted
+                        loop
+                        controls={false}
+                        playerName="Maple Leaf Foods logo"
+                      />
+                    </div>
+                  </ScrollReveal>
+                ) : (
+                  project.logo && (
                   projectId === 'apple' && isMobile ? (
                     <div className="relative shrink-0 size-20 rounded-2xl overflow-hidden">
                       <img
@@ -1536,6 +1593,7 @@ export default function ProjectModal({
                       </div>
                     </ScrollReveal>
                   )
+                )
                 )}
 
                 {/* Title and Metadata */}
@@ -1554,6 +1612,11 @@ export default function ProjectModal({
                       {isShufflr && (
                         <p className="max-w-[32ch] font-['Lucas',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
                           {SHUFFLR_TAGLINE}
+                        </p>
+                      )}
+                      {isMapleLeaf && (
+                        <p className="max-w-[36ch] font-['Lucas',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
+                          {MAPLE_LEAF_TAGLINE}
                         </p>
                       )}
                     </div>
@@ -1590,9 +1653,11 @@ export default function ProjectModal({
                 </div>
 
                 {/* Separator Line */}
+                {(project.heroVideo || project.heroImage) && (
                 <ScrollReveal variant="fade" delay={400} rootMargin="0px" className="w-full">
                   <HorizontalLine />
                 </ScrollReveal>
+                )}
 
                 {/* Hero Video or Image */}
                 {project.heroVideo ? (
@@ -1652,6 +1717,29 @@ export default function ProjectModal({
                 <RippleCaseStudy />
               ) : isShufflr ? (
                 <ShufflrCaseStudy />
+              ) : isMapleLeaf ? (
+                <>
+                  <MapleLeafCaseStudy />
+                  {mapleLeafProtectedSections.map((section) => (
+                    <div
+                      key={section._key}
+                      className="mx-auto w-full max-w-[800px]"
+                    >
+                      <ScrollReveal>
+                        <ContentBlock
+                          section={section}
+                          isFullscreen={isFullscreen}
+                          isUnlocked={isUnlocked}
+                          onUnlock={handleUnlock}
+                          projectId={projectId}
+                          scrollContainerRef={scrollContainerRef}
+                          missionRef={missionRef}
+                          tocRef={tocRef}
+                        />
+                      </ScrollReveal>
+                    </div>
+                  ))}
+                </>
               ) : (
               visibleSections.map((section, index) => {
                   const sectionNumber =
@@ -1717,22 +1805,23 @@ export default function ProjectModal({
               )}
 
               {/* Also Check Out Section */}
-              {project.relatedProjects && project.relatedProjects.length > 0 && (
+              {alsoCheckOutProjects.length > 0 && (
                 <div className="mx-auto w-full max-w-[800px]">
                 <ScrollReveal variant="fade">
                   <AlsoCheckOut
-                    projects={project.relatedProjects.map((related) => ({
-                      id: related._id,
+                    projects={alsoCheckOutProjects.map((related) => ({
+                      id: related.id,
                       title: related.title,
-                      year: related.year || "",
-                      description: related.shortDescription || "",
-                      imageSrc: related.heroImage ? urlFor(related.heroImage).width(800).height(434).url() : "",
+                      year: related.year,
+                      description: related.description,
+                      imageSrc: related.imageSrc,
                     }))}
                     onProjectClick={(proj) => {
-                      // Find the original related project to get the company name
-                      const relatedProject = project.relatedProjects?.find((r) => r._id === proj.id);
-                      if (relatedProject?.company) {
-                        handleProjectClick(relatedProject.company);
+                      const relatedProject = alsoCheckOutProjects.find(
+                        (entry) => entry.id === proj.id,
+                      );
+                      if (relatedProject) {
+                        handleProjectClick(relatedProject.modalId);
                       }
                     }}
                     onViewAll={isFullscreen ? onViewAllProjects : undefined}
@@ -2109,6 +2198,8 @@ function ContentBlock({
       if (!shouldShowProtected) return null;
       
       const hasPassword = !!section.showPasswordProtection;
+      const isMapleLeafProtected =
+        !!projectId && isMapleLeafProject(projectId);
       return (
         <div className="content-stretch flex flex-col items-start px-8 py-10 relative shrink-0 w-full">
           <div className="bg-zinc-100 content-stretch flex flex-col items-center justify-center overflow-clip p-16 max-md:px-8 max-md:py-16 relative rounded-[26px] shrink-0 w-full">
@@ -2130,8 +2221,25 @@ function ContentBlock({
                     {(section.title || (projectId === "apple" ? "This work is confidential." : hasPassword ? "This case study is password-protected." : "Confidential")).replace(/\n/g, ' ')}
                   </p>
                   <p className="leading-normal relative shrink-0 text-[#a1a1aa] text-lg">
-                    {projectId === "apple" ? "Please " : hasPassword ? "Curious? Feel free to " : (section.message || "Interested? Please ")}
-                    {section.contactEmail ? (
+                    {isMapleLeafProtected ? (
+                      <>
+                        Want to learn more? Feel free to{" "}
+                        <a
+                          href={`mailto:${section.contactEmail || "lucasvu.work@gmail.com"}`}
+                          className="font-medium text-zinc-500 hover:text-blue-500 transition-colors"
+                        >
+                          email me
+                        </a>
+                        !
+                      </>
+                    ) : projectId === "apple" ? (
+                      "Please "
+                    ) : hasPassword ? (
+                      "Curious? Feel free to "
+                    ) : (
+                      section.message || "Interested? Please "
+                    )}
+                    {!isMapleLeafProtected && section.contactEmail ? (
                       <>
                         <a
                           href={`mailto:${section.contactEmail}`}
@@ -2141,9 +2249,9 @@ function ContentBlock({
                         </a>
                         {projectId === "apple" ? " if you'd like to chat!" : "!"}
                       </>
-                    ) : (
+                    ) : !isMapleLeafProtected ? (
                       projectId === "apple" ? "email me if you'd like to chat!" : "email me!"
-                    )}
+                    ) : null}
                   </p>
                 </div>
               </div>
@@ -2152,6 +2260,7 @@ function ContentBlock({
               {hasPassword && !isUnlocked && projectId && (
                 <PasswordInput 
                   projectId={projectId} 
+                  placeholder={isMapleLeafProtected ? "Enter Password" : "Enter"}
                   onUnlock={() => onUnlock?.(section.unlockTargetSectionId)}
                 />
               )}

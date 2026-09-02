@@ -1,6 +1,5 @@
 import React from "react";
 import { ScrollReveal } from "../shared/ScrollReveal";
-import DesignSystemLogoLink from "./DesignSystemLogoLink";
 import grainTexture from "../../assets/Rectangle Grain 1.png";
 
 type PageHeaderProps = {
@@ -24,7 +23,6 @@ export default function PageHeader({
       className="content-stretch flex flex-col items-start relative shrink-0 w-full"
       style={{ zIndex: 41 }}
     >
-      {/* Grain texture overlay - sits below content */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -35,22 +33,9 @@ export default function PageHeader({
         }}
       />
 
-      {/* Logo */}
       <div className="relative shrink-0 w-full" style={{ zIndex: 2 }}>
         <div className="size-full">
-          <div className="content-stretch flex flex-col items-start px-16 pt-8 pb-8 max-md:px-6 max-md:pt-8 max-md:pb-4 relative w-full">
-            <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
-              {/* Logo doorway: mount + hover prefetch /design-system and warm heavy sections. */}
-              <DesignSystemLogoLink />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Text */}
-      <div className="relative shrink-0 w-full" style={{ zIndex: 2 }}>
-        <div className="size-full">
-          <div className="content-stretch flex flex-col gap-4 items-start pt-14 px-16 max-md:px-6 max-md:pt-20 relative w-full max-md:min-h-[210px] md:min-h-[176px]">
+          <div className="content-stretch flex flex-col gap-4 items-start px-16 pt-14 max-md:px-6 max-md:pt-20 md:pt-16 relative w-full max-md:min-h-[210px] md:min-h-[176px]">
             <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
               <ScrollReveal variant="fade" rootMargin="0px" disabled>
                 {nameAddon ? (

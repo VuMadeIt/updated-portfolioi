@@ -12,6 +12,7 @@ import { buttonClassName } from '../shared/Button';
 import { HorizontalLine } from '../shared/HorizontalLine';
 import Footer from '../layout/Footer';
 import Tooltip from '../shared/Tooltip';
+import BrandMark from '../shared/BrandMark';
 
 const MUX_ENV_KEY = 'e4cc19a78gcf0tbtfmu4m7ruf';
 
@@ -310,7 +311,13 @@ export function ExperimentSiteEmbed({
         )}
         aria-label="Go back"
       >
-        <img src="/logo.png" alt="Lucas Vu Logo" className="size-full object-contain" loading="eager" fetchPriority="high" decoding="async" />
+        <BrandMark
+          size="lg"
+          className={clsx(
+            "transition-all duration-300 ease-out",
+            isScrolled ? "text-2xl" : "text-2xl md:text-[2.75rem]",
+          )}
+        />
       </button>
 
       <Breadcrumb

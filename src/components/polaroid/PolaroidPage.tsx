@@ -11,7 +11,7 @@ import imgMessagesIcon from '../../assets/polaroid/dd3b1a5ed7db644c197314328f647
 import imgLinkedInIcon from '../../assets/polaroid/f81f194aee98efdd62a97e659006efa986492874.png';
 import imgMailIcon from '../../assets/polaroid/7d8c54338d14a1f9afdfff1bec90c42375e5050e.png';
 import imgXIcon from '../../assets/receipt/icons-optimized/IMG_6929.png';
-import imgLogo from '../../assets/logo.png';
+import BrandMark from '../shared/BrandMark';
 import InfoButton from '../shared/InfoButton';
 import Tooltip from '../shared/Tooltip';
 import { useExperimentProject } from '../../hooks/useExperimentProject';
@@ -446,11 +446,7 @@ export default function PolaroidPage() {
         }`}
         aria-label="Go back to home"
       >
-        <img 
-          src={imgLogo} 
-          alt="Lucas Vu Logo" 
-          className="w-8 h-8 md:w-[44px] md:h-[44px] object-contain"
-        />
+        <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
       </button>
 
       {/* Info Button - fixed top right */}

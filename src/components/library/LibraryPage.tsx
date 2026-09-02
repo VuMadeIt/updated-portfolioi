@@ -14,7 +14,7 @@ import { AddBookModal } from "./AddBookModal";
 import { PlusIcon } from "./icons";
 import type { Book, ShelfBookData } from "./types";
 import { booksForShelf } from "./sortBooks";
-import imgLogo from '../../assets/logo.png';
+import BrandMark from "../shared/BrandMark";
 import InfoButton from '../shared/InfoButton';
 import { useExperimentProject } from '../../hooks/useExperimentProject';
 import { FilterDropdown } from '../shared/FilterDropdown';
@@ -390,11 +390,7 @@ export default function LibraryPage({
             className="cursor-pointer transition-opacity duration-200 hover:opacity-80"
             aria-label="Go back to home"
           >
-            <img
-              src={imgLogo}
-              alt="Lucas Vu Logo"
-              className="size-8 md:size-[44px] object-contain"
-            />
+            <BrandMark size="lg" className="text-2xl md:text-[2.75rem]" />
           </button>
         </div>
 
