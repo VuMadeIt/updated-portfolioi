@@ -145,7 +145,7 @@ const staticProjects: Project[] = [
     id: "parrot",
     title: "Parrot",
     year: "2026",
-    description: "Design engineering at Parrot.",
+    description: "Creating the end-to-end experience for an iMessage integration",
     imageSrc: "",
     videoSrc: "/videos/parrot.mp4",
     backgroundColor: "#ffffff",
@@ -154,8 +154,7 @@ const staticProjects: Project[] = [
     id: "creators-collective",
     title: "Creators Collective",
     year: "2026",
-    description:
-      "An online gallery showing student-led artwork, writing, and other creative projects from University of Waterloo students. Keep refreshing the site to see different designs!",
+    description: "Building a online exhibit to flaunt Waterloo's creatives",
     imageSrc: "",
     videoSrc: "/videos/creators-collective.mp4",
     tryItOutHref: "https://creatorscollective.framer.website/",

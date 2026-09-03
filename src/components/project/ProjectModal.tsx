@@ -947,6 +947,7 @@ function PasswordInput({
   );
 }
 
+type ProjectModalProps = {
   projectId: string; // company name: "apple", "roblox", "adobe", "nasa"
   onClose: () => void;
   onBack?: () => void;

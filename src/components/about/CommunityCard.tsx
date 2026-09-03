@@ -126,12 +126,12 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
   }, [expandedPhotoId, handleClosePhoto]);
 
   type PhotoSizeClasses = {
-    vertical: { width: string; height: string };
-    horizontal: { width: string; height: string };
-    horizontalWide: { width: string; height: string };
+    vertical: string;
+    horizontal: string;
+    horizontalWide: string;
   };
 
-  function getPhotoSize(
+  function getPhotoWidth(
     photo: CommunityPhoto,
     sizeClasses: PhotoSizeClasses,
   ) {
@@ -150,7 +150,7 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
     photo: CommunityPhoto,
     sizeClasses: PhotoSizeClasses,
   ) {
-    const { width, height } = getPhotoSize(photo, sizeClasses);
+    const width = getPhotoWidth(photo, sizeClasses);
 
     return (
       <div
@@ -159,15 +159,15 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
           width,
         )}
       >
-        <div className={clsx("relative w-full overflow-hidden rounded-sm", height)}>
+        <div className="relative w-full overflow-hidden rounded-sm bg-zinc-100">
           <ShimmerImage
             src={photo.imageSrc}
             alt={photo.caption || "Community photo"}
-            className="h-full w-full object-cover"
+            className="block h-auto w-full object-contain"
             style={getImageStyle(photo)}
             loading="lazy"
             rounded="rounded-sm"
-            wrapperClassName="absolute inset-0 h-full w-full"
+            wrapperClassName="block w-full"
           />
         </div>
         {photo.caption && (
@@ -206,10 +206,9 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
     rowPhotos: CommunityPhoto[],
     rowStartIndex: number,
     sizeClasses: PhotoSizeClasses,
-    rowHeightClass: string,
   ) {
     return (
-      <div className={clsx("flex w-full items-start justify-center gap-1", rowHeightClass)}>
+      <div className="flex w-full items-start justify-center gap-3">
         {rowPhotos.map((photo, rowIndex) => {
           const index = rowStartIndex + rowIndex;
           const rotation = photo.rotation ?? defaultRotations[index] ?? 0;
@@ -237,21 +236,21 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
   }
 
   const desktopSizeClasses: PhotoSizeClasses = {
-    vertical: { width: "w-40", height: "h-52" },
-    horizontal: { width: "w-48", height: "h-40" },
-    horizontalWide: { width: "w-56", height: "h-40" },
+    vertical: "w-40",
+    horizontal: "w-48",
+    horizontalWide: "w-56",
   };
 
   const tabletSizeClasses: PhotoSizeClasses = {
-    vertical: { width: "w-36", height: "h-44" },
-    horizontal: { width: "w-44", height: "h-36" },
-    horizontalWide: { width: "w-52", height: "h-36" },
+    vertical: "w-36",
+    horizontal: "w-44",
+    horizontalWide: "w-52",
   };
 
   const mobileSizeClasses: PhotoSizeClasses = {
-    vertical: { width: "w-36", height: "h-44" },
-    horizontal: { width: "w-44", height: "h-36" },
-    horizontalWide: { width: "w-48", height: "h-36" },
+    vertical: "w-36",
+    horizontal: "w-44",
+    horizontalWide: "w-48",
   };
 
   return (
@@ -357,20 +356,20 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
         <div className="relative w-full shrink-0 overflow-x-clip px-2 md:px-4">
           {isSplitOverlapLayout ? (
             <>
-              <div className="flex w-full flex-col items-center gap-10 lg:hidden">
+              <div className="flex w-full flex-col items-center gap-11 lg:hidden">
                 {photos.map((photo, index) =>
                   renderPhoto(photo, index, mobileSizeClasses),
                 )}
               </div>
 
-              <div className="hidden lg:flex xl:hidden w-full flex-col items-center gap-8">
-                {renderOverlapRow(photos.slice(0, 4), 0, tabletSizeClasses, "min-h-[300px]")}
-                {renderOverlapRow(photos.slice(4), 4, tabletSizeClasses, "min-h-[300px]")}
+              <div className="hidden lg:flex xl:hidden w-full flex-col items-center gap-4">
+                {renderOverlapRow(photos.slice(0, 4), 0, tabletSizeClasses)}
+                {renderOverlapRow(photos.slice(4), 4, tabletSizeClasses)}
               </div>
 
-              <div className="hidden xl:flex w-full flex-col items-center gap-8">
-                {renderOverlapRow(photos.slice(0, 4), 0, desktopSizeClasses, "min-h-[320px]")}
-                {renderOverlapRow(photos.slice(4), 4, desktopSizeClasses, "min-h-[320px]")}
+              <div className="hidden xl:flex w-full flex-col items-center gap-4">
+                {renderOverlapRow(photos.slice(0, 4), 0, desktopSizeClasses)}
+                {renderOverlapRow(photos.slice(4), 4, desktopSizeClasses)}
               </div>
             </>
           ) : (
@@ -380,8 +379,8 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
             className={clsx(
               "w-full lg:hidden",
               isMultiRowLayout
-                ? "grid grid-cols-1 justify-items-center gap-10 sm:grid-cols-2"
-                : "flex flex-col items-center gap-10",
+                ? "grid grid-cols-1 justify-items-center gap-11 sm:grid-cols-2"
+                : "flex flex-col items-center gap-11",
             )}
           >
             {photos.map((photo, index) =>
@@ -393,7 +392,7 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
           <div
             className={clsx(
               "hidden lg:grid xl:hidden justify-items-center",
-              isMultiRowLayout ? "grid-cols-2 gap-10" : "grid-cols-2 gap-12",
+              isMultiRowLayout ? "grid-cols-2 gap-11" : "grid-cols-2 gap-[3.25rem]",
             )}
           >
             {photos.map((photo, index) =>
@@ -406,8 +405,8 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
             className={clsx(
               "hidden xl:w-full xl:justify-items-center",
               isMultiRowLayout
-                ? "xl:grid xl:grid-cols-3 xl:gap-x-6 xl:gap-y-10"
-                : "xl:flex xl:min-h-[320px] xl:items-start xl:justify-center xl:gap-1",
+                ? "xl:grid xl:grid-cols-3 xl:gap-x-7 xl:gap-y-11"
+                : "xl:flex xl:items-start xl:justify-center xl:gap-3",
             )}
           >
             {photos.map((photo, index) => {

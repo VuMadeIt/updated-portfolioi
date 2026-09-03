@@ -18,7 +18,7 @@ const experimentProjects = [
     projectId: 'parrot',
     title: 'Parrot',
     year: '2026',
-    description: 'Design engineering at Parrot.',
+    description: 'Creating the end-to-end experience for an iMessage integration',
     backgroundColor: '#ffffff',
     order: 0,
     isPublished: true,
@@ -29,7 +29,7 @@ const experimentProjects = [
     title: 'Creators Collective',
     year: '2026',
     description:
-      'An online gallery showing student-led artwork, writing, and other creative projects from University of Waterloo students. Keep refreshing the site to see different designs!',
+      "Building a online exhibit to flaunt Waterloo's creatives",
     tryItOutHref: 'https://creatorscollective.framer.website/',
     backgroundColor: '#ffffff',
     toolCategories: [

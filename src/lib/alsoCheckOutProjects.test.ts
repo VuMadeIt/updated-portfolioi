@@ -76,3 +76,14 @@ test("wraps around the portfolio order", () => {
     ["maple-leaf-foods", "ripple"],
   );
 });
+
+test("skips coming soon projects like warframe and parrot", () => {
+  const picks = getAlsoCheckOutFromPortfolio(portfolio, "shufflr");
+
+  assert.deepEqual(
+    picks.map((project) => project.id),
+    ["creators-collective", "maple-leaf-foods"],
+  );
+  assert.ok(!picks.some((project) => project.id === "parrot"));
+  assert.ok(!picks.some((project) => project.id === "warframe"));
+});

@@ -1,4 +1,4 @@
-export const COMING_SOON_PROJECT_IDS = ["warframe"] as const;
+export const COMING_SOON_PROJECT_IDS = ["warframe", "parrot"] as const;
 
 export const COMING_SOON_LABEL = "Coming Soon";
 
