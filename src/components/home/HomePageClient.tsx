@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import {
   consumeHomeScrollReturn,
-  rememberHomeScrollForReturn,
 } from "@/components/shared/homeScrollReturn";
 import dynamic from "next/dynamic";
 import { useNavigate } from "@/lib/navigation";
@@ -129,7 +128,7 @@ const staticProjects: Project[] = [
     id: "ripple",
     title: "Ripple",
     year: "2026",
-    description: "Sustainable AI through reuse, not regeneration.",
+    description: "Reimagining a cleaner future with LLMs",
     imageSrc: "",
     videoSrc: "/videos/ripple.mp4",
   },
@@ -155,11 +154,19 @@ const staticProjects: Project[] = [
     id: "creators-collective",
     title: "Creators Collective",
     year: "2026",
-    description: "A community for creators building together.",
+    description:
+      "An online gallery showing student-led artwork, writing, and other creative projects from University of Waterloo students. Keep refreshing the site to see different designs!",
     imageSrc: "",
     videoSrc: "/videos/creators-collective.mp4",
+    tryItOutHref: "https://creatorscollective.framer.website/",
     mediaZoom: 1.12,
     backgroundColor: "#ffffff",
+    toolCategories: [
+      { label: "Design", tools: ["Figma"] },
+      { label: "Development", tools: ["Framer"] },
+      { label: "Role", tools: ["Web Designer"] },
+      { label: "Team", tools: ["4 Web Designers", "1 Design Lead"] },
+    ],
   },
 ];
 
@@ -543,7 +550,10 @@ function ToolsSection({ categories }: { categories: ToolCategory[] }) {
   return (
     <div className="flex w-full flex-col gap-2">
       <HorizontalLine />
-      <div className="font-['Lucas',sans-serif] font-normal gap-4 grid-cols-4 relative shrink-0 text-base w-full hidden md:grid">
+      <div className={clsx(
+        "font-['Lucas',sans-serif] font-normal gap-4 relative shrink-0 text-base w-full hidden md:grid",
+        categories.length >= 5 ? "md:grid-cols-5" : "md:grid-cols-4",
+      )}>
         {categories.map((category, idx) => (
           <div key={idx} className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0">
             <p className="leading-normal relative shrink-0 text-[#a1a1aa]">
@@ -820,14 +830,14 @@ function mergeWorkProjects(
           ...project,
           title: experimentData.title || project.title,
           year: experimentData.year || project.year,
-          description: experimentData.description || project.description,
+          description: project.description || experimentData.description,
           xLink: experimentData.xLink || project.xLink,
           tryItOutHref:
             experimentData.tryItOutHref || project.tryItOutHref,
           backgroundColor:
             experimentData.backgroundColor || project.backgroundColor,
           toolCategories:
-            experimentData.toolCategories || project.toolCategories,
+            project.toolCategories || experimentData.toolCategories,
         };
       }
       const experimentData = experimentMap[project.id];
@@ -857,7 +867,7 @@ function mergeWorkProjects(
           ...project,
           title: experimentData.title,
           year: experimentData.year,
-          description: experimentData.description,
+          description: project.description || experimentData.description,
           imageSrc,
           videoSrc: muxUrls.videoSrc,
           popupImageSrc: popupMuxUrls.imageSrc,
@@ -868,7 +878,7 @@ function mergeWorkProjects(
           backgroundColor:
             experimentData.backgroundColor || project.backgroundColor,
           toolCategories:
-            experimentData.toolCategories || project.toolCategories,
+            project.toolCategories || experimentData.toolCategories,
         };
       }
     }
@@ -1008,17 +1018,16 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
   }, [localSlug]);
 
   /*
-   * Deep links to /project/gallery should land on the real page, not a preview
-   * modal. No scroll is recorded for the trip: this replaces the entry instead
-   * of pushing, so whatever sits behind it is not this page, and the seal must
-   * not try to reach it with back. Card clicks never reach here — they are
-   * intercepted for direct nav before the slug can be set.
+   * Deep links to /project/gallery are retired — send visitors home.
    */
   useEffect(() => {
     if (slug === "gallery" || localSlug === "gallery") {
-      window.location.replace("/gallery");
+      setLocalSlug(undefined);
+      setLocalFullscreen(false);
+      setLocalBookSlug(undefined);
+      navigate("/", { replace: true });
     }
-  }, [slug, localSlug]);
+  }, [slug, localSlug, navigate]);
 
   useEffect(() => {
     const blockedSlug = slug || localSlug;
@@ -1036,22 +1045,6 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
 
   const handleProjectClick = useCallback((projectId: string) => {
     if (isComingSoonProject(projectId)) return;
-
-    // Direct-nav experiments never open ExperimentModal /film-style popup routes.
-    if (DIRECT_NAV_EXPERIMENT_IDS.includes(projectId)) {
-      const link = getExperimentLink(projectId);
-      if (link && !link.external) {
-        if (posthogEnabled) {
-          posthog.capture("project_opened", {
-            project_id: projectId,
-            view_mode: "direct",
-          });
-        }
-        rememberHomeScrollForReturn();
-        window.location.href = link.href;
-        return;
-      }
-    }
 
     const isMobile = window.innerWidth < 768;
     const shouldGoFullscreen = projectId === 'film' || (isMobile && projectId !== 'sketchbook' && projectId !== 'creators-collective');

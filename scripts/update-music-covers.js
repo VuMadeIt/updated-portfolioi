@@ -4,7 +4,7 @@ const MUSICBRAINZ_BASE = "https://musicbrainz.org/ws/2";
 const COVERART_BASE = "https://coverartarchive.org";
 
 // MusicBrainz requires a User-Agent header
-const USER_AGENT = "MichelleLiuPortfolio/1.0 (https://michelle-liu.com)";
+const USER_AGENT = "LucasVuPortfolio/1.0 (https://lucasvu.com)";
 
 // Sanity client
 const sanityClient = createClient({

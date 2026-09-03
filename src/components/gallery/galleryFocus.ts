@@ -22,3 +22,6 @@
  */
 export const GALLERY_FOCUS_RING =
   "gallery-focus focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300";
+
+/** Keeps the action bar open when interacting with controls outside it (e.g. thumbstick). */
+export const KEEP_BAR_OPEN_ATTR = "data-gallery-keep-bar-open";

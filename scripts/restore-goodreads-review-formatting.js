@@ -88,7 +88,7 @@ async function fetchFeedReviews() {
   while (true) {
     const url = `https://www.goodreads.com/review/list_rss/${USER_ID}?shelf=${SHELF}&page=${page}`;
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'michelle-liu-goodreads-sync/1.0' },
+      headers: { 'User-Agent': 'lucas-vu-goodreads-sync/1.0' },
     });
     if (!res.ok) {
       throw new Error(`Goodreads feed returned ${res.status} ${res.statusText} (${url})`);

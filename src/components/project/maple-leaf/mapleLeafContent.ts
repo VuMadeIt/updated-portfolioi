@@ -15,9 +15,9 @@ export const MAPLE_LEAF_IMAGES = {
 export const MAPLE_LEAF_NAV_ITEMS: CaseStudyNavItem[] = [
   { id: INTRODUCTION_NAV_ID, label: "Introduction", kind: "heading" },
   { id: "mission", label: "The Mission", kind: "item" },
-  { id: "project-01", label: "Service Penalty App", kind: "item" },
-  { id: "project-02", label: "Maple Leaf Market", kind: "item" },
-  { id: "project-03", label: "Project Tracking & Reporting App", kind: "item" },
+  { id: "project-01", label: "Project 1", kind: "item" },
+  { id: "project-02", label: "Project 2", kind: "item" },
+  { id: "project-03", label: "Project 3", kind: "item" },
 ];
 
 export const MAPLE_LEAF_MISSION = {

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons/Chevron";
 import { PlusIcon } from "@/components/library/icons";
 import { ICON_STROKE_WIDTH } from "@/components/shared/iconSizes";
-import { KEEP_BAR_OPEN_ATTR } from "./GalleryActionBar";
+import { KEEP_BAR_OPEN_ATTR } from "./galleryFocus";
 import { GALLERY_FOCUS_RING } from "./galleryFocus";
 import {
   GALLERY_PAINTINGS,

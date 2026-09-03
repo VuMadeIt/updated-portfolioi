@@ -56,17 +56,17 @@ export default function AboutSidebar({
   const visibleCommunities = communityItems.filter((c) => c.sidebarName);
 
   const nodes: SidebarNode[] = [
-    { kind: "item", id: "hi", label: "Hi!" },
-    { kind: "item", id: "experience", label: "Experience" },
+    { kind: "item", id: "hi", label: "hello!" },
+    { kind: "item", id: "experience", label: "experience" },
     {
       kind: "group",
       id: "community",
-      label: "Community",
+      label: "community",
       active: isCommunityActive,
       expanded: isCommunityActive && visibleCommunities.length > 0,
       children: visibleCommunities.map((c) => ({ id: c.id, label: c.sidebarName })),
     },
-    { kind: "item", id: "philosophy", label: "Philosophy" },
+    { kind: "item", id: "philosophy", label: "why design" },
     ...(SHOW_SHELF_AND_LORE
       ? ([
           {

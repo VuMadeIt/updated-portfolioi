@@ -1,7 +1,7 @@
 # PostHog Analytics Setup Report
 
 **Date:** 2026-03-25
-**Project:** michelle-liu portfolio
+**Project:** lucas-vu portfolio
 **PostHog Project ID:** 357336
 **Dashboard:** [Analytics basics](https://us.posthog.com/project/357336/dashboard/1400409)
 

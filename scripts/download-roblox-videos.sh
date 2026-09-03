@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /Users/michelleliu/michelle-liu
+cd "$(dirname "$0")/.."
 mkdir -p public/roblox/videos
 
 SITE_ID="609611a17e27302b1d0fc824"

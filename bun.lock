@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "michelle-liu-portfolio",
+      "name": "lucas-vu-portfolio",
       "dependencies": {
         "@mux/mux-player": "^3.10.2",
         "@mux/mux-player-react": "^3.10.2",

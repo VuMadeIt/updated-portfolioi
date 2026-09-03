@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { createPortal } from "react-dom";
 import { useScrollLock } from "../../utils/useScrollLock";
@@ -22,7 +23,6 @@ import ExperienceCard from "./ExperienceCard";
 import AboutSidebar from "./AboutSidebar";
 import Footer from "../layout/Footer";
 import { ArrowUpRight } from "../icons/ArrowUpRight";
-import ContactBadge from "../shared/ContactBadge";
 import NavigationTabs from "../layout/NavigationTabs";
 
 import type { AboutCategory, ShelfSubcategory, CommunitySidebarItem } from "./AboutSidebar";
@@ -89,6 +89,7 @@ import { Close } from "../icons/Close";
 import { ghostIconButtonClass } from "../shared/ghostIconButton";
 
 import DesignPhilosophyPreviewCard from "../design-philosophy/DesignPhilosophyPreviewCard";
+import KnownAsHeading from "./KnownAsHeading";
 
 const CommunityCard = dynamic(() => import("./CommunityCard"));
 const ShelfSection = dynamic(() => import("./ShelfSection"));
@@ -196,7 +197,7 @@ const THE_CADET_COMMUNITY: CommunityCardData = {
     {
       id: "cadet-face-paint",
       imageSrc: cadetFacePaintPhoto,
-      caption: "The GGHG Face Paint Tattoo",
+      caption: "The GGHG Tattoo",
       orientation: "vertical",
     },
     {
@@ -228,7 +229,7 @@ const THE_CHESS_PLAYERS_COMMUNITY: CommunityCardData = {
     {
       id: "chess-volunteer-ceremony",
       imageSrc: chessVolunteerPhoto,
-      caption: "I gave a 15-min speech at the Volunteer Appreciation Ceremony!!",
+      caption: "This was after my 15-min speech at the Volunteer Appreciation Ceremony!!",
       orientation: "horizontal",
     },
     {
@@ -415,7 +416,79 @@ function buildSidequestersCommunity(
 }
 
 // fadeUpStyles imported from shared animations
-function ProfilePhoto({ imageSrc, caption }: { imageSrc?: string; caption?: React.ReactNode }) {
+type ProfilePhotoProps = {
+  imageSrc?: string;
+  date?: string;
+  caption?: string;
+};
+
+function ProfilePolaroidFrame({
+  imageSrc,
+  date,
+  caption,
+  className,
+  imageClassName,
+  onClick,
+}: ProfilePhotoProps & {
+  className?: string;
+  imageClassName?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <div
+      className={clsx(
+        "flex w-[17.5rem] rotate-[-4deg] flex-col border border-zinc-100 bg-white p-3 pb-0 shadow-media transition-transform duration-200 ease-out md:w-[19rem]",
+        onClick && "cursor-zoom-in hover:scale-[0.99]",
+        className,
+      )}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
+    >
+      <div className="overflow-hidden rounded-sm bg-zinc-100">
+        {imageSrc ? (
+          <img
+            src={imageSrc}
+            alt="Lucas Vu"
+            decoding="async"
+            width={304}
+            height={389}
+            className={clsx("block h-auto w-full object-contain", imageClassName)}
+          />
+        ) : (
+          <div className="aspect-[3/4] w-full bg-zinc-200" />
+        )}
+      </div>
+
+      {(date || caption) && (
+        <div className="px-1.5 pb-8 pt-5 text-left">
+          {date && (
+            <p className="font-['Lucas',sans-serif] text-sm font-medium tabular-nums text-zinc-600">
+              {date}
+            </p>
+          )}
+          {caption && (
+            <p className="font-['Lucas',sans-serif] text-sm font-normal lowercase text-zinc-400">
+              {caption}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProfilePhoto({ imageSrc, date, caption }: ProfilePhotoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -441,32 +514,12 @@ function ProfilePhoto({ imageSrc, caption }: { imageSrc?: string; caption?: Reac
 
   return (
     <>
-      <div className="flex flex-col gap-3 w-72 md:w-76">
-        <div
-          className="rounded-lg overflow-hidden cursor-zoom-in"
-          onClick={() => imageSrc && setIsExpanded(true)}
-        >
-          {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt="Lucas Vu"
-              decoding="async"
-              width={304}
-              height={389}
-              className="w-full h-auto rounded-lg transition-transform duration-200 ease-out hover:scale-[0.99]"
-            />
-          ) : (
-            <div className="w-full aspect-[3/4] bg-gradient-to-br from-zinc-200 to-zinc-300 rounded-lg" />
-          )}
-        </div>
-        {caption && (
-          <div className="px-6">
-            <p className="text-sm text-zinc-400 text-center">
-              {caption}
-            </p>
-          </div>
-        )}
-      </div>
+      <ProfilePolaroidFrame
+        imageSrc={imageSrc}
+        date={date}
+        caption={caption}
+        onClick={imageSrc ? () => setIsExpanded(true) : undefined}
+      />
 
       {isExpanded && imageSrc && createPortal(
         <div
@@ -490,23 +543,13 @@ function ProfilePhoto({ imageSrc, caption }: { imageSrc?: string; caption?: Reac
             className={`relative z-10 flex max-h-[85vh] max-w-[90vw] flex-col items-center transition-all duration-200 ease-out ${isClosing ? 'opacity-0 scale-95' : 'animate-[scaleIn_300ms_ease-out]'}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative flex flex-col items-center gap-1">
-              <div className="relative">
-                <img
-                  src={imageSrc}
-                  alt="Lucas Vu"
-                  className="object-contain rounded-lg max-h-[65vh] w-auto relative"
-                />
-              </div>
-              {caption && (
-                <p
-                  className={`mt-6 max-w-[600px] text-center font-['Lucas',sans-serif] text-base tracking-[0.005em] font-normal leading-relaxed text-zinc-500 [&_a]:text-zinc-800 [&_a:hover]:text-zinc-900 ${isClosing ? '' : 'animate-[fadeSlideUp_300ms_ease-out_100ms_both]'}`}
-                  style={{ fontVariationSettings: "'opsz' 9" }}
-                >
-                  {caption}
-                </p>
-              )}
-            </div>
+            <ProfilePolaroidFrame
+              imageSrc={imageSrc}
+              date={date}
+              caption={caption}
+              className="rotate-0 max-h-[75vh] w-auto max-w-[min(90vw,22rem)]"
+              imageClassName="max-h-[58vh] w-auto object-contain"
+            />
           </div>
         </div>,
         document.body
@@ -980,7 +1023,8 @@ export default function AboutPage() {
               <div className="shrink-0">
                 <ProfilePhoto
                     imageSrc={profilePic}
-                    caption="A Solo Backpacking Trip in Anime Land!"
+                    date="01/08/26"
+                    caption="a solo backpacking trip in anime land!"
                   />
               </div>
             </ScrollReveal>
@@ -988,9 +1032,7 @@ export default function AboutPage() {
             {/* Bio Content */}
             <div className="flex flex-col pt-8 gap-6 flex-1 max-w-xl">
               <ScrollReveal variant="fade" delay={150}>
-                <h2 className="font-['Lucas',sans-serif] font-medium text-zinc-600 text-3xl md:text-3xl">
-                  Hi, I'm Lucas!
-                </h2>
+                <KnownAsHeading />
               </ScrollReveal>
 
               {/* Location & Education */}
@@ -1011,24 +1053,19 @@ export default function AboutPage() {
               <ScrollReveal variant="fade" delay={250}>
                 <div className="flex flex-col gap-4 text-zinc-600 text-base tracking-[0.005em] leading-relaxed">
                   <p>
-                    I love art, business, technology, & the ways that they can work together to
-                    create extraordinary products for people. I obsess over crafting beautiful
-                    tools for creation & human connection.
+                    What truly defines me is my passion to constantly try new things. Whether it
+                    be soccer, fishing, martial arts, dancing, or jumping on project ideas,
+                    trying new things is a big part of who I am.
                   </p>
                   <p>
-                    I view myself as an artist at heart, designing where beauty meets tactile utility. I like to think of it as my <a href="https://en.wikipedia.org/wiki/Ikigai" target="_blank" rel="noopener noreferrer" className="text-zinc-600 font-semibold no-underline hover:text-blue-600 transition-colors">ikigai</a>: the
-                    constant pursuit of an intersection between passion, profession, & personal mission.
-                  </p>
-                  <p>
-                    3 words to describe me: Golden Retriever Energy (even on the bad days)
+                    But one thing that seems to be concrete is my passion for human connection,
+                    building and design. I find that creating extraordinary products for people,
+                    and communities that I can relate to, is something I was made to do! And that
+                    isn&apos;t going anywhere anytime soon :)
                   </p>
                 </div>
               </ScrollReveal>
 
-              {/* CTA Badge - Animates from dot to full on scroll */}
-              <ScrollReveal variant="fade" delay={300}>
-                <ContactBadge scrollExpandMode className="mt-2" />
-              </ScrollReveal>
             </div>
           </section>
 
@@ -1037,7 +1074,7 @@ export default function AboutPage() {
             <ScrollReveal variant="fade">
               <div className="flex flex-col">
                 <h2 className="font-['Lucas',sans-serif] font-medium text-zinc-700 text-3xl leading-normal shrink-0">
-                  Experience
+                  experience
                 </h2>
               </div>
             </ScrollReveal>
@@ -1058,7 +1095,7 @@ export default function AboutPage() {
             <ScrollReveal variant="fade">
               <div className="flex flex-col">
                 <h2 className="font-['Lucas',sans-serif] font-medium text-zinc-600 text-3xl leading-normal shrink-0">
-                  My Communities
+                  community
                 </h2>
                 <p className="font-['Lucas',sans-serif] tracking-wide font-normal text-zinc-400 text-lg flex items-center gap-1.5">
                   The people who make it all worth it
@@ -1096,7 +1133,10 @@ export default function AboutPage() {
           {/* Philosophy Section */}
           <section ref={philosophyRef} className="flex flex-col gap-12 w-full scroll-mt-8">
             <ScrollReveal variant="fade">
-              <SectionHeading title="My Design Philosophy" subtitle="why I do what I do..." />
+              <SectionHeading
+                title="why design"
+                subtitle="the reason why design serves as (one of) my life's purposes"
+              />
             </ScrollReveal>
             <ScrollReveal delay={80}>
               <DesignPhilosophyPreviewCard onClick={() => setIsDesignPhilosophyOpen(true)} />

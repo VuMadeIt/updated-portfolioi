@@ -328,7 +328,7 @@ function countFeedItems(xml) {
 async function fetchFeedPage(page) {
   const url = feedUrl(page);
   const res = await fetch(url, {
-    headers: { 'User-Agent': 'michelle-liu-goodreads-sync/1.0' },
+    headers: { 'User-Agent': 'lucas-vu-goodreads-sync/1.0' },
   });
   if (!res.ok) {
     throw new Error(`Goodreads feed returned ${res.status} ${res.statusText} (${url})`);

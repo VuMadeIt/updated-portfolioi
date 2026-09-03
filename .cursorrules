@@ -1,7 +1,7 @@
-# Michelle Liu Personal Website - Cursor Rules
+# Lucas Vu Personal Website - Cursor Rules
 
 ## Project Context
-This is Michelle Liu's personal portfolio website built with React, Vite, and Sanity CMS.
+This is Lucas Vu's personal portfolio website built with Next.js, React, TypeScript, and Sanity CMS.
 
 ## API Keys & Credentials
 
@@ -14,7 +14,7 @@ This is Michelle Liu's personal portfolio website built with React, Vite, and Sa
 ### Sanity CMS
 - **Project ID**: am3v0x1c
 - **Dataset**: production
-- **Studio**: `studio-michelle-liu/`
+- **Studio**: `studio-lucas-vu/`
 
 ## Common Tasks
 
@@ -37,7 +37,7 @@ You can also use the Sanity MCP tools to manually patch `externalCoverUrl` on sh
 - Planning/design docs may be created locally for agent workflows, but delete them before committing, pushing, or opening a PR.
 
 ## Tech Stack
-- Frontend: React + TypeScript + Vite
+- Frontend: Next.js + React + TypeScript
 - CMS: Sanity v3
 - Styling: Tailwind CSS
 - Hosting: Vercel

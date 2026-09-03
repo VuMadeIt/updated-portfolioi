@@ -76,7 +76,11 @@ async function main() {
   console.log('📚 Importing Goodreads metadata into Sanity...\n');
   
   // Read CSV file
-  const csvPath = '/Users/michelleliu/Downloads/goodreads_library_export (1).csv';
+  const csvPath = process.env.GOODREADS_CSV_PATH;
+  if (!csvPath) {
+    console.error('Set GOODREADS_CSV_PATH to your Goodreads library export CSV.');
+    process.exit(1);
+  }
   const csvContent = fs.readFileSync(csvPath, 'utf-8');
   const lines = csvContent.split('\n').filter(line => line.trim());
   

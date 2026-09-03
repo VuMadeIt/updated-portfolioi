@@ -75,7 +75,7 @@ export const SHUFFLR_EDITORIAL_BLOCKS: ShufflrEditorialBlock[] = [
   {
     title: "How Shufflr works",
     body: [
-      "Shufflr targets the loneliness and social friction most acutely felt by 18-24 year olds. The shuffle mechanic addresses the nostalgia brief through behaviour design, not aesthetics alone.",
+      "Shufflr targets the loneliness and social friction most acutely felt by 18-24 year olds. The shuffle mechanic addresses the nostalgia brief through behavior design, not aesthetics alone.",
       "The digital archive creates a retention flywheel: emotional investment increases with usage. Activity generation and location-based discovery build on established infrastructure like Google Maps, Eventbrite, and Yelp APIs.",
     ],
     placeholder: "System diagram",

@@ -24,6 +24,7 @@ import {
   SiteTextLink,
   ToolsSection,
   ViewOnXButton,
+  ViewOnSiteButton,
 } from './ExperimentSiteEmbed';
 
 // Lazy per experiment — don't download all five pages when this modal chunk loads.
@@ -44,9 +45,15 @@ function ExperimentLoading() {
 
 const DESIGN_MEETUP_HREF = 'https://designmeetup.info';
 const SUNDAYS_HREF = 'https://sundays.rsvp';
+const CREATORS_COLLECTIVE_HREF = 'https://creatorscollective.framer.website/';
+const CREATORS_COLLECTIVE_SITE_LABEL = 'creatorscollective.framer.website';
 
 function isSiteEmbedProject(projectId: string) {
-  return projectId === 'sundays' || projectId === 'design-meetup';
+  return (
+    projectId === 'sundays' ||
+    projectId === 'design-meetup' ||
+    projectId === 'creators-collective'
+  );
 }
 
 export type ExperimentProject = {
@@ -258,6 +265,61 @@ function DesignMeetupMobileEmbed({ project }: { project: ExperimentProject }) {
   );
 }
 
+function CreatorsCollectiveEmbed({
+  project,
+  isFullscreen = false,
+  isScrolled = false,
+  isPastHero = false,
+  onCollapse,
+}: {
+  project: ExperimentProject;
+  isFullscreen?: boolean;
+  isScrolled?: boolean;
+  isPastHero?: boolean;
+  onCollapse?: () => void;
+}) {
+  return (
+    <ExperimentSiteEmbed
+      project={project}
+      siteHref={CREATORS_COLLECTIVE_HREF}
+      siteLabel={CREATORS_COLLECTIVE_SITE_LABEL}
+      isFullscreen={isFullscreen}
+      isScrolled={isScrolled}
+      isPastHero={isPastHero}
+      onCollapse={onCollapse}
+      headerActions={
+        <ViewOnSiteButton
+          href={CREATORS_COLLECTIVE_HREF}
+          buttonLabel="View Here"
+        />
+      }
+      compactActions={
+        <ViewOnSiteButton
+          href={CREATORS_COLLECTIVE_HREF}
+          buttonLabel="View Here"
+        />
+      }
+    />
+  );
+}
+
+function CreatorsCollectiveMobileEmbed({ project }: { project: ExperimentProject }) {
+  return (
+    <ExperimentSiteMobileEmbed
+      project={project}
+      siteHref={CREATORS_COLLECTIVE_HREF}
+      siteLabel={CREATORS_COLLECTIVE_SITE_LABEL}
+      footerActions={
+        <ViewOnSiteButton
+          href={CREATORS_COLLECTIVE_HREF}
+          buttonLabel="View Here"
+          className="relative self-start"
+        />
+      }
+    />
+  );
+}
+
 
 export default function ExperimentModal({ projectId, project, onClose, onExpandToFullscreen, onCollapseFromFullscreen, onBookSlugChange, bookSlug, initialFullscreen = false }: ExperimentModalProps) {
   const navigate = useNavigate();
@@ -457,6 +519,19 @@ export default function ExperimentModal({ projectId, project, onClose, onExpandT
           return <DesignMeetupMobileEmbed project={project} />;
         }
         return <DesignMeetupEmbed project={project} isFullscreen={isFullscreen} isScrolled={isScrolled} isPastHero={isPastHero} onCollapse={handleCollapse} />;
+      case 'creators-collective':
+        if (isMobile && !isFullscreen) {
+          return <CreatorsCollectiveMobileEmbed project={project} />;
+        }
+        return (
+          <CreatorsCollectiveEmbed
+            project={project}
+            isFullscreen={isFullscreen}
+            isScrolled={isScrolled}
+            isPastHero={isPastHero}
+            onCollapse={handleCollapse}
+          />
+        );
       default:
         return <GenericExperimentEmbed project={project} />;
     }
@@ -716,12 +791,15 @@ function InfoPopover({ project, onClose, isMobile = false, isFullscreen = false 
 // Compact tools section for popover
 function ToolsSectionCompact({ categories, isFullscreen = false }: { categories: ToolCategory[]; isFullscreen?: boolean }) {
   if (!categories || categories.length === 0) return null;
+
+  const gridCols = categories.length >= 5 ? "grid-cols-5" : "grid-cols-4";
   
   return (
     <div className={clsx("flex w-full flex-col", isFullscreen ? "gap-2" : "gap-3")}>
       <HorizontalLine />
       <div className={clsx(
-        "font-['Lucas',sans-serif] font-normal grid grid-cols-4 relative shrink-0 w-full",
+        "font-['Lucas',sans-serif] font-normal grid relative shrink-0 w-full",
+        gridCols,
         isFullscreen ? "gap-3 text-base" : "gap-2 text-sm"
       )}>
         {categories.map((category, idx) => (

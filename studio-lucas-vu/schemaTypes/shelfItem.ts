@@ -116,7 +116,7 @@ export const shelfItem = defineType({
     defineField({
       name: 'letterboxdSlug',
       title: 'Letterboxd Slug',
-      description: 'URL slug for your Letterboxd review (e.g., "left-handed-girl" for letterboxd.com/liumichelle/film/left-handed-girl/)',
+      description: 'URL slug for your Letterboxd review (e.g., "left-handed-girl" for letterboxd.com/lucasvu/film/left-handed-girl/)',
       type: 'string',
       hidden: ({document}) => document?.mediaType !== 'movie',
     }),

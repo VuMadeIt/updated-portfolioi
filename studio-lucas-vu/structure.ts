@@ -59,7 +59,7 @@ export const structure = (S: StructureBuilder) =>
         .schemaType('project')
         .child(S.documentTypeList('project').title('Projects')),
 
-      // Experiment Project (side projects like Polaroid, Library, etc.)
+      // Experiment Project (Parrot, Creators Collective)
       S.listItem()
         .title('Experiment Project')
         .schemaType('experimentProject')

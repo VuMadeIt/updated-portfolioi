@@ -1,29 +1,78 @@
-import clsx from "clsx";
-import {
-  DESIGN_PHILOSOPHY_FOOTNOTES,
-  DESIGN_PHILOSOPHY_META,
-  DESIGN_PHILOSOPHY_PILLARS,
-  DESIGN_PHILOSOPHY_THOUGHTS,
-} from "./content";
+"use client";
 
-function ArticleImage({
-  alt,
-  caption,
+import { useCallback, useRef, useState } from "react";
+import clsx from "clsx";
+import { DESIGN_PHILOSOPHY_META } from "./content";
+
+function ArticleVideo({
+  src,
+  poster,
+  className,
 }: {
-  alt: string;
-  caption: string;
+  src: string;
+  poster: string;
+  className?: string;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const togglePlayback = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      video.muted = false;
+      video.volume = 1;
+      try {
+        await video.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false);
+      }
+      return;
+    }
+
+    video.pause();
+    setIsPlaying(false);
+  }, []);
+
   return (
-    <figure className="flex w-full flex-col gap-3">
-      <div
-        aria-label={alt}
-        className="aspect-[16/10] w-full rounded-2xl bg-zinc-100 sm:rounded-3xl"
-        role="img"
-      />
-      <figcaption className="font-['Lucas',sans-serif] text-sm font-normal text-zinc-400">
-        {caption}
-      </figcaption>
-    </figure>
+    <div className={clsx("w-full", className)}>
+      <button
+        type="button"
+        className="relative w-full overflow-hidden rounded-2xl bg-zinc-100 sm:rounded-3xl"
+        aria-label={isPlaying ? "Pause hummingbird video" : "Play hummingbird video"}
+        onClick={(event) => {
+          event.stopPropagation();
+          void togglePlayback();
+        }}
+      >
+        <video
+          ref={videoRef}
+          className="pointer-events-none aspect-[9/16] w-full object-contain"
+          src={src}
+          poster={poster}
+          playsInline
+          preload="metadata"
+          onEnded={() => setIsPlaying(false)}
+          onPause={() => setIsPlaying(false)}
+          onPlay={() => setIsPlaying(true)}
+        />
+        {!isPlaying && (
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-zinc-900/20">
+            <span className="flex size-12 items-center justify-center rounded-full bg-white">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="ml-0.5 size-5 fill-zinc-700"
+              >
+                <path d="M8 5.14v13.72L19.5 12 8 5.14z" />
+              </svg>
+            </span>
+          </span>
+        )}
+      </button>
+    </div>
   );
 }
 
@@ -43,8 +92,8 @@ export default function DesignPhilosophyContent({
       className={clsx(
         "w-full",
         isModal
-          ? "mx-auto max-w-[800px] px-8 pb-16 pt-32"
-          : "max-w-2xl px-6 py-12 md:px-16 md:py-16",
+          ? "px-16 pb-20 pt-32 md:px-36 lg:px-48"
+          : "mx-auto max-w-5xl px-12 py-16 md:px-32 lg:px-40 md:py-20",
         className,
       )}
     >
@@ -55,7 +104,7 @@ export default function DesignPhilosophyContent({
         <h1
           className={clsx(
             "text-balance font-['Lucas',sans-serif] font-medium text-zinc-700",
-            isModal ? "text-3xl md:text-4xl" : "text-3xl md:text-4xl",
+            "text-3xl md:text-4xl",
           )}
         >
           {DESIGN_PHILOSOPHY_META.title}
@@ -64,198 +113,66 @@ export default function DesignPhilosophyContent({
 
       <div className="flex flex-col gap-6 font-['Lucas',sans-serif] text-base leading-relaxed text-zinc-600">
         <p className="text-pretty">
-          Tonight, I just came back from the gym, and I&apos;m exhausted. I did core for the
-          first time in a long time and almost threw up lol. (Pro tip; I should&apos;ve eaten
-          after the gym)
+          I woke at 4:00am for something I hadn&apos;t earned yet. With 5-inch green pumpkin senkos
+          in my tackle box, a weedless rig tied by hand the night before, and the fishing rods I
+          borrowed from a friend, I was certain that wanting something badly enough, studying how
+          to catch one and dedicating the time to go out there was enough to catch that big fish.
         </p>
         <p className="text-pretty">
-          I&apos;m hunched over, writing on a desk too small under a bunk bed too short.
+          That&apos;s the first lie every beginner tells himself: that the thing exists already…
+          and the only work left is the reeling in.
         </p>
         <p className="text-pretty">
-          I&apos;m writing on a laptop with a broken screen, effectively making it an iPad.
+          Three hours passed in silence before anything was answered. And in that silence, sitting
+          alone on the shore before the world woke up, my mind wandered somewhere I hadn&apos;t
+          planned for it to go. I began thinking about my future; towards the rest of my life.
+          I&apos;d always told myself I was an entrepreneur at heart, that building and disrupting
+          was the whole point. But after becoming an operations coordinator for a charity, I
+          realized running the machine never made my legs bounce under the desk. What does is the
+          quieter thing, sitting down and making a product that actually reaches someone, that
+          changes their morning the way mine was being changed by nothing but water and waiting. I
+          hadn&apos;t gone there to figure that out. But the water doesn&apos;t ask what you came
+          for before it gives you something anyway.
         </p>
-        <p className="text-pretty">
-          I just took my 43rd consecutive shower at the gym; this is because the showers at the
-          place I&apos;m staying at are poorly maintained and unusable.
-        </p>
+        <div className="grid w-full grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,1fr)_min(30%,220px)] md:gap-10">
+          <p className="text-pretty">
+            A hummingbird came by while I sat there, and hovered over the red tip of my rod like it
+            had found a flower. It hung there for a second, waiting for a sweetness that wasn&apos;t
+            there, before realizing it had been fooled by paint and darting away. I think about that
+            a lot. Like the bird, it&apos;s so easy to chase bright appearances over actual
+            substance, to go after the shiny shell of a title, like entrepreneur, instead of the
+            craft that actually feeds you. But the bird&apos;s real wisdom wasn&apos;t in avoiding
+            the mistake; it was in refusing to stay tricked. It didn&apos;t waste time trying to
+            drink from plastic or feeling foolish for being fooled. It recognized a dead end,
+            pivoted instantly, and went looking for the real thing. That felt like something worth
+            learning from a creature with a brain the size of a seed.
+          </p>
 
-        <h2 className="text-balance pt-2 text-2xl font-medium text-zinc-700">
-          I should be weary, miserable and tired.
-        </h2>
-
-        <p className="text-pretty">
-          Despite this, on the 30min walk back from the gym, I couldn&apos;t suppress this feeling
-          of excitement and joy. More precisely; it felt like a sense of intense trepidation.
-        </p>
-        <p className="text-pretty">
-          That&apos;s because tomorrow, and the day after, and the day after that, I have the
-          privilege of getting into the office early at 7:00am. I get to grab a coffee and start
-          ripping designs on Figma, sweating every little detail. I get to boot up Claude and
-          spend hours building feature demos and bringing ideas to life. I get to sweat every
-          granular detail at a company that respects and pushes me to be a better designer. I get
-          to build, design, and contribute to one of the most highly anticipated products of 2027
-          at such an early stage.
-        </p>
-        <p className="text-pretty">
-          I am happy. I am filled with purpose. Above all, I am brimming with excitement.
-        </p>
-
-        <ArticleImage
-          alt="The Ando team working together in the office"
-          caption="The Ando office, where I spend 90% of my day (not including sleep)"
-        />
-
-        <h3 className="text-balance pt-2 text-xl font-medium text-zinc-700">
-          Thoughts from a young, optimistic designer.
-        </h3>
-
-        <ul className="flex flex-col gap-3">
-          {DESIGN_PHILOSOPHY_THOUGHTS.map((thought) => (
-            <li
-              key={thought}
-              className="text-pretty text-sm font-normal text-zinc-500 before:mr-2 before:content-['-']"
-            >
-              {thought}
-            </li>
-          ))}
-        </ul>
-
-        <h2 className="text-balance pt-4 text-2xl font-medium text-zinc-700">
-          My design philosophy
-        </h2>
-
-        <p className="text-pretty">
-          Although I am early in my career, and likely blindly naive about a lot of things; I
-          know that I enjoy design, and that I feel a strong sense of purpose &amp; fulfillment
-          in the work I do.
-        </p>
-        <p className="text-pretty">
-          Much of this is influenced by my design philosophy, which is currently inspired by the
-          following:
-        </p>
-
-        <div className="flex flex-col gap-2 py-2">
-          {DESIGN_PHILOSOPHY_PILLARS.map((pillar) => (
-            <p key={pillar} className="text-pretty font-medium text-zinc-700">
-              {pillar}
-            </p>
-          ))}
+          <ArticleVideo
+            src={DESIGN_PHILOSOPHY_META.videoSrc}
+            poster={DESIGN_PHILOSOPHY_META.videoPoster}
+            className="justify-self-stretch"
+          />
         </div>
 
-        <section className="flex flex-col gap-4 pt-2">
-          <h3 className="text-balance text-lg font-medium text-zinc-700">
-            1. There has never been a better time to be a designer.
-          </h3>
-          <p className="text-pretty">
-            Perhaps this is a contrarian take, but I am bullish on this. Taste is still a moat,
-            the bar for visual mediocrity is higher ofc due to AI, but it&apos;s never been easier
-            to learn, build and just create.
-          </p>
-          <p className="text-pretty">
-            Tools are so so so accessible, and you can really go hard into interactions,
-            prototyping, and building whatever the hell you want. In the last 1.5 months at Ando,
-            I&apos;ve vicariously been learning about agents, AI, LLM&apos;s and how they function,
-            work and operate. Harnesses, conductors, mental models, vector memory, context etc. All
-            fascinating topics.
-          </p>
-          <p className="text-pretty">
-            As of this moment I&apos;ve pushed 30+ PR&apos;s; I&apos;ve had wonderfully stimulating
-            conversations with other engineers, and have shifted to a more agentically-aligned
-            designer.
-          </p>
-          <blockquote className="border-l-2 border-zinc-200 pl-4 text-pretty italic text-zinc-500">
-            <p>&ldquo;In a world of scarcity, we treasure tools.&rdquo;</p>
-            <p>&ldquo;In a world of abundance, we treasure taste.&rdquo;</p>
-          </blockquote>
-          <p className="text-sm text-zinc-400">Anu Atluru, Taste is Eating Silicon Valley</p>
-        </section>
-
-        <section className="flex flex-col gap-4 pt-2">
-          <h3 className="text-balance text-lg font-medium text-zinc-700">
-            2. Curiosity, genuineness, and thoughtfulness have yet to fail me.
-          </h3>
-          <p className="text-pretty">
-            Just asking questions, being proactive, and genuinely interested can get you so far!!
-            So much of my own understanding of design, ai, and agents comes from just listening to
-            those around me, asking silly questions (there are no dumb questions), and being
-            excited and reading from resources online!
-          </p>
-          <p className="text-pretty">
-            Questions with the right crowd can foster surprising and meaningful discussions. One
-            such example occurred during Ando&apos;s Tulum retreat earlier this week. On the topic
-            of agentic memory, I asked what RAM stood for (random access memory). This billowed
-            into a lovely conversation about vector memory, analogies about how agentic memory
-            mirrors our own neural systems, and a deeper dive on how we can optimize it.
-          </p>
-          <p className="text-pretty">
-            Keep in mind before asking this, I didn&apos;t even know about memory as a component of
-            ai.
-          </p>
-
-          <ArticleImage
-            alt="The Ando team at breakfast during the Tulum retreat"
-            caption="So many wonderful conversations get sparked as a byproduct of spending time together intentionally. (Ando Tulum 2026 retreat; breakfast)"
-          />
-        </section>
-
-        <section className="flex flex-col gap-4 pt-2">
-          <h3 className="text-balance text-lg font-medium text-zinc-700">
-            3. Design is a labour of love.
-          </h3>
-          <p className="text-pretty">
-            Give it your everything. Of course, this is adjacent to burnout mentality, so pace
-            yourself. This also doesn&apos;t mean working 24/7 around the clock. Rather, be
-            introspective, find what gets your gears going; what gets you excited, and then how to
-            get the most leverage / impact out of it.
-          </p>
-          <p className="text-pretty">
-            For me personally, I&apos;m very fortunate to have what I can only assume to be a
-            natural affinity for work (that is a nice way of saying I&apos;m a workaholic). I am
-            incredibly fortunate to be in San Francisco for this summer, working at a company with
-            a very high bar for design. Working in SF has been my dream since 2nd year, and now
-            the stars have aligned and here I am. While I may only be here for 4 months, you can
-            be sure as hell that I intend to make the most and work the hardest these next 4
-            months.
-          </p>
-          <p className="text-pretty">Re; pressure creates diamonds.</p>
-          <p className="rounded-2xl border border-zinc-100 bg-zinc-50 px-4 py-3 text-pretty text-sm text-zinc-500">
-            A Slack message: &ldquo;I dream to help make Ando world class :))))) It would be
-            stellar.&rdquo;
-          </p>
-        </section>
-
-        <section className="flex flex-col gap-4 pt-2">
-          <h3 className="text-balance text-lg font-medium text-zinc-700">
-            4. Don&apos;t be afraid to inspire, and likewise, aspire, at the same time.
-          </h3>
-          <p className="text-pretty">
-            How fortunate am I that people look up to my designs :) I am honoured.
-          </p>
-          <p className="text-pretty">Hmm, this section is WIP.</p>
-        </section>
-
-        <h2 className="text-balance pt-4 text-2xl font-medium text-zinc-700">
-          Disclaimer: perhaps I&apos;m just naive.
-        </h2>
-
         <p className="text-pretty">
-          I recognize that I&apos;m still at an insanely early stage in my career, and that I
-          haven&apos;t really spent enough time marinating in design work to form an educated
-          opinion.
+          So when I think about why design is the thing, not entrepreneurship, not operations, but
+          actually building the product and shipping the features people touch, I think about that
+          morning by the water. There is a profound beauty in the realization that the title you
+          spent your life chasing is sometimes just the painted red tip of a fishing rod, and the
+          work you actually crave is the quiet, deliberate act of making something real. For me,
+          it is the thrill of stepping into a blank canvas to map out the exact mechanics of a
+          multiplayer experience, or watching someone interact with a prototype and having them
+          find it intuitive. That is the actual, sustaining sweetness I was looking for.
         </p>
         <p className="text-pretty">
-          But that&apos;s the fun thing about opinions! They&apos;re yours to make, and all I know
-          is that I&apos;m having fun, I&apos;m happy, and I feel purposeful and fulfilled.
+          I think about London, a week out from now, where I&apos;ll finally get to build game
+          assets and a website for a studio I&apos;ve dreamed about working for since I was a kid,
+          and how none of that path was a straight cast either. The casts that didn&apos;t land
+          and the operations roles that felt hollow were just the necessary silence before the
+          water answered.
         </p>
-
-        <section className="flex flex-col gap-4 border-t border-zinc-100 pt-10">
-          <h3 className="text-balance text-lg font-medium text-zinc-700">Footnotes</h3>
-          {DESIGN_PHILOSOPHY_FOOTNOTES.map((note) => (
-            <p key={note} className="text-pretty text-sm text-zinc-500">
-              {note}
-            </p>
-          ))}
-        </section>
+        <p className="text-pretty">And for that, I am forever grateful.</p>
       </div>
     </article>
   );

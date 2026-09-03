@@ -1,6 +1,9 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import ShimmerImage from "../shared/ShimmerImage";
+import VideoPlayer from "../shared/VideoPlayer";
 import ViewAllProjectsButton from "./ViewAllProjectsButton";
 
 type Project = {
@@ -9,6 +12,7 @@ type Project = {
   year: string;
   description: string;
   imageSrc: string;
+  videoSrc?: string;
 };
 
 type ProjectCardProps = {
@@ -16,6 +20,106 @@ type ProjectCardProps = {
   className?: string;
   onClick?: () => void;
 };
+
+function ProjectCardMedia({
+  imageSrc,
+  videoSrc,
+}: {
+  imageSrc: string;
+  videoSrc?: string;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(!imageSrc);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible || !videoSrc) return;
+    const idle = window.requestIdleCallback
+      ? window.requestIdleCallback(() => setVideoReady(true))
+      : window.setTimeout(() => setVideoReady(true), 120);
+    return () => {
+      if (window.cancelIdleCallback && typeof idle === "number") {
+        window.cancelIdleCallback(idle);
+      } else {
+        window.clearTimeout(idle);
+      }
+    };
+  }, [isVisible, videoSrc]);
+
+  if (videoSrc) {
+    return (
+      <div
+        ref={containerRef}
+        className="aspect-[678/367.625] relative isolate w-full overflow-hidden rounded-[26px] bg-zinc-200"
+      >
+        {imageSrc ? (
+          <img
+            src={imageSrc}
+            alt=""
+            decoding="async"
+            onLoad={() => setImageLoaded(true)}
+            className={clsx(
+              "absolute inset-0 size-full object-cover transition-opacity duration-500 ease-out",
+              videoLoaded ? "opacity-0" : "opacity-100",
+            )}
+          />
+        ) : null}
+        {isVisible && videoReady && (
+          <VideoPlayer
+            src={videoSrc}
+            className="absolute inset-0 size-full object-cover"
+            autoPlay
+            muted
+            loop
+            controls={false}
+            muxEnvKey="e4cc19a78gcf0tbtfmu4m7ruf"
+            onLoaded={() => setVideoLoaded(true)}
+          />
+        )}
+        <div
+          className={clsx(
+            "pointer-events-none absolute inset-0 z-10 animate-shimmer bg-zinc-200 transition-opacity duration-500 ease-out",
+            (imageSrc ? imageLoaded && videoLoaded : videoLoaded)
+              ? "opacity-0"
+              : "opacity-100",
+          )}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="aspect-[678/367.625] relative w-full overflow-hidden rounded-[26px]">
+      <ShimmerImage
+        wrapperClassName="!absolute inset-0 size-full"
+        rounded="rounded-[26px]"
+        className="size-full object-cover"
+        alt=""
+        src={imageSrc}
+      />
+    </div>
+  );
+}
 
 function ProjectCard({ project, className, onClick }: ProjectCardProps) {
   return (
@@ -32,15 +136,7 @@ function ProjectCard({ project, className, onClick }: ProjectCardProps) {
       )}
     >
       <div className="w-full overflow-hidden rounded-[26px] transition-transform duration-300 group-hover:scale-[0.99]">
-        <div className="aspect-[678/367.625] w-full relative">
-          <ShimmerImage
-            wrapperClassName="!absolute inset-0 size-full"
-            rounded="rounded-[26px]"
-            className="size-full object-cover"
-            alt=""
-            src={project.imageSrc}
-          />
-        </div>
+        <ProjectCardMedia imageSrc={project.imageSrc} videoSrc={project.videoSrc} />
       </div>
       <div className="flex flex-col font-medium items-start px-2 gap-0 text-base tracking-[0.005em] w-full">
         <p className="text-[#18181b] w-full">
@@ -100,4 +196,3 @@ export default function AlsoCheckOut({
     </div>
   );
 }
-

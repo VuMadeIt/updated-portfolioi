@@ -1,5 +1,5 @@
 /**
- * Parse and sync movies from LiuMichelle's Letterboxd diary/review RSS feed.
+ * Parse and sync movies from Lucas's Letterboxd diary/review RSS feed.
  *
  * Task 1 exports pure parser helpers; full Sanity sync is added in later tasks.
  *
@@ -400,10 +400,10 @@ function hasValidRssStructure(xml) {
 }
 
 async function fetchLetterboxdFeed(fetchImpl = fetch) {
-  const username = process.env.LETTERBOXD_USERNAME || 'LiuMichelle';
+  const username = process.env.LETTERBOXD_USERNAME || 'lucasvu';
   const url = `https://letterboxd.com/${username.toLowerCase()}/rss/`;
   const response = await fetchImpl(url, {
-    headers: {'User-Agent': 'michelle-liu-letterboxd-sanity-sync/1.0'},
+    headers: {'User-Agent': 'lucas-vu-letterboxd-sanity-sync/1.0'},
   });
 
   if (!response.ok) {

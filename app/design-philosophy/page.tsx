@@ -3,7 +3,7 @@ import DesignPhilosophyPage from "@/components/design-philosophy/DesignPhilosoph
 import { siteUrl } from "@/lib/site";
 
 const description =
-  "Why I'm excited to be a designer in 2026 — Lucas Vu's design philosophy on taste, curiosity, and the privilege of building.";
+  "Why I’m Finally Ready to Call Myself a Designer — a morning by the water, a hummingbird, and the craft that actually feeds you.";
 
 export const metadata: Metadata = {
   title: "Design Philosophy | lucas vu",

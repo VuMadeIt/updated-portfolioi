@@ -8,7 +8,7 @@ function formatDate(isoDate) {
     return null;
   }
 
-  // Always format in America/Los_Angeles so the date matches Michelle's local day
+  // Always format in America/Los_Angeles so the date matches the site owner's local day
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Los_Angeles',
     month: '2-digit',

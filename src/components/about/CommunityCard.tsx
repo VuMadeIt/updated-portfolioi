@@ -126,15 +126,12 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
   }, [expandedPhotoId, handleClosePhoto]);
 
   type PhotoSizeClasses = {
-    vertical: string;
-    horizontal: string;
-    horizontalWide: string;
-    captionVertical: string;
-    captionHorizontal: string;
-    captionHorizontalWide: string;
+    vertical: { width: string; height: string };
+    horizontal: { width: string; height: string };
+    horizontalWide: { width: string; height: string };
   };
 
-  function getPhotoFrameClass(
+  function getPhotoSize(
     photo: CommunityPhoto,
     sizeClasses: PhotoSizeClasses,
   ) {
@@ -143,19 +140,43 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
     return sizeClasses.horizontal;
   }
 
-  function getPhotoCaptionClass(
-    photo: CommunityPhoto,
-    sizeClasses: PhotoSizeClasses,
-  ) {
-    if (photo.orientation === "vertical") return sizeClasses.captionVertical;
-    if (photo.frameVariant === "wide") return sizeClasses.captionHorizontalWide;
-    return sizeClasses.captionHorizontal;
-  }
-
   function getImageStyle(photo: CommunityPhoto) {
     return photo.objectPosition
       ? { objectPosition: photo.objectPosition }
       : undefined;
+  }
+
+  function renderPolaroidBody(
+    photo: CommunityPhoto,
+    sizeClasses: PhotoSizeClasses,
+  ) {
+    const { width, height } = getPhotoSize(photo, sizeClasses);
+
+    return (
+      <div
+        className={clsx(
+          "relative flex flex-col overflow-hidden rounded-sm border border-zinc-100 bg-white p-1.5 pb-0 shadow-media transition-transform duration-200 hover:scale-[1.01]",
+          width,
+        )}
+      >
+        <div className={clsx("relative w-full overflow-hidden rounded-sm", height)}>
+          <ShimmerImage
+            src={photo.imageSrc}
+            alt={photo.caption || "Community photo"}
+            className="h-full w-full object-cover"
+            style={getImageStyle(photo)}
+            loading="lazy"
+            rounded="rounded-sm"
+            wrapperClassName="absolute inset-0 h-full w-full"
+          />
+        </div>
+        {photo.caption && (
+          <p className="w-full text-pretty px-1.5 pb-3 pt-2.5 text-left font-['Lucas',sans-serif] text-xs font-normal leading-snug text-zinc-500">
+            {photo.caption}
+          </p>
+        )}
+      </div>
+    );
   }
 
   function renderPhoto(
@@ -172,39 +193,10 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
         onClick={() => setExpandedPhotoId(photo.id)}
       >
         <div
-          className="relative flex flex-col gap-1"
+          className="relative"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
-          <div className="relative transition-transform duration-200 hover:scale-[1.01]">
-            <div className="absolute -inset-2 rounded-sm border border-zinc-100 bg-white shadow-media" />
-            <div
-              className={clsx(
-                "relative overflow-hidden rounded-sm",
-                getPhotoFrameClass(photo, sizeClasses),
-              )}
-            >
-              <ShimmerImage
-                src={photo.imageSrc}
-                alt={photo.caption || "Community photo"}
-                className="h-full w-full object-cover"
-                style={getImageStyle(photo)}
-                loading="lazy"
-                rounded="rounded-sm"
-                wrapperClassName="absolute inset-0 h-full w-full"
-              />
-            </div>
-          </div>
-          {photo.caption && (
-            <p
-              className={clsx(
-                "mt-2 font-['Lucas',sans-serif] text-sm font-normal leading-tight text-zinc-500",
-                getPhotoCaptionClass(photo, sizeClasses),
-              )}
-              style={{ fontVariationSettings: "'opsz' 9" }}
-            >
-              {photo.caption}
-            </p>
-          )}
+          {renderPolaroidBody(photo, sizeClasses)}
         </div>
       </div>
     );
@@ -217,55 +209,25 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
     rowHeightClass: string,
   ) {
     return (
-      <div className={clsx("flex w-full items-start justify-center", rowHeightClass)}>
+      <div className={clsx("flex w-full items-start justify-center gap-1", rowHeightClass)}>
         {rowPhotos.map((photo, rowIndex) => {
           const index = rowStartIndex + rowIndex;
           const rotation = photo.rotation ?? defaultRotations[index] ?? 0;
           const yOffsetValue = parseInt(photo.yOffset || "0", 10) * 4;
           const xOffsetValue = parseInt(photo.xOffset || "0", 10) * 4;
-          const marginClass = rowIndex === 0 ? "" : "-ml-3";
 
           return (
             <div
               key={photo.id}
-              className={clsx("cursor-pointer", marginClass)}
+              className="cursor-pointer"
               style={{ transform: `translate(${xOffsetValue}px, ${yOffsetValue}px)` }}
               onClick={() => setExpandedPhotoId(photo.id)}
             >
               <div
-                className="relative flex flex-col gap-1"
+                className="relative"
                 style={{ transform: `rotate(${rotation}deg)` }}
               >
-                <div className="relative transition-transform duration-200 hover:scale-[1.01]">
-                  <div className="absolute -inset-2 rounded-sm border border-zinc-100 bg-white shadow-media" />
-                  <div
-                    className={clsx(
-                      "relative overflow-hidden rounded-sm",
-                      getPhotoFrameClass(photo, sizeClasses),
-                    )}
-                  >
-                    <ShimmerImage
-                      src={photo.imageSrc}
-                      alt={photo.caption || "Community photo"}
-                      className="h-full w-full object-cover"
-                      style={getImageStyle(photo)}
-                      loading="lazy"
-                      rounded="rounded-sm"
-                      wrapperClassName="absolute inset-0 h-full w-full"
-                    />
-                  </div>
-                </div>
-                {photo.caption && (
-                  <p
-                    className={clsx(
-                      "mt-2 font-['Lucas',sans-serif] text-sm font-normal leading-tight text-zinc-500",
-                      getPhotoCaptionClass(photo, sizeClasses),
-                    )}
-                    style={{ fontVariationSettings: "'opsz' 9" }}
-                  >
-                    {photo.caption}
-                  </p>
-                )}
+                {renderPolaroidBody(photo, sizeClasses)}
               </div>
             </div>
           );
@@ -275,30 +237,21 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
   }
 
   const desktopSizeClasses: PhotoSizeClasses = {
-    vertical: "h-72 w-60",
-    horizontal: "h-60 w-72",
-    horizontalWide: "h-60 w-[21rem]",
-    captionVertical: "w-60",
-    captionHorizontal: "w-72",
-    captionHorizontalWide: "w-[21rem]",
+    vertical: { width: "w-40", height: "h-52" },
+    horizontal: { width: "w-48", height: "h-40" },
+    horizontalWide: { width: "w-56", height: "h-40" },
   };
 
   const tabletSizeClasses: PhotoSizeClasses = {
-    vertical: "h-56 w-48",
-    horizontal: "h-48 w-56",
-    horizontalWide: "h-48 w-[17rem]",
-    captionVertical: "w-48",
-    captionHorizontal: "w-56",
-    captionHorizontalWide: "w-[17rem]",
+    vertical: { width: "w-36", height: "h-44" },
+    horizontal: { width: "w-44", height: "h-36" },
+    horizontalWide: { width: "w-52", height: "h-36" },
   };
 
   const mobileSizeClasses: PhotoSizeClasses = {
-    vertical: "h-52 w-44",
-    horizontal: "h-44 w-52",
-    horizontalWide: "h-44 w-60",
-    captionVertical: "w-44",
-    captionHorizontal: "w-52",
-    captionHorizontalWide: "w-60",
+    vertical: { width: "w-36", height: "h-44" },
+    horizontal: { width: "w-44", height: "h-36" },
+    horizontalWide: { width: "w-48", height: "h-36" },
   };
 
   return (
@@ -401,7 +354,7 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
 
       {/* Photo Collage - full width below header */}
       {photos.length > 0 && (
-        <div className="relative w-full shrink-0 px-4">
+        <div className="relative w-full shrink-0 overflow-x-clip px-2 md:px-4">
           {isSplitOverlapLayout ? (
             <>
               <div className="flex w-full flex-col items-center gap-10 lg:hidden">
@@ -411,13 +364,13 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
               </div>
 
               <div className="hidden lg:flex xl:hidden w-full flex-col items-center gap-8">
-                {renderOverlapRow(photos.slice(0, 4), 0, tabletSizeClasses, "h-[360px]")}
-                {renderOverlapRow(photos.slice(4), 4, tabletSizeClasses, "h-[360px]")}
+                {renderOverlapRow(photos.slice(0, 4), 0, tabletSizeClasses, "min-h-[300px]")}
+                {renderOverlapRow(photos.slice(4), 4, tabletSizeClasses, "min-h-[300px]")}
               </div>
 
               <div className="hidden xl:flex w-full flex-col items-center gap-8">
-                {renderOverlapRow(photos.slice(0, 4), 0, desktopSizeClasses, "h-[400px]")}
-                {renderOverlapRow(photos.slice(4), 4, desktopSizeClasses, "h-[400px]")}
+                {renderOverlapRow(photos.slice(0, 4), 0, desktopSizeClasses, "min-h-[320px]")}
+                {renderOverlapRow(photos.slice(4), 4, desktopSizeClasses, "min-h-[320px]")}
               </div>
             </>
           ) : (
@@ -452,7 +405,9 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
           <div
             className={clsx(
               "hidden xl:w-full xl:justify-items-center",
-              isMultiRowLayout ? "xl:grid xl:grid-cols-3 xl:gap-x-6 xl:gap-y-10" : "xl:flex xl:h-[400px] xl:items-start xl:justify-center",
+              isMultiRowLayout
+                ? "xl:grid xl:grid-cols-3 xl:gap-x-6 xl:gap-y-10"
+                : "xl:flex xl:min-h-[320px] xl:items-start xl:justify-center xl:gap-1",
             )}
           >
             {photos.map((photo, index) => {
@@ -463,49 +418,19 @@ export default function CommunityCard({ className, data }: CommunityCardProps) {
               const rotation = photo.rotation ?? defaultRotations[index] ?? 0;
               const yOffsetValue = parseInt(photo.yOffset || "0", 10) * 4;
               const xOffsetValue = parseInt(photo.xOffset || "0", 10) * 4;
-              const marginClasses = ["", "-ml-2", "-ml-2", "-ml-2"];
 
               return (
                 <div
                   key={photo.id}
-                  className={clsx("cursor-pointer", marginClasses[index])}
+                  className="cursor-pointer"
                   style={{ transform: `translate(${xOffsetValue}px, ${yOffsetValue}px)` }}
                   onClick={() => setExpandedPhotoId(photo.id)}
                 >
                   <div
-                    className="relative flex flex-col gap-1"
+                    className="relative"
                     style={{ transform: `rotate(${rotation}deg)` }}
                   >
-                    <div className="relative transition-transform duration-200 hover:scale-[1.01]">
-                      <div className="absolute -inset-2 rounded-sm border border-zinc-100 bg-white shadow-media" />
-                      <div
-                        className={clsx(
-                          "relative overflow-hidden rounded-sm",
-                          getPhotoFrameClass(photo, desktopSizeClasses),
-                        )}
-                      >
-                        <ShimmerImage
-                          src={photo.imageSrc}
-                          alt={photo.caption || "Community photo"}
-                          className="h-full w-full object-cover"
-                          style={getImageStyle(photo)}
-                          loading="lazy"
-                          rounded="rounded-sm"
-                          wrapperClassName="absolute inset-0 h-full w-full"
-                        />
-                      </div>
-                    </div>
-                    {photo.caption && (
-                      <p
-                        className={clsx(
-                          "mt-2 font-['Lucas',sans-serif] text-sm font-normal leading-tight text-zinc-500",
-                          getPhotoCaptionClass(photo, desktopSizeClasses),
-                        )}
-                        style={{ fontVariationSettings: "'opsz' 9" }}
-                      >
-                        {photo.caption}
-                      </p>
-                    )}
+                    {renderPolaroidBody(photo, desktopSizeClasses)}
                   </div>
                 </div>
               );

@@ -59,6 +59,10 @@ const nextConfig: NextConfig = {
       { source: "/work", destination: "/", permanent: true },
       { source: "/system", destination: "/design-system", permanent: true },
       { source: "/ds", destination: "/design-system", permanent: true },
+      { source: "/gallery", destination: "/", permanent: true },
+      { source: "/gallery/:path*", destination: "/", permanent: true },
+      { source: "/project/gallery", destination: "/", permanent: true },
+      { source: "/project/gallery/:path*", destination: "/", permanent: true },
     ];
   },
 

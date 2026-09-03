@@ -10,8 +10,14 @@ export const experimentProject = defineType({
     defineField({
       name: 'projectId',
       title: 'Project ID',
-      description: 'Unique identifier (e.g., "polaroid", "screentime", "library", "sketchbook")',
+      description: 'Unique identifier for work-grid side projects',
       type: 'string',
+      options: {
+        list: [
+          {title: 'Parrot', value: 'parrot'},
+          {title: 'Creators Collective', value: 'creators-collective'},
+        ],
+      },
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -63,7 +69,7 @@ export const experimentProject = defineType({
     defineField({
       name: 'tryItOutHref',
       title: 'Try It Out URL',
-      description: 'The route path (e.g., "/polaroid", "/library")',
+      description: 'The route path (e.g., "/creators-collective")',
       type: 'string',
     }),
     defineField({

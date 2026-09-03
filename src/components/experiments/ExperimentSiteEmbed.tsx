@@ -33,11 +33,14 @@ export type ExperimentSiteProject = {
 export function ToolsSection({ categories, large = false, noLine = false }: { categories: ToolCategory[]; large?: boolean; noLine?: boolean }) {
   if (!categories || categories.length === 0) return null;
 
+  const desktopGridCols =
+    categories.length >= 5 ? "md:grid-cols-5" : "md:grid-cols-4";
+
   const grids = (
     <>
       <div className={clsx(
         "font-['Lucas',sans-serif] font-normal relative shrink-0 w-full hidden md:grid",
-        large ? "flex gap-5 text-base grid-cols-4" : "gap-3 grid-cols-4 text-base"
+        large ? clsx("flex gap-5 text-base", desktopGridCols) : clsx("gap-3 text-base", desktopGridCols)
       )}>
         {categories.map((category, idx) => (
           <div key={idx} className={clsx(
@@ -104,6 +107,43 @@ export function ViewOnXButton({ href, className }: { href: string; className?: s
         View on
       </span>
       <XLogo size="12px" className="text-white" />
+      <span className="text-white inline-flex items-center">
+        <ArrowUpRight size="12px" />
+      </span>
+    </a>
+  );
+}
+
+export function ViewOnSiteButton({
+  href,
+  siteName,
+  buttonLabel = "View on",
+  className,
+}: {
+  href: string;
+  siteName?: string;
+  buttonLabel?: string;
+  className?: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={buttonClassName({
+        variant: "primary",
+        size: "sm",
+        className: clsx("whitespace-nowrap inline-flex items-center gap-1", className),
+      })}
+    >
+      <span className="font-['Lucas',sans-serif] font-medium leading-normal text-sm text-white whitespace-nowrap">
+        {buttonLabel}
+      </span>
+      {siteName ? (
+        <span className="font-['Lucas',sans-serif] font-medium leading-normal text-sm text-white whitespace-nowrap">
+          {siteName}
+        </span>
+      ) : null}
       <span className="text-white inline-flex items-center">
         <ArrowUpRight size="12px" />
       </span>

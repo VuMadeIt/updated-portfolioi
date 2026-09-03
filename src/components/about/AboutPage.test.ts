@@ -23,8 +23,26 @@ test("hardcodes Lucas experience without freelance startup logos", () => {
 test("lists Waterloo Systems Design as education", () => {
   assert.match(source, /Systems Design Engineer, University of Waterloo/);
   assert.doesNotMatch(source, /Cognitive Science, UCLA/);
-  assert.match(source, /A Solo Backpacking Trip in Anime Land!/);
+  assert.match(source, /date="01\/08\/26"/);
+  assert.match(source, /a solo backpacking trip in anime land!/);
+  assert.doesNotMatch(source, /A Solo Backpacking Trip in Anime Land!/);
   assert.doesNotMatch(source, /Hung Liu/);
+  assert.match(source, /object-contain/);
+  assert.match(source, /pb-8 pt-5/);
+  assert.match(source, /border-zinc-100 bg-white/);
+  assert.match(source, /shadow-media/);
+  assert.doesNotMatch(source, /from-\[#f7f5f0\]\/95/);
+  assert.doesNotMatch(source, /#f7f5f0/);
+});
+
+test("uses the cycling known-as heading and updated hi copy", () => {
+  assert.match(source, /KnownAsHeading/);
+  assert.match(source, /passion to constantly try new things/);
+  assert.match(source, /passion for human connection/);
+  assert.doesNotMatch(source, /Hi, I'm Lucas!/);
+  assert.doesNotMatch(source, /Golden Retriever Energy/);
+  assert.doesNotMatch(source, /ContactBadge/);
+  assert.doesNotMatch(source, /Seeking Summer 2027/);
 });
 
 test("replaces Sundays in LA community with the designers section", () => {
@@ -48,7 +66,8 @@ test("replaces UCLA Product Space with The Cadet Community section", () => {
   assert.match(source, /most defining part of my childhood/);
   assert.match(source, /Remembrance Day Parade in the Snow/);
   assert.match(source, /Riding in the back of an Army Truck!!/);
-  assert.match(source, /The GGHG Face Paint Tattoo/);
+  assert.match(source, /The GGHG Tattoo/);
+  assert.doesNotMatch(source, /The GGHG Face Paint Tattoo/);
   assert.match(source, /PEAK aura farming/);
   assert.match(source, /rotation: 3/);
   assert.match(source, /buildCadetCommunity/);
@@ -59,7 +78,8 @@ test("keeps The Chess Players as a separate community", () => {
   assert.match(source, /title: "the chess players!"/);
   assert.match(source, /sidebarName: "the chess players!"/);
   assert.match(source, /Chess Jesus/);
-  assert.match(source, /I gave a 15-min speech at the Volunteer Appreciation Ceremony!!/);
+  assert.match(source, /This was after my 15-min speech at the Volunteer Appreciation Ceremony!!/);
+  assert.doesNotMatch(source, /I gave a 15-min speech at the Volunteer Appreciation Ceremony!!/);
   assert.doesNotMatch(source, /😎/);
   assert.match(source, /buildChessPlayersCommunity/);
   assert.match(source, /chess-tcdsb-west-end/);
@@ -82,8 +102,11 @@ test("replaces Nexus with The Sidequesters section", () => {
 });
 
 test("replaces favorite quotes with a design philosophy preview card", () => {
-  assert.match(source, /title="My Design Philosophy"/);
-  assert.match(source, /subtitle="why I do what I do\.\.\."/);
+  assert.match(source, /title="why design"/);
+  assert.match(
+    source,
+    /the reason why design serves as \(one of\) my life's purposes/,
+  );
   assert.match(source, /DesignPhilosophyPreviewCard/);
   assert.match(source, /DesignPhilosophyModal/);
   assert.match(source, /isDesignPhilosophyOpen/);

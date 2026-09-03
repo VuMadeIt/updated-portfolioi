@@ -29,10 +29,10 @@ export const project = defineType({
       type: 'string',
       options: {
         list: [
-          {title: 'Apple', value: 'apple'},
-          {title: 'Roblox', value: 'roblox'},
-          {title: 'Adobe', value: 'adobe'},
-          {title: 'NASA', value: 'nasa'},
+          {title: 'Warframe', value: 'apple'},
+          {title: 'Maple Leaf Foods', value: 'roblox'},
+          {title: 'Ripple', value: 'adobe'},
+          {title: 'Shufflr', value: 'nasa'},
         ],
         layout: 'radio',
       },

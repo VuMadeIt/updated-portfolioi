@@ -4,7 +4,7 @@ import { INTRODUCTION_NAV_ID } from "../caseStudyNavItems";
 export const RIPPLE_FIGMA_EMBED_URL =
   "https://embed.figma.com/proto/01XnqrdkdhHhUCY7Ii3AvT/BLOOM-Designathon-2026?node-id=36-1061&p=f&scaling=scale-down&content-scaling=fixed&starting-point-node-id=36%3A1061&page-id=0%3A1&embed-host=share";
 
-export const RIPPLE_TAGLINE = "Sustainable AI through reuse, not regeneration.";
+export const RIPPLE_TAGLINE = "Reimagining a cleaner future with LLMs";
 
 export const RIPPLE_VIDEOS = {
   home: "/videos/ripple/home.mp4",
@@ -52,7 +52,7 @@ export const RIPPLE_EDITORIAL_BLOCKS: RippleEditorialBlock[] = [
     title: "Our approach",
     body: [
       "There are hundreds of environmental issues to tackle, from transportation and clothing to food waste. Initially, we brainstormed a wide range of ideas, including a community sharing platform for item borrowing, daily sustainability challenges, and an app around reduce, reuse, and recycle.",
-      "We wanted to find an unsustainable action in everyday life so our solution could maximize impact at a behavioural level, rather than requiring large lifestyle changes. However, we decided to dive into something less commonly discussed.",
+      "We wanted to find an unsustainable action in everyday life so our solution could maximize impact at a behavioral level, rather than requiring large lifestyle changes. However, we decided to dive into something less commonly discussed.",
     ],
     images: [
       {
@@ -77,7 +77,7 @@ export const RIPPLE_EDITORIAL_BLOCKS: RippleEditorialBlock[] = [
   {
     title: "Ripple: a more sustainable AI experience",
     body: [
-      "Ripple is a concept focused on reuse, not regeneration. When a user enters a prompt, Ripple searches through a database of previously asked prompts and resurfaces the most relevant answers, eliminating unnecessary AI generation and saving energy and water used by data centres.",
+      "Ripple is a concept focused on reuse, not regeneration. When a user enters a prompt, Ripple searches through a database of previously asked prompts and resurfaces the most relevant answers, eliminating unnecessary AI generation and saving energy and water used by data centers.",
       "For example, instead of sending a new prompt to learn about the Eiffel Tower, Ripple searches previously asked prompts relevant to your question and resurfaces existing answers. If no relevant match is found, Ripple can still respond like a typical LLM, but prioritizes efficient, low-cost models.",
     ],
     images: [
@@ -166,7 +166,7 @@ export const RIPPLE_DECISIONS = [
   {
     title: "Ripple and water effects",
     body: [
-      "The theme of water runs throughout the design to reinforce the environmental message. Water-saving animations, stats, and the history river work together to gamify sustainable behaviour.",
+      "The theme of water runs throughout the design to reinforce the environmental message. Water-saving animations, stats, and the history river work together to gamify sustainable behavior.",
     ],
   },
 ] as const;

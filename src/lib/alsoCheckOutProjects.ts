@@ -7,6 +7,7 @@ export type PortfolioProjectCard = {
   year: string;
   description: string;
   imageSrc: string;
+  videoSrc?: string;
 };
 
 export type AlsoCheckOutProject = PortfolioProjectCard & {

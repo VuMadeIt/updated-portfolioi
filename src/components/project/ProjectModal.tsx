@@ -12,7 +12,6 @@ import {
 import type { Project, ContentSection } from "../../sanity/types";
 import { ICON_STROKE_WIDTH } from "../shared/iconSizes";
 import { LoadingText } from "../shared/LoadingSpinner";
-import BrandMark from "../shared/BrandMark";
 
 const LOCAL_HERO_VIDEOS: Record<string, string> = {
   roblox: "/videos/maple-leaf.mp4",
@@ -432,7 +431,7 @@ function Breadcrumb({ projectName, onWorkClick, isScrolled = false, isPastHero =
         onClick={onWorkClick}
         className={clsx(
           "flex items-center justify-center py-0.5 rounded-md transition-all duration-300 ease-out hover:bg-[#f4f4f5]",
-          isScrolled ? "opacity-0 pointer-events-none w-0 px-0 overflow-hidden" : "opacity-100 px-1.5 ml-2"
+          isScrolled ? "opacity-0 pointer-events-none w-0 px-0 overflow-hidden" : "opacity-100 px-1.5"
         )}
       >
         <span className="font-['Lucas:Medium',sans-serif] font-medium text-sm leading-normal text-[#52525b] whitespace-nowrap">
@@ -948,11 +947,6 @@ function PasswordInput({
   );
 }
 
-const LogoIcon = ({ className }: { className?: string }) => (
-  <BrandMark size="lg" className={clsx("text-[2.75rem]", className)} />
-);
-
-type ProjectModalProps = {
   projectId: string; // company name: "apple", "roblox", "adobe", "nasa"
   onClose: () => void;
   onBack?: () => void;
@@ -967,6 +961,7 @@ type ProjectModalProps = {
     year: string;
     description: string;
     imageSrc: string;
+    videoSrc?: string;
   }>;
 };
 
@@ -1262,25 +1257,6 @@ export default function ProjectModal({
     }
   };
 
-  const handleBack = () => {
-    if (isFullscreen) {
-      // In fullscreen mode on desktop, clicking logo should collapse back to modal view
-      const isDesktop = window.innerWidth >= 768;
-      if (isDesktop && onCollapseFromFullscreen) {
-        onCollapseFromFullscreen();
-      } else if (onViewAllProjects) {
-        // On mobile or if no collapse handler, go to homepage
-        onViewAllProjects();
-      }
-    } else if (onBack) {
-      setIsClosing(true);
-      setIsVisible(false);
-      setTimeout(() => {
-        onBack();
-      }, 300);
-    }
-  };
-
   const scrollToNavTarget = (id: string) => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -1473,20 +1449,6 @@ export default function ProjectModal({
               }} */
             >
               <div className="content-stretch flex gap-1.5 items-center relative shrink-0 w-full">
-                <button
-                  onClick={handleBack}
-                  className={clsx(
-                    "overflow-clip relative shrink-0 cursor-pointer hover:opacity-80 transition-all duration-300 ease-out p-0 border-0 bg-transparent",
-                    isScrolled ? "size-7" : "size-8 md:size-[44px]"
-                  )}
-                >
-                  <LogoIcon
-                    className={clsx(
-                      isScrolled ? "text-2xl" : "text-2xl md:text-[2.75rem]",
-                    )}
-                  />
-                </button>
-                
                 {/* Breadcrumb navigation */}
                 <Breadcrumb 
                   projectName={getBreadcrumbProjectName(projectId, project)}
@@ -1815,6 +1777,7 @@ export default function ProjectModal({
                       year: related.year,
                       description: related.description,
                       imageSrc: related.imageSrc,
+                      videoSrc: related.videoSrc,
                     }))}
                     onProjectClick={(proj) => {
                       const relatedProject = alsoCheckOutProjects.find(
