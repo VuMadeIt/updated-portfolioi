@@ -68,9 +68,20 @@ function BodyText({
   );
 }
 
-function PullQuote({ children }: { children: React.ReactNode }) {
+function PullQuote({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <blockquote className="border-l-2 border-zinc-300 pl-5 font-['Lucas',sans-serif] text-xl leading-relaxed text-zinc-800 md:text-2xl">
+    <blockquote
+      className={clsx(
+        "border-l-2 border-zinc-300 pl-5 font-['Lucas',sans-serif] text-xl leading-relaxed text-zinc-800 md:text-2xl",
+        className,
+      )}
+    >
       {children}
     </blockquote>
   );

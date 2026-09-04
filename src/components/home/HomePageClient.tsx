@@ -40,6 +40,7 @@ import {
 import NavigationTabs from "../layout/NavigationTabs";
 import WorkHero from "./WorkHero";
 import ComingSoonCursor, { useComingSoonCursor } from "./ComingSoonCursor";
+import { useScrollLock } from "../../utils/useScrollLock";
 import { HorizontalLine } from "../shared/HorizontalLine";
 import { muxPosterUrl, posterTimeForProject } from "../../lib/muxPoster";
 import { toInternalProjectId, toPublicProjectSlug } from "../../lib/projectSlugs";

@@ -3,7 +3,7 @@ export const SITE_OWNER_FIRST = "Lucas";
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://lucasvu.com");
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://michelle-liu-nu.vercel.app");
 
 export const LETTERBOXD_USERNAME =
   process.env.NEXT_PUBLIC_LETTERBOXD_USERNAME ?? "lucasvu";
