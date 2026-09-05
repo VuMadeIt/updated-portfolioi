@@ -44,21 +44,32 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing project" }, { status: 400 });
   }
 
-  const project = await sanityClient.fetch<Project | null>(PROJECT_BY_COMPANY_QUERY, {
-    company,
-  });
+  try {
+    const project = await sanityClient.fetch<Project | null>(
+      PROJECT_BY_COMPANY_QUERY,
+      { company },
+    );
 
-  if (!project) {
-    return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    if (!project) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    const unlocked = hasProjectAccess(req, company);
+    const responseProject = unlocked
+      ? project
+      : filterProjectForPublicAccess(project);
+
+    return NextResponse.json(responseProject, {
+      headers: {
+        "Cache-Control": "private, no-store",
+        "X-Project-Unlocked": unlocked ? "true" : "false",
+      },
+    });
+  } catch (error) {
+    console.warn("Sanity project fetch failed:", error);
+    return NextResponse.json(
+      { error: "Failed to load project" },
+      { status: 502 },
+    );
   }
-
-  const unlocked = hasProjectAccess(req, company);
-  const responseProject = unlocked ? project : filterProjectForPublicAccess(project);
-
-  return NextResponse.json(responseProject, {
-    headers: {
-      "Cache-Control": "private, no-store",
-      "X-Project-Unlocked": unlocked ? "true" : "false",
-    },
-  });
 }

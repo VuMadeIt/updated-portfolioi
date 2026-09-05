@@ -1,13 +1,11 @@
-/** Public work-grid slugs → Sanity company / experiment ids. */
+/** Public work-grid slugs → Sanity company ids (only where CMS still uses old keys). */
 export const PUBLIC_TO_INTERNAL: Record<string, string> = {
-  warframe: "apple",
+  // Maple Leaf unlock/password docs may still live under the legacy company key.
   "maple-leaf-foods": "roblox",
   mapleleaf: "roblox",
-  ripple: "adobe",
-  shufflr: "nasa",
 };
 
-/** Sanity company ids → public URL slugs. */
+/** Legacy Michelle company ids → Lucas public URL slugs (old links / cookies). */
 export const INTERNAL_TO_PUBLIC: Record<string, string> = {
   apple: "warframe",
   roblox: "maple-leaf-foods",
@@ -21,4 +19,10 @@ export function toInternalProjectId(slug: string): string {
 
 export function toPublicProjectSlug(id: string): string {
   return INTERNAL_TO_PUBLIC[id] ?? id;
+}
+
+/** Case studies that render entirely from local code (no Sanity project row required). */
+export function isLocalOnlyCaseStudy(projectId: string): boolean {
+  const id = toPublicProjectSlug(projectId);
+  return id === "shufflr" || id === "ripple" || id === "warframe";
 }

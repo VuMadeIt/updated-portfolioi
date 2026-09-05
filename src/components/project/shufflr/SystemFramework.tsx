@@ -14,13 +14,18 @@ import { isOverDropZone } from "./dropZone";
 type Pillar = (typeof SHUFFLR_SYSTEM_PILLARS)[number];
 type PillarId = Pillar["id"];
 
-const WORD_LAYOUTS: Record<
+/**
+ * Arc above the bottom-center folder.
+ * Viability sits on the center axis (directly over the folder), higher;
+ * the other two share the same offset from center and sit lower.
+ */
+const SLOT_LAYOUT: Record<
   PillarId,
-  { left: string; top: string; rotate: number; bobDelay: number }
+  { left: string; top: string; bobDelay: number }
 > = {
-  desirability: { left: "12%", top: "10%", rotate: -5, bobDelay: 0 },
-  viability: { left: "40%", top: "7%", rotate: 4, bobDelay: 0.45 },
-  feasibility: { left: "64%", top: "18%", rotate: -3, bobDelay: 0.9 },
+  desirability: { left: "22%", top: "34%", bobDelay: 0 },
+  viability: { left: "50%", top: "22%", bobDelay: 0.45 },
+  feasibility: { left: "78%", top: "34%", bobDelay: 0.9 },
 };
 
 function MacFolder({
@@ -68,7 +73,6 @@ function PillarWord({
   pillar,
   reduceMotion,
   absorbing,
-  showDragHint,
   onDropInFolder,
   folderRef,
   onHoverFolderChange,
@@ -76,12 +80,11 @@ function PillarWord({
   pillar: Pillar;
   reduceMotion: boolean | null;
   absorbing: boolean;
-  showDragHint: boolean;
   onDropInFolder: (id: PillarId) => void;
   folderRef: React.RefObject<HTMLDivElement | null>;
   onHoverFolderChange: (over: boolean) => void;
 }) {
-  const layout = WORD_LAYOUTS[pillar.id];
+  const layout = SLOT_LAYOUT[pillar.id];
   const wordRef = useRef<HTMLDivElement>(null);
   const overRef = useRef(false);
   const [dragging, setDragging] = useState(false);
@@ -90,7 +93,6 @@ function PillarWord({
     (point: { x: number; y: number }) => {
       const folder = folderRef.current;
       const word = wordRef.current;
-      // Framer `point` is page-space; rects are viewport — normalize.
       const clientPoint = {
         x: point.x - (typeof window !== "undefined" ? window.scrollX : 0),
         y: point.y - (typeof window !== "undefined" ? window.scrollY : 0),
@@ -108,14 +110,10 @@ function PillarWord({
     <motion.div
       ref={wordRef}
       className={clsx(
-        "absolute z-30 touch-none select-none",
+        "absolute z-30 -translate-x-1/2 touch-none select-none",
         dragging ? "cursor-grabbing" : "cursor-grab",
       )}
-      style={{
-        left: layout.left,
-        top: layout.top,
-        rotate: layout.rotate,
-      }}
+      style={{ left: layout.left, top: layout.top }}
       drag={!absorbing}
       dragMomentum={false}
       dragElastic={0.05}
@@ -123,7 +121,7 @@ function PillarWord({
       initial={false}
       animate={
         absorbing
-          ? { opacity: 0, scale: 0.15, x: -60, y: 110 }
+          ? { opacity: 0, scale: 0.12, y: 160 }
           : reduceMotion || dragging
             ? { opacity: 1, scale: 1, y: 0 }
             : { opacity: 1, scale: 1, y: [0, -5, 0] }
@@ -164,15 +162,45 @@ function PillarWord({
         if (shouldDrop) onDropInFolder(pillar.id);
       }}
     >
-      <div className="relative inline-block">
-        <p className="font-['Lucas',sans-serif] text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">
-          {pillar.title}
+      <p className="whitespace-nowrap text-center font-['Lucas',sans-serif] text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl md:text-3xl">
+        {pillar.title}
+      </p>
+    </motion.div>
+  );
+}
+
+function RevealedCard({
+  pillar,
+  reduceMotion,
+}: {
+  pillar: Pillar;
+  reduceMotion: boolean | null;
+}) {
+  const layout = SLOT_LAYOUT[pillar.id];
+
+  return (
+    <motion.div
+      className="absolute z-20 w-[min(200px,30%)] -translate-x-1/2 sm:w-[min(220px,28%)]"
+      style={{ left: layout.left, top: layout.top }}
+      initial={reduceMotion ? false : { opacity: 0, scale: 0.94, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 320, damping: 26 }}
+    >
+      <div className="rounded-2xl border border-white/70 bg-white/90 p-3 shadow-[0_8px_24px_rgba(24,24,27,0.1)] backdrop-blur-sm sm:p-3.5">
+        <div className="mb-1.5 flex items-center gap-2">
+          <span
+            className="size-2.5 shrink-0 rounded-full"
+            style={{ backgroundColor: pillar.color }}
+            aria-hidden
+          />
+          <h3 className="font-['Lucas',sans-serif] text-sm font-semibold text-zinc-900">
+            {pillar.title}
+          </h3>
+        </div>
+        <p className="font-['Lucas',sans-serif] text-[11px] leading-relaxed text-zinc-600 sm:text-xs">
+          {pillar.body}
         </p>
-        {showDragHint && !absorbing && (
-          <span className="pointer-events-none absolute bottom-0 right-0 translate-x-[110%] translate-y-[40%] whitespace-nowrap font-['Lucas',sans-serif] text-[10px] text-zinc-400 sm:text-[11px]">
-            drag me
-          </span>
-        )}
       </div>
     </motion.div>
   );
@@ -186,11 +214,8 @@ export function SystemFramework({ className }: { className?: string }) {
   const [folderHighlight, setFolderHighlight] = useState(false);
 
   const remaining = SHUFFLR_SYSTEM_PILLARS.filter(
-    (p) => !droppedIds.includes(p.id),
+    (p) => !droppedIds.includes(p.id) && absorbingId !== p.id,
   );
-  const revealed = droppedIds
-    .map((id) => SHUFFLR_SYSTEM_PILLARS.find((p) => p.id === id)!)
-    .filter(Boolean);
 
   const finalizeDrop = useCallback((id: PillarId) => {
     setDroppedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -217,42 +242,54 @@ export function SystemFramework({ className }: { className?: string }) {
     return () => window.clearTimeout(t);
   }, [absorbingId, finalizeDrop]);
 
-  const hintId = remaining[0]?.id;
+  const visibleWords = SHUFFLR_SYSTEM_PILLARS.filter(
+    (p) => !droppedIds.includes(p.id),
+  );
+  const revealed = SHUFFLR_SYSTEM_PILLARS.filter((p) =>
+    droppedIds.includes(p.id),
+  );
 
   return (
     <div className={clsx("w-full", className)}>
       <div
-        className={clsx(
-          "relative w-full overflow-hidden rounded-[26px]",
-          revealed.length > 1
-            ? "min-h-[680px] sm:min-h-[640px]"
-            : "min-h-[560px] sm:min-h-[620px]",
-        )}
+        className="relative min-h-[480px] w-full overflow-hidden rounded-[26px] p-4 sm:min-h-[520px] sm:p-5 md:min-h-[540px] md:p-6"
         style={{ backgroundColor: "#E7F0FA" }}
-        aria-label="Drag Desirability, Viability, and Feasibility into the Shufflr folder to reveal each definition"
+        aria-label="Drag each word into the Shufflr folder to reveal its definition"
       >
-        {remaining.map((pillar) => (
+        <p className="pointer-events-none absolute right-4 top-4 z-40 max-w-[11rem] text-right font-['Lucas',sans-serif] text-[10px] leading-snug text-zinc-400 sm:right-5 sm:top-5 sm:max-w-[14rem] sm:text-[11px] md:right-6 md:top-6">
+          Drag each word into the folder
+        </p>
+
+        {visibleWords.map((pillar) => (
           <PillarWord
             key={pillar.id}
             pillar={pillar}
             reduceMotion={reduceMotion}
             absorbing={absorbingId === pillar.id}
-            showDragHint={pillar.id === hintId}
             onDropInFolder={beginDrop}
             folderRef={folderRef}
             onHoverFolderChange={setFolderHighlight}
           />
         ))}
 
-        {/* Large bottom-left drop zone (~42% of canvas) */}
+        <AnimatePresence>
+          {revealed.map((pillar) => (
+            <RevealedCard
+              key={pillar.id}
+              pillar={pillar}
+              reduceMotion={reduceMotion}
+            />
+          ))}
+        </AnimatePresence>
+
         <div
           ref={folderRef}
-          className="absolute bottom-0 left-0 z-20 flex h-[42%] w-[42%] min-h-[200px] min-w-[180px] items-end justify-start p-4 sm:p-6"
+          className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 sm:bottom-5 md:bottom-6"
           data-drop-zone="shufflr-folder"
         >
           <div
             className={clsx(
-              "rounded-2xl p-2 transition-colors",
+              "rounded-2xl p-1 transition-colors sm:p-1.5",
               folderHighlight &&
                 "bg-white/55 ring-2 ring-dashed ring-blue-400/80",
             )}
@@ -261,39 +298,6 @@ export function SystemFramework({ className }: { className?: string }) {
               highlighted={folderHighlight}
               reduceMotion={reduceMotion}
             />
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute bottom-4 left-[30%] right-3 z-10 sm:bottom-5 sm:left-[32%] sm:right-5">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
-            <AnimatePresence initial={false}>
-              {revealed.map((pillar) => (
-                <motion.div
-                  key={pillar.id}
-                  className="pointer-events-auto overflow-hidden rounded-2xl border border-white/70 bg-white/90 p-3 shadow-[0_8px_24px_rgba(24,24,27,0.1)] backdrop-blur-sm sm:p-3.5"
-                  initial={
-                    reduceMotion ? false : { opacity: 0, y: 18, scale: 0.94 }
-                  }
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 320, damping: 26 }}
-                  layout
-                >
-                  <div className="mb-1.5 flex items-center gap-2">
-                    <span
-                      className="size-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: pillar.color }}
-                      aria-hidden
-                    />
-                    <h3 className="font-['Lucas',sans-serif] text-sm font-semibold text-zinc-900">
-                      {pillar.title}
-                    </h3>
-                  </div>
-                  <p className="font-['Lucas',sans-serif] text-[11px] leading-relaxed text-zinc-600 sm:text-xs md:text-[13px]">
-                    {pillar.body}
-                  </p>
-                </motion.div>
-              ))}
-            </AnimatePresence>
           </div>
         </div>
 

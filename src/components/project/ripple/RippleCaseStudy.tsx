@@ -11,6 +11,7 @@ import {
   RIPPLE_FEATURES,
   RIPPLE_FIGMA_EMBED_URL,
   RIPPLE_LEARNINGS,
+  RIPPLE_REFLECTION,
   type RippleEditorialBlock,
   type RippleFeatureBlock,
 } from "./rippleContent";
@@ -304,14 +305,19 @@ export default function RippleCaseStudy() {
       <RippleSection
         id="reflection"
         eyebrow="Reflection"
-        title="Looking back"
+        title="Key learnings"
         className="pb-24"
       >
-        <BodyText>
-          Ripple was a team project built in eight hours at BLOOM Designathon 2026.
-          The biggest takeaway for me: before designing, it&apos;s worth spending
-          time on the problem and a unique solution, even when the clock is running.
-        </BodyText>
+        <ul className="flex list-disc flex-col gap-5 pl-5 marker:text-zinc-400">
+          {RIPPLE_REFLECTION.map((item) => (
+            <li
+              key={item.slice(0, 48)}
+              className="pl-1 font-['Lucas',sans-serif] text-base leading-relaxed text-zinc-600 md:text-lg"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
       </RippleSection>
     </div>
   );

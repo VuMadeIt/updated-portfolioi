@@ -23,7 +23,11 @@ const { createClient } = require('@sanity/client');
 
 const { cleanReview, matchKey, findExistingMatch } = require('./sync-goodreads-rss.js');
 
-const USER_ID = process.env.GOODREADS_USER_ID || '126741914';
+const USER_ID = process.env.GOODREADS_USER_ID;
+if (!USER_ID) {
+  console.error('Set GOODREADS_USER_ID to your Goodreads numeric user id.');
+  process.exit(1);
+}
 const SHELF = process.env.GOODREADS_SHELF || 'read';
 const PAGE_SIZE = 100;
 

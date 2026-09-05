@@ -189,6 +189,12 @@ export const RIPPLE_LEARNINGS = [
   },
 ] as const;
 
+export const RIPPLE_REFLECTION = [
+  "Don't reinvent the LLM interface. People already know how to use ChatGPT, so Ripple looks and feels like it too. The sustainability part happens quietly underneath, not as some brand new interaction people have to learn.",
+  "Meet people where they are, not where you wish they were. Telling people to just use AI less was never going to work. Ripple works with the habit instead of against it, resurfacing old answers instead of asking anyone to change their behavior.",
+  "Make the invisible feel real! Water and energy costs are totally hidden in every LLM people already use. That's why the profile page, the savings counter, and the river graphic all exist. If people can't see it, they won't feel it, and if they don't feel it, they won't care.",
+] as const;
+
 export function isRippleProject(projectId: string, company?: string): boolean {
   return (
     projectId === "ripple" ||

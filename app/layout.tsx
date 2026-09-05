@@ -6,12 +6,12 @@ import "@/index.css";
 import "@/styles/globals.css";
 
 const siteDescription =
-  "Designing tools for human connection & creativity. Clients include Cognition, Luma, & Pika. Previously at Apple, Roblox, & NASA.";
+  "Product designer based in Waterloo. Currently exploring design systems, product craft, and creative engineering.";
 
 const siteOgImage = {
-  url: siteUrl("/og-image.jpg?v=6"),
-  width: 1200,
-  height: 628,
+  url: siteUrl("/favicon.png"),
+  width: 512,
+  height: 512,
   alt: SITE_OWNER,
 };
 

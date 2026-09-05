@@ -138,7 +138,7 @@ const staticProjects: Project[] = [
     title: "Shufflr",
     year: "2026",
     description:
-      "A fun way for university students to create spontaneous, low-stakes hangout moments, like the good ol' days.",
+      "Lowering the activation energy of fun,\nlow-stakes hangout moments!",
     imageSrc: "",
     videoSrc: "/videos/shufflr.mp4",
   },
@@ -395,7 +395,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
       process.env.NODE_ENV !== "development" &&
       MAIN_PROJECT_IDS.includes(project.id)
     ) {
-      void preloadProject(toInternalProjectId(project.id));
+      void preloadProject(project.id);
     }
   };
 
@@ -464,7 +464,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           </div>
         </div>
         <div className="hidden md:flex content-stretch items-start px-[13px] py-0 -mt-1.5 -mb-0.5 relative shrink-0 w-full">
-          <p className="font-['Lucas',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{displayDescription}</p>
+          <p className="whitespace-pre-line font-['Lucas',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{displayDescription}</p>
         </div>
         <div className="md:hidden content-stretch flex flex-col font-['Lucas',sans-serif] font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.01em] gap-1">
           <div className="flex items-center w-full">
@@ -664,7 +664,7 @@ function SimpleProjectModal({ project, onClose }: ProjectModalProps) {
               </div>
               
               <div className="content-stretch flex gap-2 items-start relative w-full">
-                <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
+                <p className="whitespace-pre-line font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
                   {project.description}
                 </p>
               </div>
@@ -692,7 +692,7 @@ function SimpleProjectModal({ project, onClose }: ProjectModalProps) {
               </div>
               
               <div className="content-stretch flex gap-2 items-start relative w-full">
-                <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
+                <p className="whitespace-pre-line font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
                   {project.description}
                 </p>
               </div>
@@ -919,9 +919,18 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
         }
 
         const [sanityProjects, experimentProjects] = await Promise.all([
-          cachedProjects ?? client.fetch<SanityProject[]>(PROJECTS_QUERY),
+          cachedProjects ??
+            client.fetch<SanityProject[]>(PROJECTS_QUERY).catch((error) => {
+              console.warn("Error fetching Sanity work projects:", error);
+              return [] as SanityProject[];
+            }),
           cachedExperiments ??
-            client.fetch<SanityExperimentProject[]>(EXPERIMENT_PROJECTS_QUERY),
+            client
+              .fetch<SanityExperimentProject[]>(EXPERIMENT_PROJECTS_QUERY)
+              .catch((error) => {
+                console.warn("Error fetching experiment projects:", error);
+                return [] as SanityExperimentProject[];
+              }),
         ]);
 
         if (!cachedProjects) {
@@ -1197,7 +1206,7 @@ export default function HomePageClient({ slug, mode, bookSlug }: HomePageClientP
         ) : (
           <SanityProjectModal
             key={selectedProject.id}
-            projectId={toInternalProjectId(selectedProject.id)}
+            projectId={selectedProject.id}
             onClose={handleModalClose}
             onBack={isFullscreenFromUrl ? handleCollapseFromFullscreen : handleModalClose}
             onExpandToFullscreen={handleExpandToFullscreen}

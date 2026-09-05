@@ -8,14 +8,15 @@ import {
   SHUFFLR_CHALLENGE_TITLE,
   SHUFFLR_EDITORIAL_BLOCKS,
   SHUFFLR_FEATURES,
-  SHUFFLR_LEARNINGS,
   SHUFFLR_PROBLEM_STATEMENT,
+  SHUFFLR_REFLECTION,
   type ShufflrEditorialBlock,
   type ShufflrFeatureBlock,
 } from "./shufflrContent";
 import { CASE_STUDY_COLUMN } from "../caseStudyLayout";
 import { ProblemInsightsGrid } from "./ProblemInsightsGrid";
 import { SystemFramework } from "./SystemFramework";
+import { NorthStarDiagram } from "./NorthStarDiagram";
 
 type SectionProps = {
   id: string;
@@ -271,41 +272,47 @@ export default function ShufflrCaseStudy() {
         </div>
       </ShufflrSection>
 
-      <ShufflrSection
+      <section
         id="learnings"
-        eyebrow="Key learnings"
-        title="How we measure success"
+        data-section-number="learnings"
+        data-section-heading="How we measure success"
+        className="scroll-mt-28 bg-white py-16 text-zinc-900 md:py-20"
       >
-        <div className="flex flex-col gap-10">
+        <div className={clsx(CASE_STUDY_COLUMN, "flex flex-col gap-8")}>
+          <div className="flex flex-col gap-3">
+            <p className="font-['Lucas',sans-serif] text-sm uppercase tracking-[0.12em] text-zinc-400">
+              Key learnings
+            </p>
+            <h2 className="text-balance font-['Lucas',sans-serif] text-3xl font-normal leading-tight text-zinc-900 md:text-4xl">
+              How we measure success
+            </h2>
+          </div>
           <BodyText>
             The north star metric and key drivers that tell us whether Shufflr is
             actually getting people off their phones and into real life.
           </BodyText>
-          {SHUFFLR_LEARNINGS.map((item) => (
-            <ScrollReveal key={item.number}>
-              <div className="flex flex-col gap-2">
-                <h3 className="font-['Lucas',sans-serif] text-xl text-zinc-900">
-                  {item.title}
-                </h3>
-                <BodyText>{item.body}</BodyText>
-              </div>
-            </ScrollReveal>
-          ))}
+          <ScrollReveal>
+            <NorthStarDiagram />
+          </ScrollReveal>
         </div>
-      </ShufflrSection>
+      </section>
 
       <ShufflrSection
         id="reflection"
         eyebrow="Reflection"
-        title="Looking back"
+        title="Key learnings"
         className="pb-24"
       >
-        <BodyText>
-          Shufflr started as a product concept for university students who miss the
-          spontaneity of pre-algorithm social life. The biggest takeaway: reducing
-          activation energy matters more than adding another feature. If hanging out
-          is easier than staying in, connection becomes the default.
-        </BodyText>
+        <ul className="flex list-disc flex-col gap-5 pl-5 marker:text-zinc-400">
+          {SHUFFLR_REFLECTION.map((item) => (
+            <li
+              key={item.slice(0, 48)}
+              className="pl-1 font-['Lucas',sans-serif] text-base leading-relaxed text-zinc-600 md:text-lg"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
       </ShufflrSection>
     </div>
   );

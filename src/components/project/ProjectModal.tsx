@@ -7,11 +7,17 @@ import { urlFor } from "../../sanity/client";
 import {
   fetchProjectByCompany,
   getCachedData,
+  setCachedData,
   WORK_SANITY_PROJECTS_KEY,
 } from "../../sanity/preload";
 import type { Project, ContentSection } from "../../sanity/types";
 import { ICON_STROKE_WIDTH } from "../shared/iconSizes";
 import { LoadingText } from "../shared/LoadingSpinner";
+import {
+  isLocalOnlyCaseStudy,
+  toInternalProjectId,
+  toPublicProjectSlug,
+} from "../../lib/projectSlugs";
 
 const LOCAL_HERO_VIDEOS: Record<string, string> = {
   adobe: "/videos/ripple.mp4",
@@ -26,17 +32,42 @@ function resolveHeroVideoSrc(heroVideo?: string): string | undefined {
   return `https://stream.mux.com/${heroVideo}.m3u8`;
 }
 
+function localProjectShell(company: string): Project {
+  return {
+    _id: `local-${company}`,
+    title: company,
+    slug: company,
+    company,
+    content: [],
+    isPublished: true,
+  };
+}
+
+function isLucasCaseStudyId(projectId: string): boolean {
+  const id = toPublicProjectSlug(projectId);
+  return (
+    id === "shufflr" ||
+    id === "ripple" ||
+    id === "warframe" ||
+    id === "maple-leaf-foods"
+  );
+}
+
 function applyLucasProjectOverrides(
   projectId: string,
   project: Project | null,
 ): Project | null {
-  if (!project) return null;
+  if (!project) {
+    if (!isLucasCaseStudyId(projectId)) return null;
+    project = localProjectShell(toPublicProjectSlug(projectId));
+  }
 
   if (
     projectId === "roblox" ||
     projectId === "maple-leaf-foods" ||
     projectId === "mapleleaf" ||
-    project.company === "roblox"
+    project.company === "roblox" ||
+    project.company === "maple-leaf-foods"
   ) {
     return {
       ...project,
@@ -1064,15 +1095,25 @@ export default function ProjectModal({
     });
   }, [isMapleLeaf, project, isUnlocked]);
 
-  // Fetch project data from Sanity (uses preloaded cache if available)
+  // Fetch project data from Sanity (uses preloaded cache if available).
+  // Lucas local case studies never depend on Michelle Sanity company rows.
   useEffect(() => {
     async function fetchProject() {
       try {
-        // Check cache first (populated by preloadLikelyPages). Cached project
-        // payloads are public-only, so bypass them once this tab is unlocked.
+        if (isLocalOnlyCaseStudy(projectId)) {
+          const local = applyLucasProjectOverrides(projectId, null);
+          if (local) {
+            setCachedData(`project:${projectId}`, local);
+            setProject(local);
+          }
+          setError(null);
+          setLoading(false);
+          return;
+        }
+
         const cacheKey = `project:${projectId}`;
         const cachedData = getCachedData<Project>(cacheKey);
-        
+
         if (cachedData && !isProjectUnlocked(projectId)) {
           setProject(applyLucasProjectOverrides(projectId, cachedData));
           setError(null);
@@ -1081,17 +1122,31 @@ export default function ProjectModal({
         }
 
         setLoading(true);
-        
-        const { project: data, unlocked } = await fetchProjectByCompany(projectId);
+
+        const apiCompany = toInternalProjectId(projectId);
+        const { project: data, unlocked } = await fetchProjectByCompany(apiCompany);
         if (unlocked) {
           markProjectUnlocked(projectId);
           setIsUnlocked(true);
         }
-        setProject(applyLucasProjectOverrides(projectId, data));
-        setError(null);
+        const next = applyLucasProjectOverrides(projectId, data);
+        if (next) {
+          setCachedData(cacheKey, next);
+          setProject(next);
+          setError(null);
+        } else {
+          setError("Failed to load project");
+        }
       } catch (err) {
-        console.error("Error fetching project:", err);
-        setError("Failed to load project");
+        console.warn("Error fetching project:", err);
+        const fallback = applyLucasProjectOverrides(projectId, null);
+        if (fallback) {
+          setCachedData(`project:${projectId}`, fallback);
+          setProject(fallback);
+          setError(null);
+        } else {
+          setError("Failed to load project");
+        }
       } finally {
         setLoading(false);
       }
@@ -1500,7 +1555,7 @@ export default function ProjectModal({
           {!loading && !error && project && (
             <div className="flex flex-col pb-16 w-full">
               {/* Mobile not available message - shown only after unlocking on mobile (NASA is allowed) */}
-              {isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr && !isMapleLeaf && (
+              {isUnlocked && isMobile && !isRipple && !isShufflr && !isMapleLeaf && projectId !== "warframe" && (
                 <div className="mx-auto flex w-full max-w-[800px] flex-col items-center justify-center min-h-[60vh] case-study-pad-x text-center">
                   <LaptopIcon />
                   <p className="text-[#71717a] text-base leading-normal px-12 mt-4">
@@ -1510,7 +1565,7 @@ export default function ProjectModal({
               )}
 
               {/* Project Hero Header - hidden on mobile when unlocked (NASA is allowed) */}
-              {!(isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr && !isMapleLeaf) && (
+              {!(isUnlocked && isMobile && !isRipple && !isShufflr && !isMapleLeaf && projectId !== "warframe") && (
               <>
               <div className="mx-auto w-full max-w-[800px]">
               <div
@@ -1536,7 +1591,7 @@ export default function ProjectModal({
                   </ScrollReveal>
                 ) : (
                   project.logo && (
-                  projectId === 'apple' && isMobile ? (
+                  projectId === "warframe" && isMobile ? (
                     <div className="relative shrink-0 size-20 rounded-2xl overflow-hidden">
                       <img
                         className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
@@ -1572,7 +1627,7 @@ export default function ProjectModal({
                         </p>
                       )}
                       {isShufflr && (
-                        <p className="max-w-[32ch] font-['Lucas',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
+                        <p className="max-w-[32ch] whitespace-pre-line font-['Lucas',sans-serif] text-lg leading-relaxed text-zinc-500 md:text-xl">
                           {SHUFFLR_TAGLINE}
                         </p>
                       )}

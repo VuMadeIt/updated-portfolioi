@@ -19,7 +19,7 @@
  *     .filter(Boolean);
  *   const out = [];
  *   for (let page = 1; page <= 8; page++) {
- *     const res = await fetch(`/review/list/126741914?shelf=read&per_page=100&page=${page}`);
+ *     const res = await fetch(`/review/list/YOUR_GOODREADS_USER_ID?shelf=read&per_page=100&page=${page}`);
  *     const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
  *     const rows = [...doc.querySelectorAll('tr.bookalike')].map((row) => {
  *       const a = row.querySelector('td.field.title a[href*="/book/show/"]');

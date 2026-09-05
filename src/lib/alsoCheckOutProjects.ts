@@ -60,9 +60,8 @@ export function normalizePortfolioProjectId(
 }
 
 function toModalProjectId(publicId: string): string {
-  return MAIN_PORTFOLIO_IDS.has(publicId)
-    ? toInternalProjectId(publicId)
-    : publicId;
+  // Modals use Lucas public slugs (Shufflr/Ripple/Warframe are local-only).
+  return publicId;
 }
 
 export function getAlsoCheckOutFromPortfolio(

@@ -4,7 +4,7 @@ import { INTRODUCTION_NAV_ID } from "../caseStudyNavItems";
 export const SHUFFLR_FIGMA_EMBED_URL = "";
 
 export const SHUFFLR_TAGLINE =
-  "A fun way for university students to create spontaneous, low-stakes hangout moments, like the good ol' days.";
+  "Lowering the activation energy of fun,\nlow-stakes hangout moments!";
 
 export const SHUFFLR_VIDEOS = {
   shuffle: "/videos/shufflr/shuffle.mp4",
@@ -67,7 +67,7 @@ export const SHUFFLR_SYSTEM_PILLARS = [
     id: "desirability",
     title: "Desirability",
     color: "#5CE1F0",
-    body: "Targets the loneliness and social friction most acutely felt by 18-24 year olds, a cohort that over-indexes on mobile usage and under-indexes on self-reported social satisfaction. The shuffle mechanic directly addressing the nostalgia brief through behaviour design, rather than aesthetics alone.",
+    body: "Targets the loneliness and social friction most acutely felt by 18-24 year olds, a cohort that over-indexes on mobile usage and under-indexes on self-reported social satisfaction.",
   },
   {
     id: "viability",
@@ -198,6 +198,33 @@ export const SHUFFLR_RESEARCH_STATS = [
   },
 ] as const;
 
+export const SHUFFLR_NORTH_STAR_ROWS = [
+  {
+    feature: "The Shuffle",
+    featureBullets: ["Vibe input", "Group size & distance", "Available time"],
+    kpi: "Shuffle-to-hangout %",
+    dimension: "Algorithm quality",
+  },
+  {
+    feature: "Discover & plan",
+    featureBullets: ["Trending activities", "Nearby events", "Price filters"],
+    kpi: "Weekly active completers",
+    dimension: "Activation",
+  },
+  {
+    feature: "Connect",
+    featureBullets: ["Nearby communities", "Group chats", "Low-friction invites"],
+    kpi: "7-day return rate",
+    dimension: "Retention",
+  },
+  {
+    feature: "Profile & memories",
+    featureBullets: ["Photo prompts", "Digital album", "Shared history"],
+    kpi: "Memory capture rate",
+    dimension: "Emotional investment",
+  },
+] as const;
+
 export const SHUFFLR_LEARNINGS = [
   {
     number: "01",
@@ -219,6 +246,11 @@ export const SHUFFLR_LEARNINGS = [
     title: "7-day return shuffle rate",
     body: "Percent of users who re-shuffle within 7 days of completing their first activity.",
   },
+] as const;
+
+export const SHUFFLR_REFLECTION = [
+  "Talk to people before you talk to Figma. We learned that planning, not desire, was the friction, which only came out because we ran interviews early and kept going back to them instead of assuming we already knew the problem.",
+  "Prototype the parts that don't demo well in static mockups. The shuffle-to-result flow was impossible to feel out as flat Figma screens, so I vibe coded it with Claude to test actual timing and randomization logic. Seeing it move changed decisions that static frames never would have surfaced.",
 ] as const;
 
 export function isShufflrProject(projectId: string, company?: string): boolean {

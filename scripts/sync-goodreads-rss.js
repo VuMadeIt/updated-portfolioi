@@ -14,17 +14,21 @@
  *
  * Env:
  *   SANITY_TOKEN       Sanity Editor token (required to write; dry-run without it)
- *   GOODREADS_USER_ID  Goodreads numeric user id (default 126741914)
+ *   GOODREADS_USER_ID  Goodreads numeric user id (required)
  *   GOODREADS_SHELF    Shelf name (default "read")
  *
- * Run: SANITY_TOKEN=your_token node scripts/sync-goodreads-rss.js
+ * Run: SANITY_TOKEN=your_token GOODREADS_USER_ID=your_id node scripts/sync-goodreads-rss.js
  */
 
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@sanity/client');
 
-const USER_ID = process.env.GOODREADS_USER_ID || '126741914';
+const USER_ID = process.env.GOODREADS_USER_ID;
+if (!USER_ID) {
+  console.error('Set GOODREADS_USER_ID to your Goodreads numeric user id.');
+  process.exit(1);
+}
 const SHELF = process.env.GOODREADS_SHELF || 'read';
 // Goodreads list_rss returns at most PAGE_SIZE items per request; paginate with &page=.
 const PAGE_SIZE = 100;

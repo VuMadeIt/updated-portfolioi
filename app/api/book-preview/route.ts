@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
     const description = match.author
       ? `By ${match.author} · From Lucas Vu's library`
       : `From Lucas Vu's library`;
-    const imageUrl = `${origin}/og-image.jpg?v=6`;
+    const imageUrl = `${origin}/favicon.png`;
     const canonicalUrl = `${origin}${pathname}`;
 
     return new NextResponse(

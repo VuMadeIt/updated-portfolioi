@@ -203,6 +203,25 @@ export async function preloadProject(company: string): Promise<void> {
     return;
   }
 
+  // Local Lucas case studies do not need Michelle Sanity company documents.
+  const { isLocalOnlyCaseStudy } = await import("../lib/projectSlugs");
+  if (isLocalOnlyCaseStudy(company)) {
+    const localVideo =
+      LOCAL_HERO_VIDEO_BY_COMPANY[company] ||
+      LOCAL_HERO_VIDEO_BY_COMPANY[company === "shufflr" ? "shufflr" : company];
+    if (localVideo) {
+      fetch(localVideo, { mode: "no-cors", cache: "force-cache" }).catch(() => {});
+    }
+    if (
+      company === "maple-leaf-foods" ||
+      company === "mapleleaf" ||
+      company === "roblox"
+    ) {
+      warmImage("/images/maple-leaf/logo.png");
+    }
+    return;
+  }
+
   try {
     const { project: data } = await fetchProjectByCompany(company);
     if (data) {
@@ -427,10 +446,18 @@ export async function preloadWorkPage(): Promise<void> {
     const [projects, experiments] = await Promise.all([
       cachedProjects
         ? Promise.resolve(null)
-        : client.fetch<WorkSanityProject[]>(PROJECTS_QUERY),
+        : client.fetch<WorkSanityProject[]>(PROJECTS_QUERY).catch((err) => {
+            console.warn("Failed to fetch work projects:", err);
+            return [] as WorkSanityProject[];
+          }),
       cachedExperiments
         ? Promise.resolve(null)
-        : client.fetch<WorkExperimentProject[]>(EXPERIMENT_PROJECTS_QUERY),
+        : client.fetch<WorkExperimentProject[]>(EXPERIMENT_PROJECTS_QUERY).catch(
+            (err) => {
+              console.warn("Failed to fetch experiment projects:", err);
+              return [] as WorkExperimentProject[];
+            },
+          ),
     ]);
 
     if (projects) setCachedData(WORK_SANITY_PROJECTS_KEY, projects);

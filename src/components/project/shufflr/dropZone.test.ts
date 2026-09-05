@@ -14,16 +14,23 @@ assert.equal(
   "center of folder",
 );
 
-// Pointer just outside folder but within pad
+// Pointer just outside folder but within small pad
 assert.equal(
-  pointInExpanded({ x: 220, y: 500 }, folder, 100),
+  pointInExpanded({ x: 208, y: 500 }, folder, 12),
   true,
-  "near folder with pad",
+  "near folder with tight pad",
+);
+
+// Pointer outside tight pad
+assert.equal(
+  pointInExpanded({ x: 220, y: 500 }, folder, 12),
+  false,
+  "outside tight pad",
 );
 
 // Pointer far away
 assert.equal(
-  pointInExpanded({ x: 500, y: 100 }, folder, 100),
+  pointInExpanded({ x: 500, y: 100 }, folder, 12),
   false,
   "far from folder",
 );
@@ -32,9 +39,9 @@ assert.equal(
 const overlappingWord = { left: 150, top: 450, right: 280, bottom: 520 };
 assert.equal(rectsOverlap(overlappingWord, folder, 0), true, "word overlaps");
 
-// Word near folder with pad
+// Word near but not overlapping with tight pad
 const nearWord = { left: 250, top: 450, right: 360, bottom: 520 };
-assert.equal(rectsOverlap(nearWord, folder, 80), true, "word near with pad");
+assert.equal(rectsOverlap(nearWord, folder, 12), false, "word not near enough");
 
 // Combined: pointer miss but word overlaps → still drop
 assert.equal(
@@ -65,15 +72,11 @@ assert.equal(
   "neither pointer nor word near",
 );
 
-// Latch simulation: was over earlier in drag
-let latched = false;
-latched = isOverDropZone(folder, null, { x: 100, y: 500 }) || latched;
-assert.equal(latched, true, "latch while over");
-const releaseFar = isOverDropZone(
-  folder,
-  { left: 400, top: 50, right: 500, bottom: 100 },
-  { x: 500, y: 50 },
+// Far word should not count as over even with isOverDropZone
+assert.equal(
+  isOverDropZone(folder, nearWord, { x: 300, y: 480 }),
+  false,
+  "near-but-not-over word does not drop",
 );
-assert.equal(latched || releaseFar, true, "release after latch still drops");
 
 console.log("dropZone.test.ts: all assertions passed");

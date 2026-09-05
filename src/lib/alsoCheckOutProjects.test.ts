@@ -64,8 +64,8 @@ test("returns the next two portfolio projects for also check out", () => {
     picks.map((project) => project.id),
     ["maple-leaf-foods", "ripple"],
   );
-  assert.equal(picks[0]?.modalId, "roblox");
-  assert.equal(picks[1]?.modalId, "adobe");
+  assert.equal(picks[0]?.modalId, "maple-leaf-foods");
+  assert.equal(picks[1]?.modalId, "ripple");
 });
 
 test("wraps around the portfolio order", () => {

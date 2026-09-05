@@ -65,8 +65,8 @@ test("normalizes project ids before deriving secrets or cookies", () => {
   assert.equal(normalizeProjectId("Adobe"), "adobe");
   assert.equal(normalizeProjectId("roblox-2026"), "roblox-2026");
   assert.equal(normalizeProjectId("maple-leaf-foods"), "roblox");
-  assert.equal(normalizeProjectId("ripple"), "adobe");
-  assert.equal(normalizeProjectId("shufflr"), "nasa");
+  assert.equal(normalizeProjectId("ripple"), "ripple");
+  assert.equal(normalizeProjectId("shufflr"), "shufflr");
   assert.equal(normalizeProjectId("../adobe"), null);
   assert.equal(normalizeProjectId("PASSWORD_ADOBE"), null);
 });

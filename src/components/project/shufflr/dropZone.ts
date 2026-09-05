@@ -40,14 +40,17 @@ export function rectsOverlap(
   );
 }
 
+/** Tight hitbox — must be directly over the folder (small pad for finger precision). */
+const FOLDER_HIT_PAD = 12;
+
 export function isOverDropZone(
   folderRect: { left: number; top: number; right: number; bottom: number } | null,
   wordRect: { left: number; top: number; right: number; bottom: number } | null,
   point: { x: number; y: number },
 ) {
   if (!folderRect) return false;
-  // Prefer word↔folder overlap — most reliable while dragging.
-  if (wordRect && rectsOverlap(wordRect, folderRect, 100)) return true;
-  if (pointInExpanded(point, folderRect, 120)) return true;
+  // Require actual overlap with the folder bounds (tight pad).
+  if (wordRect && rectsOverlap(wordRect, folderRect, FOLDER_HIT_PAD)) return true;
+  if (pointInExpanded(point, folderRect, FOLDER_HIT_PAD)) return true;
   return false;
 }

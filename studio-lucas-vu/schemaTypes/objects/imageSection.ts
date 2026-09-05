@@ -35,7 +35,7 @@ export const imageSection = defineType({
       name: 'externalImageUrl',
       title: 'External Image URL',
       type: 'string',
-      description: 'Alternative: Use a URL or path (e.g., /roblox/image.png) instead of uploading',
+      description: 'Alternative: Use a URL or path (e.g., /images/example.png) instead of uploading',
     }),
     defineField({
       name: 'alt',

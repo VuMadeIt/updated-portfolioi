@@ -466,7 +466,7 @@ export interface Project {
   _id: string;
   title: string;
   slug: string;
-  company: "apple" | "roblox" | "adobe" | "nasa";
+  company: string;
   year?: string;
   shortDescription?: string;
   logo?: SanityImage;

@@ -34,7 +34,7 @@ test('parses Letterboxd namespaced fields and encoded text', () => {
 
 test('extracts the film slug from normal and rewatch URLs', () => {
   assert.equal(
-    letterboxdSlug('https://letterboxd.com/liumichelle/film/mulholland-drive/1/'),
+    letterboxdSlug('https://letterboxd.com/lucasvu/film/mulholland-drive/1/'),
     'mulholland-drive'
   );
 });
@@ -65,7 +65,7 @@ test('malformed TMDb values cannot become IDs, keys, document IDs, or patch valu
   for (const raw of ['abc', '787abc', '0', '-5']) {
     const xml = '<rss><channel><item>'
       + `<letterboxd:filmTitle>Invalid ${raw}</letterboxd:filmTitle>`
-      + `<link>https://letterboxd.com/liumichelle/film/invalid-${encodeURIComponent(raw)}/</link>`
+      + `<link>https://letterboxd.com/lucasvu/film/invalid-${encodeURIComponent(raw)}/</link>`
       + `<tmdb:movieId>${raw}</tmdb:movieId>`
       + '</item></channel></rss>';
     const [item] = parseFeed(xml);
