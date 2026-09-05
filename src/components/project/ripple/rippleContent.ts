@@ -171,24 +171,6 @@ export const RIPPLE_DECISIONS = [
   },
 ] as const;
 
-export const RIPPLE_LEARNINGS = [
-  {
-    number: "01",
-    title: "Think ambitiously",
-    body: "Ripple isn't fully feasible at the moment, but it's an inspiring concept for a more sustainable future. The most ambitious projects are often the ones that move thinking forward.",
-  },
-  {
-    number: "02",
-    title: "Spend time on the problem",
-    body: "Even with only eight hours, it's worth spending time on the problem statement and a unique solution before jumping into screens.",
-  },
-  {
-    number: "03",
-    title: "Don't perfect the details",
-    body: "Within a designathon, refining small details isn't always worth it. Sometimes you need to step back and focus on the bigger picture and overall system.",
-  },
-] as const;
-
 export const RIPPLE_REFLECTION = [
   "Don't reinvent the LLM interface. People already know how to use ChatGPT, so Ripple looks and feels like it too. The sustainability part happens quietly underneath, not as some brand new interaction people have to learn.",
   "Meet people where they are, not where you wish they were. Telling people to just use AI less was never going to work. Ripple works with the habit instead of against it, resurfacing old answers instead of asking anyone to change their behavior.",

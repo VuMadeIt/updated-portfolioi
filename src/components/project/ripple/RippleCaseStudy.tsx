@@ -10,7 +10,6 @@ import {
   RIPPLE_EDITORIAL_BLOCKS,
   RIPPLE_FEATURES,
   RIPPLE_FIGMA_EMBED_URL,
-  RIPPLE_LEARNINGS,
   RIPPLE_REFLECTION,
   type RippleEditorialBlock,
   type RippleFeatureBlock,
@@ -275,31 +274,6 @@ export default function RippleCaseStudy() {
             </div>
           ) : null}
         </ScrollReveal>
-      </RippleSection>
-
-      <RippleSection
-        id="learnings"
-        eyebrow="Key learnings"
-        title="What we learned"
-      >
-        <div className="flex flex-col gap-10">
-          <BodyText>
-            Ripple probably isn&apos;t feasible at this time. To implement it in the
-            real world, you&apos;d need to collect and store data from millions of
-            prompts being asked every day. But Ripple was made to ideate on a hopeful
-            future in which LLMs might be more sustainable.
-          </BodyText>
-          {RIPPLE_LEARNINGS.map((item) => (
-            <ScrollReveal key={item.number}>
-              <div className="flex flex-col gap-2">
-                <h3 className="font-['Lucas',sans-serif] text-xl text-zinc-900">
-                  {item.title}
-                </h3>
-                <BodyText>{item.body}</BodyText>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
       </RippleSection>
 
       <RippleSection
