@@ -2,11 +2,12 @@
 
 import clsx from "clsx";
 import { ScrollReveal } from "../../shared/ScrollReveal";
+import ShimmerImage from "../../shared/ShimmerImage";
+import ShimmerVideo from "../../shared/ShimmerVideo";
 import {
-  SHUFFLR_DECISIONS,
+  SHUFFLR_CHALLENGE_TITLE,
   SHUFFLR_EDITORIAL_BLOCKS,
   SHUFFLR_FEATURES,
-  SHUFFLR_FIGMA_EMBED_URL,
   SHUFFLR_LEARNINGS,
   SHUFFLR_PROBLEM_STATEMENT,
   type ShufflrEditorialBlock,
@@ -14,21 +15,30 @@ import {
 } from "./shufflrContent";
 import { CASE_STUDY_COLUMN } from "../caseStudyLayout";
 import { ProblemInsightsGrid } from "./ProblemInsightsGrid";
+import { SystemFramework } from "./SystemFramework";
 
 type SectionProps = {
   id: string;
   eyebrow?: string;
-  title: string;
+  title?: string;
+  titleClassName?: string;
   children: React.ReactNode;
   className?: string;
 };
 
-function ShufflrSection({ id, eyebrow, title, children, className }: SectionProps) {
+function ShufflrSection({
+  id,
+  eyebrow,
+  title,
+  titleClassName,
+  children,
+  className,
+}: SectionProps) {
   return (
     <section
       id={id}
       data-section-number={id}
-      data-section-heading={title}
+      data-section-heading={title || eyebrow || id}
       className={clsx("scroll-mt-28 bg-white py-16 text-zinc-900 md:py-20", className)}
     >
       <div className={clsx(CASE_STUDY_COLUMN, "flex flex-col gap-8")}>
@@ -39,9 +49,16 @@ function ShufflrSection({ id, eyebrow, title, children, className }: SectionProp
                 {eyebrow}
               </p>
             )}
-            <h2 className="text-balance font-['Lucas',sans-serif] text-3xl font-normal leading-tight text-zinc-900 md:text-4xl">
-              {title}
-            </h2>
+            {title && (
+              <h2
+                className={clsx(
+                  "text-balance font-['Lucas',sans-serif] font-normal leading-tight text-zinc-900",
+                  titleClassName ?? "text-3xl md:text-4xl",
+                )}
+              >
+                {title}
+              </h2>
+            )}
           </div>
         )}
         {children}
@@ -79,7 +96,7 @@ function PullQuote({
   return (
     <blockquote
       className={clsx(
-        "border-l-2 border-zinc-300 pl-5 font-['Lucas',sans-serif] text-xl leading-relaxed text-zinc-800 md:text-2xl",
+        "font-['Lucas',sans-serif] text-base leading-relaxed text-zinc-700 md:text-lg",
         className,
       )}
     >
@@ -103,6 +120,8 @@ function EditorialBlock({
   block: ShufflrEditorialBlock;
   showTitle?: boolean;
 }) {
+  const images = block.images ?? [];
+
   return (
     <div className="flex w-full flex-col gap-8">
       {showTitle && (
@@ -110,17 +129,52 @@ function EditorialBlock({
           {block.title}
         </h3>
       )}
-      <div className="flex flex-col gap-4">
-        {block.body.map((paragraph) => (
-          <BodyText key={paragraph}>{paragraph}</BodyText>
-        ))}
-      </div>
-      {block.placeholder && <MediaPlaceholder label={block.placeholder} />}
+      {block.body.length > 0 && (
+        <div className="flex flex-col gap-4">
+          {block.body.map((paragraph) => (
+            <BodyText key={paragraph}>{paragraph}</BodyText>
+          ))}
+        </div>
+      )}
+      {images.map((image) => (
+        <ShimmerImage
+          key={image.src}
+          src={image.src}
+          alt={image.alt}
+          className="h-auto w-full object-contain"
+          wrapperClassName="w-full"
+          rounded="rounded-[26px]"
+          loading="lazy"
+        />
+      ))}
+      {block.placeholder && images.length === 0 && (
+        <MediaPlaceholder label={block.placeholder} />
+      )}
+    </div>
+  );
+}
+
+function FeatureVideo({ src, title }: { src: string; title: string }) {
+  return (
+    <div className="w-full overflow-hidden rounded-[26px] bg-zinc-50">
+      <ShimmerVideo
+        src={src}
+        className="h-auto w-full object-contain"
+        wrapperClassName="w-full"
+        rounded="rounded-[26px]"
+        autoPlay
+        muted
+        loop
+        controls={false}
+        playerName={`Shufflr ${title}`}
+      />
     </div>
   );
 }
 
 function FeatureShowcase({ feature }: { feature: ShufflrFeatureBlock }) {
+  const images = feature.images ?? [];
+
   return (
     <div className="flex w-full flex-col gap-6">
       <h3 className="font-['Lucas',sans-serif] text-2xl text-zinc-900">
@@ -131,49 +185,59 @@ function FeatureShowcase({ feature }: { feature: ShufflrFeatureBlock }) {
           <BodyText key={paragraph}>{paragraph}</BodyText>
         ))}
       </div>
-      {feature.placeholder && <MediaPlaceholder label={feature.placeholder} />}
+      {feature.video && <FeatureVideo src={feature.video} title={feature.title} />}
+      {images.length > 0 && (
+        <div className="flex w-full flex-col gap-6">
+          {images.map((image) => (
+            <ShimmerImage
+              key={image.src}
+              src={image.src}
+              alt={image.alt}
+              className="h-auto w-full object-contain"
+              wrapperClassName="w-full"
+              rounded="rounded-[26px]"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      )}
+      {!feature.video && images.length === 0 && feature.placeholder && (
+        <MediaPlaceholder label={feature.placeholder} />
+      )}
     </div>
   );
 }
 
-const EDITORIAL_SECTION_IDS = ["approach", "problem", "solution", "ambition", "system"] as const;
+const EDITORIAL_SECTION_IDS = ["solution", "system"] as const;
 
 export default function ShufflrCaseStudy() {
-  const showFigmaEmbed =
-    Boolean(SHUFFLR_FIGMA_EMBED_URL) && SHUFFLR_FIGMA_EMBED_URL.includes("figma.com");
-
   return (
     <div className="w-full bg-white">
-      <ShufflrSection id="challenge" eyebrow="The challenge" title="Bringing back the social energy of 2016">
+      <ShufflrSection
+        id="challenge"
+        eyebrow="The challenge"
+        title={SHUFFLR_CHALLENGE_TITLE}
+        titleClassName="text-xl md:text-2xl"
+      >
         <ScrollReveal>
-          <div className="flex flex-col gap-6">
-            <BodyText>
-              University students want deeper friendships, but coordinating unstructured
-              social time has become high-friction. We asked:
-            </BodyText>
-            <PullQuote>{SHUFFLR_PROBLEM_STATEMENT}</PullQuote>
-            <BodyText>
-              Shufflr is our answer: a concept for spontaneous, low-stakes hangout moments
-              that feel more like 2016 than another group chat debate.
-            </BodyText>
-          </div>
+          <PullQuote>{SHUFFLR_PROBLEM_STATEMENT}</PullQuote>
+        </ScrollReveal>
+      </ShufflrSection>
+
+      <ShufflrSection id="problem" eyebrow="Problem">
+        <ScrollReveal>
+          <ProblemInsightsGrid />
         </ScrollReveal>
       </ShufflrSection>
 
       {SHUFFLR_EDITORIAL_BLOCKS.map((block, index) => {
         const sectionId = EDITORIAL_SECTION_IDS[index];
         const eyebrow =
-          sectionId === "approach"
-            ? "Defining a direction"
-            : sectionId === "problem"
-              ? "Problem"
-              : sectionId === "solution"
-                ? "Solution"
-                : sectionId === "ambition"
-                  ? "One step at a time"
-                  : sectionId === "system"
-                    ? "System"
-                    : undefined;
+          sectionId === "solution"
+            ? "Solution"
+            : sectionId === "system"
+              ? "System"
+              : undefined;
 
         return (
           <ShufflrSection
@@ -183,12 +247,11 @@ export default function ShufflrCaseStudy() {
             title={block.title}
           >
             <ScrollReveal>
-              <div className="flex flex-col gap-10">
+              {sectionId === "system" ? (
+                <SystemFramework />
+              ) : (
                 <EditorialBlock block={block} showTitle={false} />
-                {sectionId === "problem" && (
-                  <ProblemInsightsGrid className="mt-2" />
-                )}
-              </div>
+              )}
             </ScrollReveal>
           </ShufflrSection>
         );
@@ -206,48 +269,6 @@ export default function ShufflrCaseStudy() {
             </ScrollReveal>
           ))}
         </div>
-      </ShufflrSection>
-
-      <ShufflrSection
-        id="decisions"
-        eyebrow="Design decisions"
-        title="What makes Shufflr different"
-      >
-        <div className="flex flex-col gap-10">
-          {SHUFFLR_DECISIONS.map((decision, index) => (
-            <ScrollReveal key={decision.title} delay={index * 60}>
-              <div className="flex flex-col gap-4">
-                <h3 className="font-['Lucas',sans-serif] text-xl text-zinc-900">
-                  {decision.title}
-                </h3>
-                {decision.body.map((paragraph) => (
-                  <BodyText key={paragraph}>{paragraph}</BodyText>
-                ))}
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </ShufflrSection>
-
-      <ShufflrSection
-        id="prototype"
-        eyebrow="Prototype"
-        title="Try it out"
-      >
-        <ScrollReveal>
-          {showFigmaEmbed ? (
-            <div className="w-full overflow-hidden rounded-[26px] border border-zinc-200">
-              <iframe
-                title="Shufflr Figma prototype"
-                className="aspect-[16/10] w-full"
-                src={SHUFFLR_FIGMA_EMBED_URL}
-                allowFullScreen
-              />
-            </div>
-          ) : (
-            <MediaPlaceholder label="Figma prototype embed" />
-          )}
-        </ScrollReveal>
       </ShufflrSection>
 
       <ShufflrSection

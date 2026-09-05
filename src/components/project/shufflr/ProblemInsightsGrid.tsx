@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -34,40 +34,65 @@ function StickyNote({
   index,
   reduceMotion,
   layout,
+  constraintsRef,
 }: {
   note: (typeof SHUFFLR_USER_INSIGHTS)[number];
   index: number;
   reduceMotion: boolean | null;
   layout: ScatterLayout;
+  constraintsRef: React.RefObject<HTMLDivElement | null>;
 }) {
+  const [canDrag, setCanDrag] = useState(Boolean(reduceMotion));
+  const [zIndex, setZIndex] = useState(layout.zIndex);
+
   return (
     <motion.div
-      className="absolute origin-center shadow-[0_6px_18px_rgba(24,24,27,0.12)]"
+      className={clsx(
+        "absolute origin-center touch-none shadow-[0_6px_18px_rgba(24,24,27,0.12)]",
+        canDrag && "cursor-grab active:cursor-grabbing",
+      )}
       style={{
         top: `${layout.cyPct}%`,
         left: `${layout.cxPct}%`,
         width: `${layout.sizePct}%`,
-        // Height follows width → true square on any canvas aspect.
         aspectRatio: "1 / 1",
-        height: "auto",
-        zIndex: layout.zIndex,
+        zIndex,
         backgroundColor: note.color,
         x: "-50%",
         y: "-50%",
+        rotate: layout.rotate,
         containerType: "size",
       }}
       initial={
         reduceMotion
-          ? { opacity: 1, scale: 1, rotate: layout.rotate }
-          : { opacity: 0, scale: 0.82, rotate: layout.rotate }
+          ? { opacity: 1, scale: 1 }
+          : { opacity: 0, scale: 0.82 }
       }
-      whileInView={{ opacity: 1, scale: 1, rotate: layout.rotate }}
+      whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true, amount: 0.15 }}
       transition={
         reduceMotion
           ? { duration: 0 }
           : { ...POP_SPRING, delay: index * STAGGER_S }
       }
+      onAnimationComplete={() => {
+        if (!canDrag) setCanDrag(true);
+      }}
+      drag={canDrag}
+      dragConstraints={constraintsRef}
+      dragMomentum={false}
+      dragElastic={0.08}
+      whileHover={canDrag && !reduceMotion ? { scale: 1.04 } : undefined}
+      whileDrag={
+        reduceMotion
+          ? undefined
+          : {
+              scale: 1.06,
+              boxShadow: "0 14px 32px rgba(24,24,27,0.22)",
+            }
+      }
+      onDragStart={() => setZIndex(80)}
+      onDragEnd={() => setZIndex(layout.zIndex + 10)}
     >
       <div className="box-border flex h-full w-full flex-col justify-between gap-1 p-[8%]">
         <p
@@ -89,6 +114,7 @@ function StickyNote({
 
 export function ProblemInsightsGrid({ className }: ProblemInsightsGridProps) {
   const reduceMotion = useReducedMotion();
+  const boardRef = useRef<HTMLDivElement>(null);
   const [statIndex, setStatIndex] = useState(0);
   const activeStat = SHUFFLR_RESEARCH_STATS[statIndex];
 
@@ -138,11 +164,12 @@ export function ProblemInsightsGrid({ className }: ProblemInsightsGridProps) {
         </div>
 
         <div
+          ref={boardRef}
           className={clsx(
             "relative w-full overflow-hidden rounded-2xl bg-zinc-100",
             canvasAspect,
           )}
-          aria-label="User insight sticky notes"
+          aria-label="User insight sticky notes. Drag notes to rearrange."
         >
           {SHUFFLR_USER_INSIGHTS.map((note, index) => (
             <StickyNote
@@ -151,6 +178,7 @@ export function ProblemInsightsGrid({ className }: ProblemInsightsGridProps) {
               index={index}
               reduceMotion={reduceMotion}
               layout={noteLayouts.get(note.id)!}
+              constraintsRef={boardRef}
             />
           ))}
         </div>
@@ -162,7 +190,7 @@ export function ProblemInsightsGrid({ className }: ProblemInsightsGridProps) {
             Insight #2
           </p>
           <h3 className="text-balance font-['Lucas',sans-serif] text-xl font-semibold text-zinc-900 md:text-2xl">
-            Loneliness is measurable — and widespread.
+            Loneliness is measurable. Loneliness is widespread.
           </h3>
           <p className="text-pretty font-['Lucas',sans-serif] text-base leading-relaxed text-zinc-500">
             National research puts numbers behind the friction students already
