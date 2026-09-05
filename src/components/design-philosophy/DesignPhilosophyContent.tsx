@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import clsx from "clsx";
+import { CornerPlaybackControl } from "../shared/CornerPlaybackControl";
 import { DESIGN_PHILOSOPHY_META } from "./content";
 
 function ArticleVideo({
@@ -58,19 +59,7 @@ function ArticleVideo({
           onPause={() => setIsPlaying(false)}
           onPlay={() => setIsPlaying(true)}
         />
-        {!isPlaying && (
-          <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-zinc-900/20">
-            <span className="flex size-12 items-center justify-center rounded-full bg-white">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                className="ml-0.5 size-5 fill-zinc-700"
-              >
-                <path d="M8 5.14v13.72L19.5 12 8 5.14z" />
-              </svg>
-            </span>
-          </span>
-        )}
+        <CornerPlaybackControl isPlaying={isPlaying} />
       </button>
     </div>
   );

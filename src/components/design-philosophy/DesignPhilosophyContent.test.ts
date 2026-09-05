@@ -13,7 +13,9 @@ test("plays the hummingbird video on click with audio", () => {
   assert.match(content, /video\.muted = false/);
   assert.match(content, /await video\.play\(\)/);
   assert.match(content, /Play hummingbird video/);
+  assert.match(content, /CornerPlaybackControl/);
   assert.doesNotMatch(content, /controls/);
+  assert.doesNotMatch(content, /rounded-full bg-white/);
 });
 
 test("places the hummingbird passage beside the video in a full-width column", () => {

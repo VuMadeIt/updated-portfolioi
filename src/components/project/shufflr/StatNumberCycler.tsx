@@ -20,28 +20,23 @@ type StatNumberCyclerProps = {
 };
 
 type Pose = {
-  /** % of wheel container width */
   left: number;
-  /** % of wheel container height */
   top: number;
   scale: number;
   rotate: number;
   opacity: number;
 };
 
+type SpinDirection = "cw" | "ccw";
+
 /**
  * Detached iOS-wheel slots (% of the full stat area).
- * All numerals stay upright (0°). Active is centered; next/prev sit to the
- * right with edge padding — not glued to the active number, not flush to rim.
- *
- * - active: horizontally centered in the grey box
- * - next:   upper-right, inset from top/right
- * - prev:   lower-right, same x as next (mirrored y)
+ * Upper = next neighbor; lower = previous neighbor.
+ * Click upper → clockwise; click lower → counter-clockwise.
  */
 const POSE = {
   enter: { left: 72, top: 15, scale: 0.3, rotate: 0, opacity: 0 },
   next: { left: 72, top: 27, scale: 0.34, rotate: 0, opacity: 0.5 },
-  // Active is 10% larger (1.1) and the whole wheel sits 5% lower in the box.
   active: { left: 42, top: 53, scale: 1.1, rotate: 0, opacity: 1 },
   prev: { left: 72, top: 77, scale: 0.34, rotate: 0, opacity: 0.5 },
   exit: { left: 72, top: 95, scale: 0.3, rotate: 0, opacity: 0 },
@@ -65,6 +60,8 @@ function WheelDigit({
   progress,
   startsActive,
   endsActive,
+  onActivate,
+  ariaLabel,
 }: {
   value: string;
   from: Pose;
@@ -72,6 +69,8 @@ function WheelDigit({
   progress: MotionValue<number>;
   startsActive: boolean;
   endsActive: boolean;
+  onActivate?: () => void;
+  ariaLabel?: string;
 }) {
   const leftPct = useTransform(progress, [0, 1], [from.left, to.left]);
   const topPct = useTransform(progress, [0, 1], [from.top, to.top]);
@@ -86,9 +85,23 @@ function WheelDigit({
     [startsActive ? "#18181b" : "#a1a1aa", endsActive ? "#18181b" : "#a1a1aa"],
   );
 
+  const interactive = Boolean(onActivate);
+
   return (
-    <motion.span
-      className="absolute origin-center font-['Lucas',sans-serif] text-5xl font-bold tabular-nums leading-none tracking-tight will-change-transform sm:text-6xl"
+    <motion.button
+      type="button"
+      disabled={!interactive}
+      aria-label={ariaLabel}
+      aria-hidden={!interactive ? true : undefined}
+      tabIndex={interactive ? 0 : -1}
+      onClick={(event) => {
+        event.stopPropagation();
+        onActivate?.();
+      }}
+      className={clsx(
+        "absolute origin-center border-0 bg-transparent p-0 font-['Lucas',sans-serif] text-5xl font-bold tabular-nums leading-none tracking-tight will-change-transform sm:text-6xl",
+        interactive ? "cursor-pointer" : "pointer-events-none",
+      )}
       style={{
         left,
         top,
@@ -100,15 +113,15 @@ function WheelDigit({
         y: "-50%",
       }}
     >
-      {value}
-    </motion.span>
+      {/* Enlarge hit target for the small grey numerals */}
+      <span className="relative inline-block px-3 py-2">{value}</span>
+    </motion.button>
   );
 }
 
 /**
- * Fixed 4-value iOS-style wheel picker (click to advance).
- * Order is stable: for any active index, next/prev are always the same neighbors.
- * One shared spring progress drives every digit so the wheel turns as one unit.
+ * Fixed 4-value wheel. Upper neighbour → clockwise; lower neighbour →
+ * counter-clockwise. Shared spring progress keeps all digits locked together.
  */
 export function StatNumberCycler({
   values,
@@ -119,6 +132,7 @@ export function StatNumberCycler({
   const reduceMotion = useReducedMotion();
   const spinningRef = useRef(false);
   const [spinning, setSpinning] = useState(false);
+  const [direction, setDirection] = useState<SpinDirection>("ccw");
   const progress = useMotionValue(0);
 
   const wheel = values.slice(0, WHEEL_LEN);
@@ -133,65 +147,137 @@ export function StatNumberCycler({
   const current = at(safeIndex);
   const next = at(safeIndex + 1);
   const afterNext = at(safeIndex + 2);
+  const beforePrev = at(safeIndex - 2);
 
-  const advance = useCallback(() => {
-    if (spinningRef.current) return;
+  const spin = useCallback(
+    (dir: SpinDirection) => {
+      if (spinningRef.current) return;
 
-    if (reduceMotion) {
-      onIndexChange((safeIndex + 1) % count);
-      return;
-    }
+      const nextIndex =
+        dir === "ccw"
+          ? (safeIndex + 1) % count
+          : (safeIndex - 1 + count) % count;
 
-    spinningRef.current = true;
-    setSpinning(true);
-    progress.set(0);
-    animate(progress, 1, {
-      ...spring,
-      onComplete: () => {
-        onIndexChange((safeIndex + 1) % count);
-        setSpinning(false);
-        progress.set(0);
-        spinningRef.current = false;
-      },
-    });
-  }, [reduceMotion, onIndexChange, safeIndex, count, progress]);
+      if (reduceMotion) {
+        onIndexChange(nextIndex);
+        return;
+      }
 
-  /** Counter-clockwise slot handoff driven by one shared progress. */
+      spinningRef.current = true;
+      setDirection(dir);
+      setSpinning(true);
+      progress.set(0);
+      animate(progress, 1, {
+        ...spring,
+        onComplete: () => {
+          onIndexChange(nextIndex);
+          setSpinning(false);
+          progress.set(0);
+          spinningRef.current = false;
+        },
+      });
+    },
+    [reduceMotion, onIndexChange, safeIndex, count, progress],
+  );
+
+  /**
+   * CCW: upper(next) → active → lower(prev) → exit
+   * CW:  lower(prev) → active → upper(next) → exit-up
+   */
   const digits: {
     value: string;
     from: Slot;
     to: Slot;
     key: string;
+    onActivate?: () => void;
+    ariaLabel?: string;
   }[] = spinning
-    ? [
-        { value: afterNext, from: "enter", to: "next", key: `in-${safeIndex}` },
-        { value: next, from: "next", to: "active", key: `next-${safeIndex}` },
-        {
-          value: current,
-          from: "active",
-          to: "prev",
-          key: `active-${safeIndex}`,
-        },
-        { value: prev, from: "prev", to: "exit", key: `prev-${safeIndex}` },
-      ]
+    ? direction === "ccw"
+      ? [
+          {
+            value: afterNext,
+            from: "enter",
+            to: "next",
+            key: `in-${safeIndex}`,
+          },
+          {
+            value: next,
+            from: "next",
+            to: "active",
+            key: `next-${safeIndex}`,
+          },
+          {
+            value: current,
+            from: "active",
+            to: "prev",
+            key: `active-${safeIndex}`,
+          },
+          {
+            value: prev,
+            from: "prev",
+            to: "exit",
+            key: `prev-${safeIndex}`,
+          },
+        ]
+      : [
+          {
+            value: beforePrev,
+            from: "exit",
+            to: "prev",
+            key: `in-${safeIndex}`,
+          },
+          {
+            value: prev,
+            from: "prev",
+            to: "active",
+            key: `prev-${safeIndex}`,
+          },
+          {
+            value: current,
+            from: "active",
+            to: "next",
+            key: `active-${safeIndex}`,
+          },
+          {
+            value: next,
+            from: "next",
+            to: "enter",
+            key: `next-${safeIndex}`,
+          },
+        ]
     : [
-        { value: next, from: "next", to: "next", key: `next-${safeIndex}` },
+        {
+          value: next,
+          from: "next",
+          to: "next",
+          key: `next-${safeIndex}`,
+          onActivate: () => spin("cw"),
+          ariaLabel: `Go to ${next} (clockwise)`,
+        },
         {
           value: current,
           from: "active",
           to: "active",
           key: `active-${safeIndex}`,
+          onActivate: () => spin("ccw"),
+          ariaLabel: `Statistic ${current}. Click to advance.`,
         },
-        { value: prev, from: "prev", to: "prev", key: `prev-${safeIndex}` },
+        {
+          value: prev,
+          from: "prev",
+          to: "prev",
+          key: `prev-${safeIndex}`,
+          onActivate: () => spin("ccw"),
+          ariaLabel: `Go to ${prev} (counter-clockwise)`,
+        },
       ];
 
   return (
-    <button
-      type="button"
-      onClick={advance}
-      aria-label={`Statistic ${current}. Click to show the next statistic.`}
+    <div
+      role="group"
+      aria-label={`Statistic wheel showing ${current}`}
       className={clsx(
-        "relative h-full min-h-[10rem] w-full cursor-pointer overflow-visible rounded-xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400",
+        "relative h-full min-h-[10rem] w-full overflow-visible rounded-xl focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-zinc-400",
         className,
       )}
     >
@@ -204,8 +290,10 @@ export function StatNumberCycler({
           progress={progress}
           startsActive={digit.from === "active"}
           endsActive={digit.to === "active"}
+          onActivate={digit.onActivate}
+          ariaLabel={digit.ariaLabel}
         />
       ))}
-    </button>
+    </div>
   );
 }
