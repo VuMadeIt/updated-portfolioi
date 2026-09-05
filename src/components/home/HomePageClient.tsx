@@ -48,6 +48,7 @@ import {
   COMING_SOON_LABEL,
   isComingSoonProject,
 } from "../../lib/comingSoonProjects";
+import { SHUFFLR_TAGLINE_INLINE } from "../project/shufflr/shufflrContent";
 import { posthog, posthogEnabled } from "../../lib/posthog";
 import { useHeroAnimation } from "../../hooks/useHeroAnimation";
 import { fadeUpStyles } from "../../styles/animations";
@@ -137,8 +138,7 @@ const staticProjects: Project[] = [
     id: "shufflr",
     title: "Shufflr",
     year: "2026",
-    description:
-      "Lowering the activation energy of fun,\nlow-stakes hangout moments!",
+    description: SHUFFLR_TAGLINE_INLINE,
     imageSrc: "",
     videoSrc: "/videos/shufflr.mp4",
   },
@@ -464,7 +464,7 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           </div>
         </div>
         <div className="hidden md:flex content-stretch items-start px-[13px] py-0 -mt-1.5 -mb-0.5 relative shrink-0 w-full">
-          <p className="whitespace-pre-line font-['Lucas',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{displayDescription}</p>
+          <p className="font-['Lucas',sans-serif] font-normal leading-snug text-[#a1a1aa] text-base tracking-[0.005em] text-left project-hover-text">{displayDescription}</p>
         </div>
         <div className="md:hidden content-stretch flex flex-col font-['Lucas',sans-serif] font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.01em] gap-1">
           <div className="flex items-center w-full">
@@ -664,7 +664,7 @@ function SimpleProjectModal({ project, onClose }: ProjectModalProps) {
               </div>
               
               <div className="content-stretch flex gap-2 items-start relative w-full">
-                <p className="whitespace-pre-line font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
+                <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
                   {project.description}
                 </p>
               </div>
@@ -692,7 +692,7 @@ function SimpleProjectModal({ project, onClose }: ProjectModalProps) {
               </div>
               
               <div className="content-stretch flex gap-2 items-start relative w-full">
-                <p className="whitespace-pre-line font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
+                <p className="font-['Lucas',sans-serif] font-normal leading-normal relative text-[#71717a] text-base tracking-[0.005em]">
                   {project.description}
                 </p>
               </div>

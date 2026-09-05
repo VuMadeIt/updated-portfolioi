@@ -6,6 +6,10 @@ export const SHUFFLR_FIGMA_EMBED_URL = "";
 export const SHUFFLR_TAGLINE =
   "Lowering the activation energy of fun,\nlow-stakes hangout moments!";
 
+/** Single-line tagline for home cards / hover (no forced break). */
+export const SHUFFLR_TAGLINE_INLINE =
+  "Lowering the activation energy of fun, low-stakes hangout moments!";
+
 export const SHUFFLR_VIDEOS = {
   shuffle: "/videos/shufflr/shuffle.mp4",
   community: "/videos/shufflr/community.mp4",
