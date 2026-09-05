@@ -168,6 +168,9 @@ const LOCAL_HERO_VIDEO_BY_COMPANY: Record<string, string> = {
   ripple: "/videos/ripple.mp4",
   nasa: "/videos/shufflr.mp4",
   shufflr: "/videos/shufflr.mp4",
+  "maple-leaf-foods": "/videos/maple-leaf.mp4",
+  mapleleaf: "/videos/maple-leaf.mp4",
+  roblox: "/videos/maple-leaf.mp4",
 };
 
 function warmProjectHeroMedia(company: string, project: Project): void {

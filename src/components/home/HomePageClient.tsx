@@ -84,6 +84,10 @@ type Project = {
   videoSrc?: string;
   /** Uniform scale >1 crops letterboxing / side bars inside the rounded card. */
   mediaZoom?: number;
+  /** How still images fill the card. Default cover. */
+  mediaFit?: "cover" | "contain";
+  /** Still-image card background (use transparent for logos with alpha). */
+  mediaBackground?: string;
   /** Full/uncropped Mux assets for ExperimentModal / ExperimentSiteEmbed. */
   popupImageSrc?: string;
   popupVideoSrc?: string;
@@ -121,10 +125,10 @@ const staticProjects: Project[] = [
   {
     id: "maple-leaf-foods",
     title: "Maple Leaf Foods",
-    year: "2024",
+    year: "2026",
     description: "Digitizing decades-old workflows at enterprise scale.",
-    imageSrc: "/images/maple-leaf/logo.png",
-    videoSrc: "",
+    imageSrc: "",
+    videoSrc: "/videos/maple-leaf.mp4",
   },
   {
     id: "ripple",
@@ -176,6 +180,8 @@ type ProjectMediaProps = {
   videoSrc?: string;
   hoverImageSrc?: string;
   mediaZoom?: number;
+  mediaFit?: "cover" | "contain";
+  mediaBackground?: string;
 };
 
 const ProjectMedia = React.memo(function ProjectMedia({
@@ -183,6 +189,8 @@ const ProjectMedia = React.memo(function ProjectMedia({
   videoSrc,
   hoverImageSrc,
   mediaZoom = 1,
+  mediaFit = "cover",
+  mediaBackground,
 }: ProjectMediaProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -311,18 +319,48 @@ const ProjectMedia = React.memo(function ProjectMedia({
   }
 
   return (
-    <div ref={containerRef} className="aspect-[678/367.625] relative isolate rounded-[26px] shrink-0 w-full overflow-hidden">
-      <ShimmerImage
-        alt=""
+    <div
+      ref={containerRef}
+      className="aspect-[678/367.625] relative isolate rounded-[26px] shrink-0 w-full overflow-hidden"
+      style={{
+        backgroundColor:
+          mediaBackground ??
+          (mediaFit === "contain" ? "transparent" : undefined),
+      }}
+    >
+      <div
         className={clsx(
-          "absolute max-w-none object-cover size-full transition-opacity duration-300 ease-out",
-          hoverImageSrc && "group-hover:opacity-0",
+          "absolute inset-0 flex items-center justify-center",
+          mediaFit === "contain" && "p-[7%]",
         )}
-        wrapperClassName="absolute inset-0"
-        rounded="rounded-[26px]"
-        src={imageSrc}
-        loading="lazy"
-      />
+      >
+        <ShimmerImage
+          alt=""
+          className={clsx(
+            "transition-opacity duration-300 ease-out",
+            mediaFit === "contain"
+              ? "relative h-full w-full object-contain"
+              : "absolute inset-0 max-w-none size-full object-cover",
+            hoverImageSrc && "group-hover:opacity-0",
+          )}
+          wrapperClassName={
+            mediaFit === "contain"
+              ? "relative h-full w-full"
+              : "absolute inset-0"
+          }
+          rounded={mediaFit === "contain" ? "rounded-none" : "rounded-[26px]"}
+          src={imageSrc}
+          loading="lazy"
+          style={
+            mediaZoom !== 1
+              ? {
+                  transform: `scale(${mediaZoom})`,
+                  transformOrigin: "center center",
+                }
+              : undefined
+          }
+        />
+      </div>
       {hoverImageSrc && (
         <img
           src={hoverImageSrc}
@@ -437,6 +475,8 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
             videoSrc={project.videoSrc}
             hoverImageSrc={project.hoverImageSrc}
             mediaZoom={project.mediaZoom}
+            mediaFit={project.mediaFit}
+            mediaBackground={project.mediaBackground}
           />
           <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
           <div className="absolute bottom-0 left-0 p-3 hidden md:block">
@@ -511,6 +551,8 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           videoSrc={project.videoSrc}
           hoverImageSrc={project.hoverImageSrc}
           mediaZoom={project.mediaZoom}
+          mediaFit={project.mediaFit}
+          mediaBackground={project.mediaBackground}
         />
         <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
       </div>

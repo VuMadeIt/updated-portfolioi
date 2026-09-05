@@ -72,7 +72,7 @@ function applyLucasProjectOverrides(
     return {
       ...project,
       title: "Maple Leaf Foods",
-      year: "2024",
+      year: "2026",
       shortDescription: MAPLE_LEAF_TAGLINE,
       heroVideo: undefined,
       heroImage: undefined,
@@ -81,7 +81,7 @@ function applyLucasProjectOverrides(
         {
           _key: "year",
           label: "Year",
-          value: ["2024"],
+          value: ["2026"],
           subValue: undefined,
         },
         {
@@ -1581,11 +1581,11 @@ export default function ProjectModal({
                 {/* Logo */}
                 {isMapleLeaf ? (
                   <ScrollReveal variant="fade" rootMargin="0px">
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-black">
+                    <div className="relative flex size-24 shrink-0 items-center justify-center overflow-visible rounded-2xl bg-transparent sm:size-28">
                       <img
                         src={MAPLE_LEAF_LOGO_IMAGE}
                         alt="Maple Leaf Foods logo"
-                        className="absolute inset-0 size-full object-contain"
+                        className="h-full w-full scale-110 object-contain"
                       />
                     </div>
                   </ScrollReveal>
