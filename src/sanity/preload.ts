@@ -1,7 +1,7 @@
 /**
  * Preloading utility for Sanity data
  * Fetches data in the background to improve perceived performance
- * when users navigate to likely pages (Apple, Roblox, Adobe, NASA, Art, About)
+ * when users navigate to likely pages (Work, About, Art, Library)
  */
 
 import { muxPosterUrl } from "../lib/muxPoster";
@@ -145,21 +145,57 @@ function warmMuxManifest(playbackId: string | undefined): void {
 
 /**
  * Preload project data for a specific company. Also warms the browser cache
- * for the hero image and Mux video manifest so the popup opens without
- * showing the gray shimmer.
+ * for hero media so the popup opens without a gray shimmer.
  *
  * Prefer calling this on project-card hover — not on Work mount. Hitting
  * `/api/project` eagerly in dev queues a heavy Next compile that blocks
  * Work → About / Art soft navigations for tens of seconds.
  */
+const LOCAL_HERO_PROJECT_IDS = new Set([
+  "roblox",
+  "maple-leaf-foods",
+  "mapleleaf",
+  "adobe",
+  "ripple",
+  "nasa",
+  "shufflr",
+  "apple",
+  "warframe",
+]);
+
+const LOCAL_HERO_VIDEO_BY_COMPANY: Record<string, string> = {
+  roblox: "/videos/maple-leaf.mp4",
+  "maple-leaf-foods": "/videos/maple-leaf.mp4",
+  mapleleaf: "/videos/maple-leaf.mp4",
+  adobe: "/videos/ripple.mp4",
+  ripple: "/videos/ripple.mp4",
+  nasa: "/videos/shufflr.mp4",
+  shufflr: "/videos/shufflr.mp4",
+};
+
+function warmProjectHeroMedia(company: string, project: Project): void {
+  if (LOCAL_HERO_PROJECT_IDS.has(company) || LOCAL_HERO_PROJECT_IDS.has(project.company)) {
+    const localVideo =
+      LOCAL_HERO_VIDEO_BY_COMPANY[company] ||
+      LOCAL_HERO_VIDEO_BY_COMPANY[project.company];
+    if (localVideo) {
+      // Prefetch the MP4; do not touch Sanity heroImage / Mux thumbs.
+      fetch(localVideo, { mode: "no-cors", cache: "force-cache" }).catch(() => {});
+    }
+    return;
+  }
+
+  if (project.heroImage) warmImage(urlFor(project.heroImage).width(1200).url());
+  warmMuxManifest(project.heroVideo);
+}
+
 export async function preloadProject(company: string): Promise<void> {
   const cacheKey = `project:${company}`;
   const existing = getCachedData<Project>(cacheKey);
   if (existing) {
     // Sanity data already cached — still warm the media URLs in case this is
     // a fresh page load where the browser cache was discarded.
-    if (existing.heroImage) warmImage(urlFor(existing.heroImage).width(1200).url());
-    warmMuxManifest(existing.heroVideo);
+    warmProjectHeroMedia(company, existing);
     return;
   }
 
@@ -167,8 +203,7 @@ export async function preloadProject(company: string): Promise<void> {
     const { project: data } = await fetchProjectByCompany(company);
     if (data) {
       setCachedData(cacheKey, data);
-      if (data.heroImage) warmImage(urlFor(data.heroImage).width(1200).url());
-      warmMuxManifest(data.heroVideo);
+      warmProjectHeroMedia(company, data);
     }
   } catch (err) {
     console.warn(`Failed to preload project ${company}:`, err);
@@ -330,6 +365,19 @@ function warmWorkMedia(
 ): void {
   if (projects) {
     for (const project of projects) {
+      // Skip Michelle Mux posters for remapped Lucas projects (local MP4 cards).
+      if (
+        LOCAL_HERO_PROJECT_IDS.has(project.company) ||
+        LOCAL_HERO_VIDEO_BY_COMPANY[project.company]
+      ) {
+        const localVideo = LOCAL_HERO_VIDEO_BY_COMPANY[project.company];
+        if (localVideo) {
+          fetch(localVideo, { mode: "no-cors", cache: "force-cache" }).catch(
+            () => {},
+          );
+        }
+        continue;
+      }
       if (project.heroVideo) {
         warmImage(
           `https://image.mux.com/${project.heroVideo}/thumbnail.png?width=1920`,

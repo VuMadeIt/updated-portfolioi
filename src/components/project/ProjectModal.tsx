@@ -97,6 +97,8 @@ function applyLucasProjectOverrides(
       year: "2026",
       shortDescription: RIPPLE_TAGLINE,
       heroVideo: LOCAL_HERO_VIDEOS.ripple,
+      // Never show Michelle/Sanity stills under the local hero MP4.
+      heroImage: undefined,
       logo: undefined,
       metadata: [
         {
@@ -135,6 +137,8 @@ function applyLucasProjectOverrides(
       year: "2026",
       shortDescription: SHUFFLR_TAGLINE,
       heroVideo: LOCAL_HERO_VIDEOS.shufflr,
+      // Never show Michelle/Sanity stills under the local hero MP4.
+      heroImage: undefined,
       logo: undefined,
       metadata: [
         {
@@ -170,6 +174,9 @@ function applyLucasProjectOverrides(
     return {
       ...project,
       title: "Warframe",
+      heroImage: undefined,
+      heroVideo: undefined,
+      logo: undefined,
     };
   }
 
@@ -231,6 +238,7 @@ import { iconSize } from "../shared/iconSizes";
 import { HorizontalLine } from "../shared/HorizontalLine";
 import { ghostIconButtonClass } from "../shared/ghostIconButton";
 import ProjectCaseStudySidebar from "./ProjectCaseStudySidebar";
+import { CASE_STUDY_PAD_X } from "./caseStudyLayout";
 import { getCaseStudyNavItems } from "./caseStudyNavItems";
 import RippleCaseStudy from "./ripple/RippleCaseStudy";
 import ShufflrCaseStudy from "./shufflr/ShufflrCaseStudy";
@@ -1496,7 +1504,7 @@ export default function ProjectModal({
             <div className="flex flex-col pb-16 w-full">
               {/* Mobile not available message - shown only after unlocking on mobile (NASA is allowed) */}
               {isUnlocked && isMobile && projectId !== 'nasa' && !isRipple && !isShufflr && !isMapleLeaf && (
-                <div className="mx-auto flex w-full max-w-[800px] flex-col items-center justify-center min-h-[60vh] px-8 text-center">
+                <div className="mx-auto flex w-full max-w-[800px] flex-col items-center justify-center min-h-[60vh] case-study-pad-x text-center">
                   <LaptopIcon />
                   <p className="text-[#71717a] text-base leading-normal px-12 mt-4">
                     This page isn't available on mobile yet. You can view it on desktop instead! {";)"}
@@ -1511,7 +1519,7 @@ export default function ProjectModal({
               <div
                 ref={heroRef}
                 className={clsx(
-                  "content-stretch flex flex-col gap-8 items-start justify-center px-8 pb-16 relative shrink-0 w-full",
+                  "content-stretch flex flex-col gap-8 items-start justify-center case-study-pad-x pb-16 relative shrink-0 w-full",
                   // Fullscreen already spends height on the sticky header, so the
                   // hero opens just below it and lands level with the nav rail at
                   // top-28. Popups have no header to clear, so they keep pt-32.
@@ -1622,35 +1630,48 @@ export default function ProjectModal({
                 </ScrollReveal>
                 )}
 
-                {/* Hero Video or Image */}
+                {/* Hero Video or Image.
+                    Local Lucas MP4s must never use Sanity/Michelle heroImage as poster
+                    or underlay — that flashes the old case-study stills before play. */}
                 {project.heroVideo ? (
                   <ScrollReveal delay={480} rootMargin="0px" className="w-full">
                     <div className="content-stretch flex flex-col items-start overflow-clip relative rounded-[26px] shrink-0 w-full">
                       <div className="aspect-[1090/591] relative rounded-[26px] shrink-0 w-full overflow-hidden bg-zinc-100">
-                        {/* Fallback image while video loads */}
-                        {project.heroImage && (
-                          <ShimmerImage
-                            className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
-                            wrapperClassName="absolute inset-0"
-                            alt=""
-                            loading="eager"
-                            fetchPriority="high"
-                            src={urlFor(project.heroImage).width(1200).url()}
-                          />
-                        )}
-                        {/* Hero video — when we already have a fallback image, suppress the
-                            redundant shimmer so the cover image shows through during video load */}
-                        <ShimmerVideo
-                          src={resolveHeroVideoSrc(project.heroVideo)!}
-                          className="absolute inset-0 max-w-none object-cover size-full"
-                          wrapperClassName="absolute inset-0"
-                          autoPlay
-                          muted
-                          loop
-                          controls={false}
-                          disableShimmer={!!project.heroImage}
-                          poster={project.heroImage ? urlFor(project.heroImage).width(1200).url() : undefined}
-                        />
+                        {(() => {
+                          const heroSrc = resolveHeroVideoSrc(project.heroVideo)!;
+                          const isLocalHero =
+                            heroSrc.startsWith("/") || heroSrc.includes(".mp4");
+                          const fallbackSrc =
+                            !isLocalHero && project.heroImage
+                              ? urlFor(project.heroImage).width(1200).url()
+                              : undefined;
+
+                          return (
+                            <>
+                              {fallbackSrc && (
+                                <ShimmerImage
+                                  className="absolute inset-0 max-w-none object-cover pointer-events-none size-full"
+                                  wrapperClassName="absolute inset-0"
+                                  alt=""
+                                  loading="eager"
+                                  fetchPriority="high"
+                                  src={fallbackSrc}
+                                />
+                              )}
+                              <ShimmerVideo
+                                src={heroSrc}
+                                className="absolute inset-0 max-w-none object-cover size-full"
+                                wrapperClassName="absolute inset-0"
+                                autoPlay
+                                muted
+                                loop
+                                controls={false}
+                                disableShimmer={!!fallbackSrc}
+                                poster={fallbackSrc}
+                              />
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </ScrollReveal>
@@ -1907,7 +1928,7 @@ function TestimonialBlock({
   return (
     <div 
       ref={sectionRef}
-      className="content-stretch flex flex-col items-start justify-center px-8 py-10 relative shrink-0 w-full scroll-mt-8"
+      className="content-stretch flex flex-col items-start justify-center case-study-pad-x py-10 relative shrink-0 w-full scroll-mt-8"
     >
       <div className="content-stretch flex flex-col gap-[100px] max-md:gap-16 items-start relative shrink-0 w-full">
         {/* Header Section */}
@@ -2072,7 +2093,7 @@ function ContentBlock({
       // Centered layout when image is provided
       if (hasImage) {
         return (
-          <div ref={missionRef} className="flex flex-col items-center px-8 py-10 relative shrink-0 w-full">
+          <div ref={missionRef} className="flex flex-col items-center case-study-pad-x py-10 relative shrink-0 w-full">
             {/* Label + Title */}
             <div className="flex flex-col gap-5 items-center text-center w-[410px] max-md:w-full">
               <p className="leading-normal text-[#a1a1aa] uppercase text-base">
@@ -2121,7 +2142,7 @@ function ContentBlock({
       // Original layout (no image)
       return (
         <div ref={missionRef} className={clsx(
-          "content-stretch items-start px-8 py-16 relative shrink-0 w-full",
+          "content-stretch items-start case-study-pad-x py-16 relative shrink-0 w-full",
           // Use flex column layout when no description
           !hasDescription && "flex flex-col gap-5 justify-center",
           // Use grid layout when there is description (two-column)
@@ -2165,7 +2186,7 @@ function ContentBlock({
       const isMapleLeafProtected =
         !!projectId && isMapleLeafProject(projectId);
       return (
-        <div className="content-stretch flex flex-col items-start px-8 py-10 relative shrink-0 w-full">
+        <div className="content-stretch flex flex-col items-start case-study-pad-x py-10 relative shrink-0 w-full">
           <div className="bg-zinc-100 content-stretch flex flex-col items-center justify-center overflow-clip p-16 max-md:px-8 max-md:py-16 relative rounded-[26px] shrink-0 w-full">
             <div className={clsx(
               "content-stretch flex flex-col items-start relative shrink-0 w-full",
@@ -2268,7 +2289,7 @@ function ContentBlock({
         return (
           <div className="flex flex-col">
             <div
-              className="content-stretch flex flex-col items-start px-8 relative shrink-0 w-full"
+              className="content-stretch flex flex-col items-start case-study-pad-x relative shrink-0 w-full"
               style={{ backgroundColor: section.backgroundColor || '#fafafa' }}
             >
               <div className={clsx("content-stretch flex flex-col justify-between relative shrink-0 w-full", verticalPadding)}>
@@ -2360,7 +2381,7 @@ function ContentBlock({
       return (
         <div className="flex flex-col">
         <div
-          className="content-stretch flex flex-col items-start px-8 relative shrink-0 w-full"
+          className="content-stretch flex flex-col items-start case-study-pad-x relative shrink-0 w-full"
           style={{ backgroundColor: section.backgroundColor || '#fafafa' }}
         >
           <div className={clsx(
@@ -2459,7 +2480,7 @@ function ContentBlock({
       // Masonry layout: center images and let them keep natural width (up to a max)
       if (section.layout === "masonry") {
         return (
-          <div className="content-stretch flex flex-col gap-6 px-8 py-16 relative shrink-0 w-full">
+          <div className="content-stretch flex flex-col gap-6 case-study-pad-x py-16 relative shrink-0 w-full">
             <div className="w-full flex flex-wrap justify-center gap-6 items-start">
               {section.images?.map((image) => (
                 <div
@@ -2495,7 +2516,7 @@ function ContentBlock({
       const isOddCount = imageCount % 2 === 1;
       
       return (
-        <div className="content-stretch flex flex-col gap-4 px-8 py-10 relative shrink-0 w-full">
+        <div className="content-stretch flex flex-col gap-4 case-study-pad-x py-10 relative shrink-0 w-full">
           {/* Image Grid */}
           <div
             className={`content-stretch grid gap-4 items-center relative w-full max-md:grid-cols-2 ${colsClass}`}
@@ -2539,7 +2560,7 @@ function ContentBlock({
         const hasBody = section.body && section.body.length > 0;
         return (
           <div className={clsx(
-            "flex gap-20 items-start px-8 relative shrink-0 w-full max-md:flex-col",
+            "flex gap-20 items-start case-study-pad-x relative shrink-0 w-full max-md:flex-col",
             hasBody ? "max-md:gap-12" : "max-md:gap-0",
             isTextSectionEmpty ? "py-7 max-md:py-4" : "py-14 max-md:py-8"
           )}>
@@ -2567,7 +2588,7 @@ function ContentBlock({
         const hasCenteredBody = section.body && section.body.length > 0;
         return (
           <div className={clsx(
-            "content-stretch flex flex-col gap-4 items-center px-8 relative shrink-0 w-full",
+            "content-stretch flex flex-col gap-4 items-center case-study-pad-x relative shrink-0 w-full",
             isTextSectionEmpty ? "py-5 max-md:py-3" : "py-10 max-md:py-6"
           )}>
             {section.label && (
@@ -2591,7 +2612,7 @@ function ContentBlock({
       if (section.layout === "single-col") {
         return (
           <div className={clsx(
-            "content-stretch grid grid-cols-[2fr_1fr_2fr] items-start px-8 relative shrink-0 w-full max-md:flex max-md:flex-col max-md:gap-8",
+            "content-stretch grid grid-cols-[2fr_1fr_2fr] items-start case-study-pad-x relative shrink-0 w-full max-md:flex max-md:flex-col max-md:gap-8",
             isTextSectionEmpty ? "py-5 max-md:py-3" : "py-10 max-md:py-6"
           )}>
             <div className="content-stretch flex flex-col gap-3 items-start relative col-start-1">
@@ -2616,7 +2637,7 @@ function ContentBlock({
       }
       return (
         <div className={clsx(
-          "content-stretch flex flex-col gap-4 items-start px-8 relative shrink-0 w-full",
+          "content-stretch flex flex-col gap-4 items-start case-study-pad-x relative shrink-0 w-full",
           isTextSectionEmpty ? "py-5 max-md:py-3" : "py-10 max-md:py-6"
         )}>
           {section.label && (
@@ -2660,7 +2681,7 @@ function ContentBlock({
       return (
         <div className={clsx(
           "content-stretch flex flex-col py-10 relative shrink-0 w-full",
-          imageSize === "full" ? "items-start px-8" : "items-center px-8"
+          imageSize === "full" ? "items-start case-study-pad-x" : "items-center case-study-pad-x"
         )}>
           <div
             className={clsx(
@@ -2727,7 +2748,7 @@ function ContentBlock({
           <div
             className={clsx(
               "flex flex-col relative shrink-0 w-full",
-              overlayImageSize === "full" ? "items-start px-8" : "items-center px-8",
+              overlayImageSize === "full" ? "items-start case-study-pad-x" : "items-center case-study-pad-x",
               !hasBgColor && "py-10"
             )}
             style={{ backgroundColor: section.backgroundColor || 'transparent' }}
@@ -2800,7 +2821,7 @@ function ContentBlock({
       
       return (
         <div
-          className="content-stretch flex flex-col items-center px-8 py-10 relative shrink-0 w-full"
+          className="content-stretch flex flex-col items-center case-study-pad-x py-10 relative shrink-0 w-full"
           style={{ backgroundColor: section.backgroundColor || 'transparent' }}
         >
           <div className={clsx("w-full", videoSizeClass)}>
@@ -2891,11 +2912,7 @@ function ContentBlock({
 
       case "dividerSection":
         return (
-          <div className="px-8 py-8 w-full">
-            <div className="h-px relative shrink-0 w-full">
-              <div className="absolute bg-zinc-100 inset-0" />
-            </div>
-          </div>
+          <div className={`${CASE_STUDY_PAD_X} py-8 w-full`} aria-hidden />
         );
 
       case "phoneVideoSection":
@@ -2908,7 +2925,7 @@ function ContentBlock({
             : null;
         
         return (
-          <div className="content-stretch flex flex-col items-start px-8 py-10 relative shrink-0 w-full">
+          <div className="content-stretch flex flex-col items-start case-study-pad-x py-10 relative shrink-0 w-full">
             <div className={clsx(
               "flex items-center gap-20 w-full",
               isVideoLeft ? "flex-row" : "flex-row-reverse",
@@ -2999,7 +3016,7 @@ function ContentBlock({
 
       case "learningsSection":
         return (
-          <div className="content-stretch flex flex-col items-start px-8 py-10 relative shrink-0 w-full">
+          <div className="content-stretch flex flex-col items-start case-study-pad-x py-10 relative shrink-0 w-full">
             {section.sectionTitle && (
               <h3 className="text-2xl font-normal text-zinc-900 mb-8">
                 {section.sectionTitle}
@@ -3042,7 +3059,7 @@ function ContentBlock({
         return (
           <div 
             data-section-number={section.number}
-            className="content-stretch flex flex-col gap-5 items-start justify-center px-8 py-16 relative shrink-0 w-full"
+            className="content-stretch flex flex-col gap-5 items-start justify-center case-study-pad-x py-16 relative shrink-0 w-full"
           >
             {/* Number + Title */}
             <div className="content-stretch flex font-normal gap-5 items-start leading-relaxed relative shrink-0 text-2xl w-full">
@@ -3058,12 +3075,6 @@ function ContentBlock({
               )}
             </div>
             
-            {/* Line */}
-            {section.showLine !== false && (
-              <div className="h-px relative shrink-0 w-full">
-                <div className="absolute inset-0 bg-zinc-100" />
-              </div>
-            )}
             
             {/* Subtitle */}
             {section.subtitle && (
@@ -3087,7 +3098,7 @@ function ContentBlock({
             className="content-stretch flex flex-col pt-14 py-8 max-md:flex-col w-full relative shrink-0"
           >
             {/* Left: Text Content */}
-            <div className="max-md:w-full px-8 flex flex-col ">
+            <div className="max-md:w-full case-study-pad-x flex flex-col ">
               {/* Heading */}
               {section.heading && (
                 <h2 className="text-lg font-normal text-zinc-600 whitespace-pre-wrap">
@@ -3104,7 +3115,7 @@ function ContentBlock({
             </div>
 
 {/* Background with Image */}
-<div className="max-md:w-full relative -mt-3 max-md:min-h-[300px] flex items-center justify-center px-8 py-8">
+<div className="max-md:w-full relative -mt-3 max-md:min-h-[300px] flex items-center justify-center case-study-pad-x py-8">
   {textImageSrc && (
     <div className="inline-block rounded-3xl"             style={{ backgroundColor: textImageBgColor }}>
       <ShimmerImage
@@ -3144,7 +3155,7 @@ function ContentBlock({
         };
         
         return (
-          <div className="content-stretch flex flex-col items-start px-8 py-10 relative shrink-0 w-full">
+          <div className="content-stretch flex flex-col items-start case-study-pad-x py-10 relative shrink-0 w-full">
             {/* Section Title with optional divider line */}
             {section.sectionTitle && (
               <div className="flex items-center gap-6 w-full mb-10">
@@ -3154,9 +3165,7 @@ function ContentBlock({
                 >
                   {section.sectionTitle}
                 </span>
-                {section.showDividerLine !== false && (
-                  <div className="flex-1 h-px bg-zinc-100" />
-                )}
+
               </div>
             )}
             
@@ -3198,8 +3207,8 @@ function ContentBlock({
         
         // Layout classes
         const highlightLayoutMap = {
-          '2-col': 'grid-cols-1 md:grid-cols-2 px-8',
-          '3-col': 'grid-cols-1 md:grid-cols-2 gap-4 lg:grid-cols-3 px-8',
+          '2-col': 'grid-cols-1 md:grid-cols-2 case-study-pad-x',
+          '3-col': 'grid-cols-1 md:grid-cols-2 gap-4 lg:grid-cols-3 case-study-pad-x',
           'stacked': 'grid-cols-1',
         };
         const highlightLayout = highlightLayoutMap[section.layout || '2-col'];
@@ -3242,8 +3251,8 @@ function ContentBlock({
               <div className={clsx(
                 "grid w-full",
                 highlightLayout,
-                section.layout === 'stacked' ? 'px-8' : '',
-                section.showDividers ? 'divide-y divide-zinc-200 [&>*]:py-16' : 'gap-12'
+                section.layout === 'stacked' ? 'case-study-pad-x' : '',
+                section.showDividers ? 'gap-0 [&>*]:py-16' : 'gap-12'
               )}>
                 {section.cards.map((card) => {
                   const cardImgSrc = card.externalImageUrl 
@@ -3321,7 +3330,7 @@ function ContentBlock({
                     <div
                       key={card._key}
                       className={clsx(
-                        "flex flex-1 flex-row w-full gap-12 px-8 p-6", 
+                        "flex flex-1 flex-row w-full gap-12 case-study-pad-x p-6", 
                         cardStyle,
                         section.showDividers && "py-8"
                       )}
@@ -3508,12 +3517,9 @@ function ContentBlock({
 
                 {/* Section Description - below horizontal line */}
                 {section.sectionDescription && (
-                  <>
-                    <div className="w-full h-px bg-zinc-100 mt-4" />
-                    <p className="text-sm md:text-base text-zinc-400 mt-4 whitespace-pre-wrap">
-                      {section.sectionDescription}
-                    </p>
-                  </>
+                  <p className="text-sm md:text-base text-zinc-400 mt-4 whitespace-pre-wrap">
+                    {section.sectionDescription}
+                  </p>
                 )}
               </div>
             )}

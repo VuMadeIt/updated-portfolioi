@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { ScrollReveal } from "../../shared/ScrollReveal";
 import ShimmerImage from "../../shared/ShimmerImage";
+import { CASE_STUDY_COLUMN } from "../caseStudyLayout";
 import {
   MAPLE_LEAF_MISSION,
   MAPLE_LEAF_PROJECTS,
@@ -30,11 +31,11 @@ function MapleLeafSection({
       data-section-number={id}
       data-section-heading={title}
       className={clsx(
-        "scroll-mt-28 bg-white px-8 py-16 text-zinc-900 md:py-20",
+        "scroll-mt-28 bg-white py-16 text-zinc-900 md:py-20",
         className,
       )}
     >
-      <div className="mx-auto flex w-full max-w-[800px] flex-col gap-8">
+      <div className={clsx(CASE_STUDY_COLUMN, "flex flex-col gap-8")}>
         {(eyebrow || title) && (
           <div className="flex flex-col gap-3">
             {eyebrow && (
@@ -117,7 +118,6 @@ export default function MapleLeafCaseStudy() {
           id={PROJECT_SECTION_IDS[index]}
           eyebrow={project.eyebrow}
           title={project.title}
-          className="border-t border-zinc-100"
         >
           <ScrollReveal delay={index * 60}>
             <ProjectBlock project={project} />

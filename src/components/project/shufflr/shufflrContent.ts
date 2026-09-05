@@ -134,21 +134,82 @@ export const SHUFFLR_DECISIONS = [
   },
 ] as const;
 
-export const SHUFFLR_PERSONAS = [
+export const SHUFFLR_USER_INSIGHTS = [
   {
-    name: "Micheal Spataro",
+    id: "calendar",
     quote:
-      "2016 felt like the last year the internet was actually social. Now it's a highlight reel optimized for strangers.",
+      "We used to hang out because someone was bored. Now everyone needs to check their calendar.",
+    attribution: "30-year-old",
+    color: "#F0ABFC",
   },
   {
-    name: "Jenny Contento",
+    id: "event",
     quote:
-      "Pre-COVID things were lighter. Memes were weird and abstract and nobody took themselves too seriously.",
+      "Everything feels like an event now. Sometimes I just want to go do something stupid with my friends.",
+    attribution: "21-year-old",
+    color: "#FDA4AF",
   },
   {
-    name: "Lucas Vu",
+    id: "plans",
     quote:
-      "Nobody wants to be the one who plans something, so nothing happens. We're all waiting for someone else to shuffle the deck.",
+      "Nobody wants to be the one who plans something, so nothing happens.",
+    attribution: "Waterloo Student",
+    color: "#93C5FD",
+  },
+  {
+    id: "after-work",
+    quote:
+      "After work, I want to do something, but by the time I figure out what, I just go home.",
+    attribution: "Young Professional",
+    color: "#FDBA74",
+  },
+  {
+    id: "group-chat",
+    quote:
+      "We have group chats with 15 people and still can’t get four people to hang out.",
+    attribution: "Gen Z Student",
+    color: "#FCD34D",
+  },
+  {
+    id: "friends",
+    quote:
+      "I have friends I’d love to see more often. We just never actually make plans.",
+    attribution: "Young Professional",
+    color: "#5EEAD4",
+  },
+] as const;
+
+export const SHUFFLR_RESEARCH_STATS = [
+  {
+    id: "01",
+    display: "200",
+    headline: "hours is how long it takes for someone to become a close friend.",
+    source: "Jeffrey A. Hall",
+    sourceUrl: "https://journals.sagepub.com/doi/10.1177/0265407518761225",
+  },
+  {
+    id: "02",
+    display: "56",
+    headline: "percent of college students say it’s difficult to make friends.",
+    source: "American Friendship Project",
+    sourceUrl:
+      "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0305834",
+  },
+  {
+    id: "03",
+    display: "17",
+    headline: "percent of Canadians aged 15–24 often or always feel lonely.",
+    source: "Statistics Canada",
+    sourceUrl:
+      "https://www150.statcan.gc.ca/n1/pub/11-627-m/11-627-m2021052-eng.htm",
+  },
+  {
+    id: "04",
+    display: "61",
+    headline:
+      "percent of young people report feeling serious loneliness.",
+    source: "Harvard Making Caring Common",
+    sourceUrl: "https://mcc.gse.harvard.edu/reports/loneliness-in-america",
   },
 ] as const;
 

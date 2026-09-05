@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { ScrollReveal } from "../../shared/ScrollReveal";
 import ShimmerImage from "../../shared/ShimmerImage";
 import ShimmerVideo from "../../shared/ShimmerVideo";
+import { CASE_STUDY_COLUMN } from "../caseStudyLayout";
 import {
   RIPPLE_DECISIONS,
   RIPPLE_EDITORIAL_BLOCKS,
@@ -28,9 +29,9 @@ function RippleSection({ id, eyebrow, title, children, className }: SectionProps
       id={id}
       data-section-number={id}
       data-section-heading={title}
-      className={clsx("scroll-mt-28 bg-white px-8 py-16 text-zinc-900 md:py-20", className)}
+      className={clsx("scroll-mt-28 bg-white py-16 text-zinc-900 md:py-20", className)}
     >
-      <div className="mx-auto flex w-full max-w-[800px] flex-col gap-8">
+      <div className={clsx(CASE_STUDY_COLUMN, "flex flex-col gap-8")}>
         {(eyebrow || title) && (
           <div className="flex flex-col gap-3">
             {eyebrow && (
@@ -213,7 +214,6 @@ export default function RippleCaseStudy() {
             id={sectionId}
             eyebrow={eyebrow}
             title={block.title}
-            className="border-t border-zinc-100"
           >
             <ScrollReveal>
               <EditorialBlock block={block} showTitle={false} />
@@ -226,7 +226,6 @@ export default function RippleCaseStudy() {
         id="features"
         eyebrow="Core features"
         title="Four surfaces, one idea."
-        className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-16 md:gap-20">
           {RIPPLE_FEATURES.map((feature, index) => (
@@ -241,7 +240,6 @@ export default function RippleCaseStudy() {
         id="decisions"
         eyebrow="Design decisions"
         title="A familiar, clean, and emotionally effective design"
-        className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-10">
           {RIPPLE_DECISIONS.map((decision, index) => (
@@ -263,7 +261,6 @@ export default function RippleCaseStudy() {
         id="prototype"
         eyebrow="Prototype"
         title="Try it out"
-        className="border-t border-zinc-100"
       >
         <ScrollReveal>
           {showFigmaEmbed ? (
@@ -283,7 +280,6 @@ export default function RippleCaseStudy() {
         id="learnings"
         eyebrow="Key learnings"
         title="What we learned"
-        className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-10">
           <BodyText>
@@ -309,7 +305,7 @@ export default function RippleCaseStudy() {
         id="reflection"
         eyebrow="Reflection"
         title="Looking back"
-        className="border-t border-zinc-100 pb-24"
+        className="pb-24"
       >
         <BodyText>
           Ripple was a team project built in eight hours at BLOOM Designathon 2026.

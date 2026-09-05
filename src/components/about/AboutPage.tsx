@@ -621,14 +621,6 @@ function transformShelfItems(data: ShelfItem[]): MediaCardData[] {
 }
 
 function transformLoreItems(data: LoreItem[]): LoreCardData[] {
-  const normalizeLoreLink = (link?: string) => {
-    if (!link) return link;
-    if (link.includes("instagram.com/https.croissant")) {
-      return "https://www.instagram.com/studio.mliu";
-    }
-    return link;
-  };
-
   return data.map((item) => ({
     id: item._id,
     imageSrc: item.image ? urlFor(item.image).width(600).url() : undefined,
@@ -636,7 +628,7 @@ function transformLoreItems(data: LoreItem[]): LoreCardData[] {
     headline: item.headline,
     date: item.date,
     description: item.description,
-    link: normalizeLoreLink(item.link),
+    link: item.link,
   }));
 }
 
@@ -992,7 +984,7 @@ export default function AboutPage() {
       <NavigationTabs activeTab="about" heroAnimationPlayed={heroAnimationPlayed} />
 
       {/* Main Content Area */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start px-16 max-md:px-6 pt-2 relative shrink-0 w-full">
+      <div className="flex flex-col lg:flex-row gap-4 items-start px-4 sm:px-6 md:px-10 lg:px-16 pt-2 relative shrink-0 w-full">
         {/* Sidebar - hidden on mobile */}
         <div className="hidden lg:block lg:sticky lg:top-8 pb-4 lg:pb-8 w-[202px] shrink-0 z-50">
           <AboutSidebar
@@ -1015,9 +1007,9 @@ export default function AboutPage() {
 
         {/* Main Content — left-aligned like prod on laptop; on large monitors, center an 800px column beside the sidebar */}
         <div className="flex-1 flex min-w-0 w-full min-[1920px]:justify-center">
-          <div className="flex flex-col gap-20 items-start pb-8 w-full min-[1920px]:max-w-[800px]">
+          <div className="flex flex-col gap-20 items-start pb-8 w-full min-w-0 min-[1920px]:max-w-[800px]">
           {/* HI! Section - Hardcoded */}
-          <section ref={hiRef} className="flex flex-col md:flex-row gap-10 md:gap-16 items-center md:items-start w-full max-w-5xl scroll-mt-8">
+          <section ref={hiRef} className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-center lg:items-start w-full max-w-5xl min-w-0 scroll-mt-8">
             {/* Profile Photo */}
             <ScrollReveal delay={100}>
               <div className="shrink-0">
@@ -1030,28 +1022,30 @@ export default function AboutPage() {
             </ScrollReveal>
 
             {/* Bio Content */}
-            <div className="flex flex-col pt-8 gap-6 flex-1 max-w-xl">
+            <div className="flex w-full min-w-0 flex-1 flex-col gap-6 pt-4 sm:pt-8 max-w-xl">
               <ScrollReveal variant="fade" delay={150}>
                 <KnownAsHeading />
               </ScrollReveal>
 
               {/* Location & Education */}
               <ScrollReveal variant="fade" delay={200}>
-                <div className="flex flex-wrap gap-2 md:gap-6 text-base tracking-[0.005em] text-zinc-400">
-                  <div className="flex items-center gap-2">
-                    <img src={mapPinIcon} alt="" className="w-4 h-4" />
+                <div className="flex flex-col gap-3 text-base tracking-[0.005em] text-zinc-400 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <img src={mapPinIcon} alt="" className="size-4 shrink-0" />
                     <span className="text-zinc-400">Toronto</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <img src={academicCapIcon} alt="" className="w-4 h-4" />
-                    <span className="text-zinc-400">Systems Design Engineer, University of Waterloo</span>
+                  <div className="flex min-w-0 items-start gap-2">
+                    <img src={academicCapIcon} alt="" className="mt-0.5 size-4 shrink-0" />
+                    <span className="text-pretty break-words text-zinc-400">
+                      Systems Design Engineer, University of Waterloo
+                    </span>
                   </div>
                 </div>
               </ScrollReveal>
 
               {/* Bio Paragraphs */}
               <ScrollReveal variant="fade" delay={250}>
-                <div className="flex flex-col gap-4 text-zinc-600 text-base tracking-[0.005em] leading-relaxed">
+                <div className="flex flex-col gap-4 text-pretty text-base leading-relaxed tracking-[0.005em] text-zinc-600">
                   <p>
                     What truly defines me is my passion to constantly try new things. Whether it
                     be soccer, fishing, martial arts, dancing, or jumping on project ideas,
@@ -1183,7 +1177,6 @@ export default function AboutPage() {
                       yearFilters={musicYears}
                       activeYear={activeMusicYear}
                       onYearChange={(year) => setActiveMusicYear(year || undefined)}
-                      externalLink={{ label: "Spotify", href: "https://open.spotify.com/user/i4stx92bb6e14vmhqe5tl8az6?si=3b9ee8fc1b3a4784" }}
                       items={musicItems}
                       itemCount={5}
                       onItemClick={(item) => console.log("Music clicked:", item)}

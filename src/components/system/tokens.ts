@@ -18,7 +18,7 @@ export type ColorGroup = {
   label: string;
   note?: string;
   colors: ColorToken[];
-  /** Brand tabs for case-study palettes (e.g. Adobe, NASA, Roblox). */
+  /** Optional brand tabs for case-study palettes. */
   tabs?: {
     id: string;
     label: string;
@@ -114,45 +114,6 @@ export const colorGroups: ColorGroup[] = [
     colors: [
       { name: "pink-500", value: "#ec4899", className: "text-pink-500", usage: "CMS default — TOC, headers, stats accent", tag: "canonical" },
       { name: "pink-50", value: "#fdf2f8", className: "bg-pink-50", usage: "CMS section header bar default", tag: "canonical" },
-    ],
-    tabs: [
-      {
-        id: "adobe",
-        label: "Adobe",
-        colors: [
-          { name: "Adobe pink", value: "#F63768", usage: "Highlight & Express headline", tag: "one-off" },
-          { name: "Adobe pink deep", value: "#DE3C82", usage: "Section title & highlight", tag: "one-off" },
-          { name: "Adobe pink soft", value: "#F777B0", usage: "Section title number / title", tag: "one-off" },
-          { name: "Adobe blush", value: "#FF8EAB", usage: "Express — card highlight", tag: "one-off" },
-          { name: "Adobe orange", value: "#FD9A00", usage: "Express — card headline", tag: "one-off" },
-          { name: "Adobe orange soft", value: "#FFB748", usage: "Express — card highlight", tag: "one-off" },
-          { name: "Adobe sky", value: "#32A7F9", usage: "Express — card headline", tag: "one-off" },
-          { name: "Adobe sky soft", value: "#88CEFF", usage: "Express — card highlight", tag: "one-off" },
-          { name: "Adobe cyan", value: "#34A9F3", usage: "Two-column / feature highlight", tag: "one-off" },
-        ],
-      },
-      {
-        id: "nasa",
-        label: "NASA",
-        colors: [
-          { name: "NASA periwinkle", value: "#828EE4", usage: "Section title number", tag: "one-off" },
-          { name: "NASA indigo", value: "#5365DE", usage: "Section title & card headline", tag: "one-off" },
-        ],
-      },
-      {
-        id: "roblox",
-        label: "Roblox",
-        includeDefaults: false,
-        colors: [
-          { name: "Roblox blue", value: "#335FFF", usage: "Highlight", tag: "one-off" },
-          { name: "Roblox blue mid", value: "#7FA2FF", usage: "Section title number", tag: "one-off" },
-          { name: "Roblox blue deep", value: "#2E5EDE", usage: "Section title & highlight", tag: "one-off" },
-          { name: "Roblox teal soft", value: "#6FD8D2", usage: "Section title number", tag: "one-off" },
-          { name: "Roblox teal", value: "#38C4BC", usage: "Section title", tag: "one-off" },
-          { name: "Roblox purple soft", value: "#B378DB", usage: "Section title number", tag: "one-off" },
-          { name: "Roblox purple", value: "#842CBF", usage: "Section title", tag: "one-off" },
-        ],
-      },
     ],
   },
 {
@@ -322,7 +283,13 @@ export const spacingScale: ScaleToken[] = [
 
 export const gutters: ScaleToken[] = [
   { name: "px-16 / max-md:px-6", value: "64px / 24px", usage: "★ Primary page gutter", tag: "canonical" },
-  { name: "px-8", value: "32px", usage: "Secondary mobile gutter", tag: "canonical" },
+  {
+    name: "case-study-pad-x / --section-padding-x",
+    value: "2rem (32px)",
+    usage: "★ Case-study section horizontal padding (inside max-w-[800px])",
+    tag: "canonical",
+  },
+  { name: "px-8", value: "32px", usage: "Secondary mobile gutter (alias of section-padding-x)", tag: "canonical" },
   { name: "px-[175px] / md:px-[8%]", value: "175px / 8%", usage: "Wide project gallery gutters", tag: "one-off" },
   { name: "w-[calc(100%*10/12)]", value: "10 of 12 cols", usage: "Project modal width", tag: "canonical" },
   { name: "w-[calc(100%*6/12)]", value: "6 of 12 cols", usage: "Info modal width", tag: "one-off" },

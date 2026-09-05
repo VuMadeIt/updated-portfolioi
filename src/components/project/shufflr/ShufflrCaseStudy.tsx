@@ -8,11 +8,12 @@ import {
   SHUFFLR_FEATURES,
   SHUFFLR_FIGMA_EMBED_URL,
   SHUFFLR_LEARNINGS,
-  SHUFFLR_PERSONAS,
   SHUFFLR_PROBLEM_STATEMENT,
   type ShufflrEditorialBlock,
   type ShufflrFeatureBlock,
 } from "./shufflrContent";
+import { CASE_STUDY_COLUMN } from "../caseStudyLayout";
+import { ProblemInsightsGrid } from "./ProblemInsightsGrid";
 
 type SectionProps = {
   id: string;
@@ -28,9 +29,9 @@ function ShufflrSection({ id, eyebrow, title, children, className }: SectionProp
       id={id}
       data-section-number={id}
       data-section-heading={title}
-      className={clsx("scroll-mt-28 bg-white px-8 py-16 text-zinc-900 md:py-20", className)}
+      className={clsx("scroll-mt-28 bg-white py-16 text-zinc-900 md:py-20", className)}
     >
-      <div className="mx-auto flex w-full max-w-[800px] flex-col gap-8">
+      <div className={clsx(CASE_STUDY_COLUMN, "flex flex-col gap-8")}>
         {(eyebrow || title) && (
           <div className="flex flex-col gap-3">
             {eyebrow && (
@@ -180,22 +181,12 @@ export default function ShufflrCaseStudy() {
             id={sectionId}
             eyebrow={eyebrow}
             title={block.title}
-            className="border-t border-zinc-100"
           >
             <ScrollReveal>
               <div className="flex flex-col gap-10">
                 <EditorialBlock block={block} showTitle={false} />
                 {sectionId === "problem" && (
-                  <div className="flex flex-col gap-10">
-                    {SHUFFLR_PERSONAS.map((persona) => (
-                      <div key={persona.name} className="flex flex-col gap-3">
-                        <p className="font-['Lucas',sans-serif] text-sm uppercase tracking-[0.12em] text-zinc-400">
-                          {persona.name}
-                        </p>
-                        <PullQuote className="text-lg md:text-xl">{persona.quote}</PullQuote>
-                      </div>
-                    ))}
-                  </div>
+                  <ProblemInsightsGrid className="mt-2" />
                 )}
               </div>
             </ScrollReveal>
@@ -207,7 +198,6 @@ export default function ShufflrCaseStudy() {
         id="features"
         eyebrow="Core features"
         title="Four surfaces, one idea."
-        className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-16 md:gap-20">
           {SHUFFLR_FEATURES.map((feature, index) => (
@@ -222,7 +212,6 @@ export default function ShufflrCaseStudy() {
         id="decisions"
         eyebrow="Design decisions"
         title="What makes Shufflr different"
-        className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-10">
           {SHUFFLR_DECISIONS.map((decision, index) => (
@@ -244,7 +233,6 @@ export default function ShufflrCaseStudy() {
         id="prototype"
         eyebrow="Prototype"
         title="Try it out"
-        className="border-t border-zinc-100"
       >
         <ScrollReveal>
           {showFigmaEmbed ? (
@@ -266,7 +254,6 @@ export default function ShufflrCaseStudy() {
         id="learnings"
         eyebrow="Key learnings"
         title="How we measure success"
-        className="border-t border-zinc-100"
       >
         <div className="flex flex-col gap-10">
           <BodyText>
@@ -290,7 +277,7 @@ export default function ShufflrCaseStudy() {
         id="reflection"
         eyebrow="Reflection"
         title="Looking back"
-        className="border-t border-zinc-100 pb-24"
+        className="pb-24"
       >
         <BodyText>
           Shufflr started as a product concept for university students who miss the
