@@ -164,9 +164,6 @@ const LOCAL_HERO_PROJECT_IDS = new Set([
 ]);
 
 const LOCAL_HERO_VIDEO_BY_COMPANY: Record<string, string> = {
-  roblox: "/videos/maple-leaf.mp4",
-  "maple-leaf-foods": "/videos/maple-leaf.mp4",
-  mapleleaf: "/videos/maple-leaf.mp4",
   adobe: "/videos/ripple.mp4",
   ripple: "/videos/ripple.mp4",
   nasa: "/videos/shufflr.mp4",
@@ -181,6 +178,13 @@ function warmProjectHeroMedia(company: string, project: Project): void {
     if (localVideo) {
       // Prefetch the MP4; do not touch Sanity heroImage / Mux thumbs.
       fetch(localVideo, { mode: "no-cors", cache: "force-cache" }).catch(() => {});
+    } else if (
+      company === "maple-leaf-foods" ||
+      company === "mapleleaf" ||
+      company === "roblox" ||
+      project.company === "roblox"
+    ) {
+      warmImage("/images/maple-leaf/logo.png");
     }
     return;
   }

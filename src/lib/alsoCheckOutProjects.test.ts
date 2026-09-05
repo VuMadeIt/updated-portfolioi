@@ -18,7 +18,7 @@ const portfolio = [
     title: "Maple Leaf Foods",
     year: "2026",
     description: "Maple Leaf description",
-    imageSrc: "/videos/maple-leaf.mp4",
+    imageSrc: "/images/maple-leaf/logo.png",
   },
   {
     id: "ripple",

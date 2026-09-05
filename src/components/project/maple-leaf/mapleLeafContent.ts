@@ -1,12 +1,13 @@
 import type { CaseStudyNavItem } from "../caseStudyNavItems";
 import { INTRODUCTION_NAV_ID } from "../caseStudyNavItems";
 
-export const MAPLE_LEAF_LOGO_VIDEO = "/videos/maple-leaf.mp4";
+export const MAPLE_LEAF_LOGO_IMAGE = "/images/maple-leaf/logo.png";
 
 export const MAPLE_LEAF_TAGLINE =
   "Digitizing decades old workflows processing millions of dollars, affecting thousands of employees.";
 
 export const MAPLE_LEAF_IMAGES = {
+  logo: MAPLE_LEAF_LOGO_IMAGE,
   servicePenaltyApp: "/images/maple-leaf/service-penalty-app.png",
   mapleLeafMarket: "/images/maple-leaf/maple-leaf-market.png",
   projectTrackingApp: "/images/maple-leaf/project-tracking-app.png",

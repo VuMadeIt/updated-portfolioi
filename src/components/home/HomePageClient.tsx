@@ -122,8 +122,8 @@ const staticProjects: Project[] = [
     title: "Maple Leaf Foods",
     year: "2024",
     description: "Digitizing decades-old workflows at enterprise scale.",
-    imageSrc: "",
-    videoSrc: "/videos/maple-leaf.mp4",
+    imageSrc: "/images/maple-leaf/logo.png",
+    videoSrc: "",
   },
   {
     id: "ripple",
@@ -155,7 +155,8 @@ const staticProjects: Project[] = [
     id: "creators-collective",
     title: "Creators Collective",
     year: "2026",
-    description: "Building a online exhibit to flaunt Waterloo's creatives",
+    description:
+      "Building a online exhibit to flaunt Waterloo's creatives. Keep refreshing the page to see past designs!",
     imageSrc: "",
     videoSrc: "/videos/creators-collective.mp4",
     tryItOutHref: "https://creatorscollective.framer.website/",

@@ -14,9 +14,6 @@ import { ICON_STROKE_WIDTH } from "../shared/iconSizes";
 import { LoadingText } from "../shared/LoadingSpinner";
 
 const LOCAL_HERO_VIDEOS: Record<string, string> = {
-  roblox: "/videos/maple-leaf.mp4",
-  "maple-leaf-foods": "/videos/maple-leaf.mp4",
-  mapleleaf: "/videos/maple-leaf.mp4",
   adobe: "/videos/ripple.mp4",
   ripple: "/videos/ripple.mp4",
   nasa: "/videos/shufflr.mp4",
@@ -71,7 +68,7 @@ function applyLucasProjectOverrides(
         {
           _key: "with",
           label: "With",
-          value: ["Craig Weller"],
+          value: ["Craig Weller (manager)"],
           subValue: undefined,
         },
       ],
@@ -255,7 +252,7 @@ import {
 } from "./shufflr/shufflrContent";
 import {
   isMapleLeafProject,
-  MAPLE_LEAF_LOGO_VIDEO,
+  MAPLE_LEAF_LOGO_IMAGE,
   MAPLE_LEAF_NAV_ITEMS,
   MAPLE_LEAF_TAGLINE,
 } from "./maple-leaf/mapleLeafContent";
@@ -1529,17 +1526,11 @@ export default function ProjectModal({
                 {/* Logo */}
                 {isMapleLeaf ? (
                   <ScrollReveal variant="fade" rootMargin="0px">
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-white">
-                      <ShimmerVideo
-                        src={MAPLE_LEAF_LOGO_VIDEO}
-                        className="size-full object-cover"
-                        wrapperClassName="size-full"
-                        rounded="rounded-2xl"
-                        autoPlay
-                        muted
-                        loop
-                        controls={false}
-                        playerName="Maple Leaf Foods logo"
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-black">
+                      <img
+                        src={MAPLE_LEAF_LOGO_IMAGE}
+                        alt="Maple Leaf Foods logo"
+                        className="absolute inset-0 size-full object-contain"
                       />
                     </div>
                   </ScrollReveal>
