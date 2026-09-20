@@ -2,8 +2,6 @@
 
 Personal portfolio site for [Lucas Vu](https://github.com/VuMadeIt).
 
-**Live site:** [https://michelle-liu-nu.vercel.app](https://michelle-liu-nu.vercel.app)
-
 **Repository:** [https://github.com/VuMadeIt/updated-portfolioi](https://github.com/VuMadeIt/updated-portfolioi)
 
 ## Stack
