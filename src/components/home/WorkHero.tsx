@@ -8,9 +8,6 @@ import HeroCapabilitySentence from "./hero/HeroCapabilitySentence";
 
 const HERO_TEXT = "lucas vu";
 
-const HERO_SUBTEXT =
-  "a six time hackathon winner who transforms ideas into interfaces people adore";
-
 const LOAD_ANIMATION_DURATION = 3;
 const LOAD_STAGGER = 0.12;
 const HOVER_REVERT_DELAY_MS = 1000;
@@ -204,7 +201,7 @@ export default function WorkHero() {
           </h1>
         </div>
 
-        <div className="mt-5 w-full max-w-full md:mt-6">
+        <div className="mt-0.5 w-full min-w-0 max-w-full md:mt-1">
           <HeroCapabilitySentence />
         </div>
       </div>
@@ -216,7 +213,9 @@ export default function WorkHero() {
           "mt-10 max-w-sm self-end text-right text-lg max-md:mt-8 max-md:max-w-none max-md:self-stretch max-md:text-left md:text-[1.35rem]",
         )}
       >
-        {HERO_SUBTEXT}
+        a six time hackathon winner who{" "}
+        <br className="md:hidden" />
+        transforms ideas into interfaces people&nbsp;adore
       </p>
     </section>
   );

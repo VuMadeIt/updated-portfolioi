@@ -921,10 +921,10 @@
  */
 
 body, a {
-  /* Try larger cursor first (works on macOS) */
-  cursor: url("../assets/cursor-default.svg") 8 8,
+  /* Try larger cursor first (works on macOS) — tip hotspot */
+  cursor: url("../assets/cursor-default.svg") 3 2,
           /* Fallback to smaller cursor (works on Windows) */
-          url("../assets/cursor-default-small.svg") 6 6,
+          url("../assets/cursor-default-small.svg") 3 2,
           /* Final fallback to system cursor */
           auto;
 }
@@ -935,11 +935,8 @@ button:hover,
 input[type="submit"]:hover,
 input[type="button"]:hover,
 .cursor-pointer:hover {
-  /* Try larger cursor first (works on macOS) */
-  cursor: url("../assets/cursor-hover.svg") 9 9,
-          /* Fallback to smaller cursor (works on Windows) */
-          url("../assets/cursor-hover-small.svg") 6 6,
-          /* Final fallback to system pointer */
+  cursor: url("../assets/cursor-hover.svg") 3 2,
+          url("../assets/cursor-hover-small.svg") 3 2,
           pointer;
 }
 

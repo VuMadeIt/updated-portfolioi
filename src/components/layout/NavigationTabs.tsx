@@ -51,16 +51,23 @@ export default function NavigationTabs({ activeTab }: NavigationTabsProps) {
   return (
     <header className="relative z-50 w-full shrink-0 bg-white pt-8 max-md:pt-8 md:pt-10">
       <ScrollReveal variant="fade" delay={280} rootMargin="0px" className="relative w-full" disabled>
-        <div className="flex w-full items-center justify-between gap-4 px-16 pb-4 max-md:px-6 max-md:pb-3">
+        <div className="flex w-full items-start justify-between gap-3 px-16 pb-4 max-md:px-6 max-md:pb-3 md:items-center md:gap-4">
           <p
-            className="flex min-w-0 items-center gap-2 font-['Lucas',sans-serif] text-xs font-normal lowercase tracking-[0.01em] text-zinc-600 md:text-sm"
+            className="flex min-w-0 flex-1 items-start gap-2 font-['Lucas',sans-serif] text-xs font-normal lowercase tracking-[0.01em] text-zinc-600 md:max-w-none md:items-center md:text-sm"
             aria-label={NAV_STATUS}
           >
             <span
               aria-hidden="true"
-              className="size-1.5 shrink-0 rounded-full bg-emerald-400 animate-[blink_1.2s_ease-in-out_infinite]"
+              className="mt-1.5 size-1.5 shrink-0 rounded-full bg-emerald-400 animate-[blink_1.2s_ease-in-out_infinite] md:mt-0"
             />
-            <span className="min-w-0 truncate">{NAV_STATUS}</span>
+            <span className="min-w-0 max-w-[11.5rem] leading-snug text-pretty md:max-w-none">
+              <span className="md:hidden">
+                seeking summer
+                <br />
+                2027 internships
+              </span>
+              <span className="hidden md:inline">{NAV_STATUS}</span>
+            </span>
           </p>
 
           <nav className="flex shrink-0 items-center gap-5 md:gap-6">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   AnimatePresence,
   LayoutGroup,
@@ -11,13 +12,15 @@ import clsx from "clsx";
 
 const wordBaseClass = clsx(
   "font-['Lucas',sans-serif] font-light text-[#3f3f46]",
-  "text-[clamp(1.5rem,4vw,2.75rem)] leading-none",
+  // Slightly smaller on mobile so “AI Workflows” fits inside page gutters
+  "text-[clamp(1.25rem,5.2vw,1.75rem)] md:text-[clamp(1.5rem,4vw,2.75rem)] leading-none",
 );
 
 const punctClass = clsx(wordBaseClass, "select-none text-zinc-400");
 
-/** Locked sentence row height — hover cards overflow vertically without jumping. */
-const SENTENCE_ROW_H = "h-[100px]";
+/** Locked sentence row height on desktop — hover cards overflow without jumping.
+ * Mobile uses auto height so the line can wrap under the name without a tall gap. */
+const SENTENCE_ROW_H = "max-md:h-auto md:h-[100px]";
 
 /** True when the primary input can't hover (phones/tablets). */
 function useIsTouchDevice() {
@@ -34,20 +37,48 @@ function useIsTouchDevice() {
   return isTouch;
 }
 
+/** Open-hand grab cursor (Design drag affordance). */
+function DesignHandCursor({ className }: { className?: string }) {
+  return (
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 28 28"
+      fill="none"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M9.2 12.2V7.4c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v4.2M12.8 11.2V5.6c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v6.2M16.4 11.5V6.8c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v7.4M20 13.2v-1.6c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v6.2c0 4.2-3.4 7.2-7.6 7.2h-1.4c-2.8 0-5.2-1.4-6.6-3.6L6.2 16.8c-.7-1-.5-2.4.5-3.1.9-.6 2.1-.4 2.8.4l.7.9V12.2"
+        fill="#ffffff"
+        stroke="#3b82f6"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 /**
  * “Design” — Figma selection chrome + magnetic drag (snap back).
- * On hover, system cursor becomes a blue Figma pointer + “you” badge.
+ * On hover/drag, cursor becomes open hand + sharp “You” badge.
  */
 function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [mounted, setMounted] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
   const isTouch = useIsTouchDevice();
 
   const showChrome = isHovered || isDragging;
   const showCustomCursor = showChrome && !isTouch;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isDragging) return;
@@ -76,6 +107,36 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
     return () => resizeObserver.disconnect();
   }, []);
 
+  const cursorOverlay =
+    mounted &&
+    createPortal(
+      <AnimatePresence>
+        {showCustomCursor && (
+          <motion.div
+            key="design-hand-cursor"
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
+            transition={{ duration: 0.14, ease: "easeOut" }}
+            className="pointer-events-none fixed z-[9999] flex items-start"
+            style={{ left: cursorPos.x, top: cursorPos.y }}
+            aria-hidden
+          >
+            <DesignHandCursor className="shrink-0 drop-shadow-sm" />
+            <motion.span
+              initial={reduceMotion ? false : { opacity: 0, x: -6, scale: 0.96 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ duration: 0.16, ease: "easeOut", delay: 0.02 }}
+              className="mt-4 ml-0.5 whitespace-nowrap bg-[#3b82f6] px-2 py-1 font-['Lucas',sans-serif] text-[11px] font-semibold leading-none text-white shadow-sm"
+            >
+              You
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body,
+    );
+
   return (
     <span className="relative mx-0 inline-flex h-full items-center select-none align-middle">
       <motion.span
@@ -94,7 +155,7 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
         }}
         className={clsx(
           wordBaseClass,
-          "relative z-20 inline-block px-1 py-1",
+          "relative z-20 inline-block py-1 pl-0 pr-0",
           showCustomCursor ? "cursor-none" : "cursor-grab active:cursor-grabbing",
         )}
         tabIndex={0}
@@ -131,44 +192,15 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
         </AnimatePresence>
       </motion.span>
 
-      <AnimatePresence>
-        {showCustomCursor && (
-          <motion.div
-            key="figma-cursor"
-            initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.12, ease: "easeOut" }}
-            className="pointer-events-none fixed z-[100] flex items-start gap-1"
-            style={{
-              left: cursorPos.x,
-              top: cursorPos.y,
-            }}
-            aria-hidden
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="#0088FF"
-              className="shrink-0 stroke-white stroke-[1.5] drop-shadow-sm"
-            >
-              <path d="M3 3l7 18 3-7 7-3L3 3z" />
-            </svg>
-            <span className="mt-3 rounded-full bg-[#0088FF] px-2 py-0.5 text-[11px] font-semibold text-white shadow-md">
-              you
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {cursorOverlay}
     </span>
   );
 }
 
 const CODE_LINES = [
-  "float d = dist(uv, p);",
-  "v += ink * exp(-d*d);",
-  "frag = vec4(col, v);",
+  "float d = dist(idea, reality);",
+  "v += prototype * exp(-d*d);",
+  "frag = vec4(iterate(col), v);",
 ] as const;
 
 /** Workflow palette from the product color strip (pastels). */
@@ -185,7 +217,7 @@ const TYPE_MS = 14; // rapid typewriter
 function renderTypedLine(full: string, typedLen: number) {
   const typed = full.slice(0, typedLen);
   const parts: { text: string; accent?: boolean }[] = [];
-  const keyword = /(float|vec4)/g;
+  const keyword = /(float|vec4|iterate)/g;
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = keyword.exec(typed)) !== null) {
@@ -490,7 +522,7 @@ function AIWorkflowsWord({ reduceMotion }: { reduceMotion: boolean }) {
             animate={{ opacity: 1, scale: 1 }}
             exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="relative z-10 inline-flex cursor-pointer select-none items-center px-1"
+            className="relative z-10 inline-flex max-w-full cursor-pointer select-none items-center px-0 max-md:overflow-x-auto max-md:pb-1 md:px-1"
           >
             {AI_NODES.map((node, i) => (
               <span key={node.id} className="contents">
@@ -551,7 +583,7 @@ function AIWorkflowsWord({ reduceMotion }: { reduceMotion: boolean }) {
 
 /**
  * Interactive “Design, Code & AI Workflows.” sentence for the Work hero.
- * Fixed row height locks baseline; Code / AI expand horizontally only.
+ * Mobile: line 1 = Design, Code · line 2 = & AI Workflows. (respects page gutters)
  */
 export default function HeroCapabilitySentence() {
   const reduceMotion = useReducedMotion() ?? false;
@@ -562,21 +594,43 @@ export default function HeroCapabilitySentence() {
         layout="position"
         className={clsx(
           SENTENCE_ROW_H,
-          "flex max-w-full flex-nowrap items-center gap-x-[0.35em] overflow-visible",
+          "box-border flex w-full min-w-0 max-w-full items-center gap-x-[0.35em] overflow-x-clip overflow-y-visible",
+          // Mobile: two explicit rows aligned to the left gutter
+          "max-md:flex-col max-md:items-stretch max-md:gap-y-1",
+          "md:flex-row md:flex-nowrap md:items-center",
         )}
         aria-label="Design, Code and AI Workflows"
       >
-        <DesignWord reduceMotion={reduceMotion} />
-        <span className={clsx(punctClass, "inline-flex h-full items-center")} aria-hidden>
-          ,
+        {/* Line 1 (mobile): Design, Code */}
+        <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-[0.2em] md:contents">
+          <DesignWord reduceMotion={reduceMotion} />
+          <span
+            className={clsx(
+              punctClass,
+              "-ml-[0.08em] inline-flex items-center md:h-full",
+            )}
+            aria-hidden
+          >
+            ,
+          </span>
+          <CodeWord reduceMotion={reduceMotion} />
         </span>
-        <CodeWord reduceMotion={reduceMotion} />
-        <span className={clsx(punctClass, "inline-flex h-full items-center")} aria-hidden>
-          &
-        </span>
-        <AIWorkflowsWord reduceMotion={reduceMotion} />
-        <span className={clsx(punctClass, "inline-flex h-full items-center")} aria-hidden>
-          .
+
+        {/* Line 2 (mobile): & AI Workflows. */}
+        <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-[0.35em] md:contents">
+          <span
+            className={clsx(punctClass, "inline-flex items-center md:h-full")}
+            aria-hidden
+          >
+            &
+          </span>
+          <AIWorkflowsWord reduceMotion={reduceMotion} />
+          <span
+            className={clsx(punctClass, "inline-flex items-center md:h-full")}
+            aria-hidden
+          >
+            .
+          </span>
         </span>
       </motion.div>
     </LayoutGroup>

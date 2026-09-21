@@ -36,6 +36,8 @@ test("renders lowercase work/about links with internship status top-left in nav"
   assert.match(source, /seeking summer 2027 internships/);
   assert.match(source, /justify-between/);
   assert.match(source, /bg-emerald-400/);
+  assert.match(source, /2027 internships/);
+  assert.match(source, /<br \/>/);
   assert.match(source, /label: "work"/);
   assert.match(source, /label: "about"/);
 });
