@@ -212,7 +212,7 @@ type IconSpecimen = {
 };
 
 /** PascalCase component names → sentence-case labels (e.g. ArrowUpRight → Arrow up right). */
-const BRAND_ICON_LABELS = new Set(["GitHub", "LinkedIn"]);
+const BRAND_ICON_LABELS = new Set(["GitHub", "LinkedIn", "Devpost"]);
 
 function iconDisplayName(name: string): string {
   if (BRAND_ICON_LABELS.has(name) || /[\s/]/.test(name)) return name;
@@ -310,7 +310,7 @@ const filledIcons: IconSpecimen[] = [
   },
 ];
 
-/** Social marks — LinkedIn, Instagram, GitHub. */
+/** Social marks — LinkedIn, Instagram, GitHub, Devpost. */
 const socialIcons: IconSpecimen[] = [
   {
     name: "LinkedIn",
@@ -333,6 +333,14 @@ const socialIcons: IconSpecimen[] = [
     sample: (
       <svg className="size-5" viewBox="0 0 98 96" fill="currentColor" aria-hidden>
         <path fillRule="evenodd" clipRule="evenodd" d={GITHUB_LOGO_PATH} />
+      </svg>
+    ),
+  },
+  {
+    name: "Devpost",
+    sample: (
+      <svg className="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+        <path d="M6.002 1.61L0 12.004 6.002 22.39h11.996L24 12.004 17.998 1.61zm1.593 4.084h3.947c3.605 0 6.276 1.695 6.276 6.31 0 4.436-3.21 6.302-6.456 6.302H7.595zm2.517 2.449v7.714h1.241c2.646 0 3.862-1.55 3.862-3.861.009-2.569-1.096-3.853-3.767-3.853Z" />
       </svg>
     ),
   },

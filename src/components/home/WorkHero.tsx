@@ -4,10 +4,9 @@ import clsx from "clsx";
 import gsap from "gsap";
 import { useLayoutEffect, useRef } from "react";
 import { brandSubtextClass } from "../../styles/brandTypography";
+import HeroCapabilitySentence from "./hero/HeroCapabilitySentence";
 
 const HERO_TEXT = "lucas vu";
-
-const HERO_STATUS = "seeking summer 2027 internships";
 
 const HERO_SUBTEXT =
   "a six time hackathon winner who transforms ideas into interfaces people adore";
@@ -169,10 +168,11 @@ export default function WorkHero() {
   return (
     <section
       aria-label="Introduction"
-      className="relative flex w-full flex-col items-center overflow-visible px-16 py-8 text-center max-md:px-6 max-md:py-6"
+      className="relative flex w-full flex-col overflow-visible px-16 py-8 max-md:px-6 max-md:py-6"
     >
-      <div className="relative inline-block max-w-full overflow-visible text-left">
-        <div className="relative overflow-visible">
+      {/* Left column: name + interactive sentence */}
+      <div className="relative flex w-full max-w-full flex-col items-start text-left">
+        <div className="relative inline-block max-w-full overflow-visible">
           <p
             ref={ghostRef}
             aria-hidden="true"
@@ -192,29 +192,8 @@ export default function WorkHero() {
               "relative z-[1] inline-flex items-end whitespace-nowrap",
             )}
           >
-            <span className="inline-grid grid-cols-[auto_auto] items-end">
-              <span className="col-start-1 row-span-2 self-end">
-                {renderLetters("l", "l")}
-              </span>
-
-              <span className="col-start-2 row-span-2 grid grid-rows-[1fr_auto] items-end self-end">
-                <span
-                  aria-label={HERO_STATUS}
-                  className="pointer-events-none z-10 flex min-h-0 min-w-0 items-end gap-[0.35em] overflow-hidden text-[clamp(9px,0.082em,12px)] leading-[1.05] translate-y-[0.06em]"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="mb-[0.08em] size-[0.45em] shrink-0 rounded-full bg-emerald-400 animate-[blink_1.2s_ease-in-out_infinite]"
-                  />
-                  <span className="min-w-0 flex-1 font-['Lucas',sans-serif] font-normal lowercase tracking-[0.01em] text-zinc-600">
-                    {HERO_STATUS}
-                  </span>
-                </span>
-
-                <span className="whitespace-nowrap">
-                  {renderLetters("ucas", "ucas")}
-                </span>
-              </span>
+            <span className="inline-block whitespace-nowrap">
+              {renderLetters("lucas", "lucas")}
             </span>
 
             <span className="inline-block w-[0.2em]" aria-hidden="true" />
@@ -224,12 +203,17 @@ export default function WorkHero() {
             </span>
           </h1>
         </div>
+
+        <div className="mt-5 w-full max-w-full md:mt-6">
+          <HeroCapabilitySentence />
+        </div>
       </div>
 
+      {/* Bottom-right hackathon subtext */}
       <p
         className={clsx(
           brandSubtextClass,
-          "mx-auto mt-4 max-w-md text-center text-lg max-md:mt-5 md:mt-3 md:text-[1.35rem]",
+          "mt-10 max-w-sm self-end text-right text-lg max-md:mt-8 max-md:max-w-none max-md:self-stretch max-md:text-left md:text-[1.35rem]",
         )}
       >
         {HERO_SUBTEXT}

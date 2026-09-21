@@ -36,15 +36,12 @@ test("renders the nav header above the Work hero", () => {
 
 test("WorkHero uses GSAP letter-shatter animation for lucas vu", () => {
   assert.match(workHeroSource, /lucas vu/);
-  assert.match(workHeroSource, /seeking summer 2027 internships/);
-  assert.match(workHeroSource, /grid-rows-\[1fr_auto\]/);
-  assert.match(workHeroSource, /row-span-2/);
-  assert.match(workHeroSource, /bg-emerald-400/);
   assert.match(workHeroSource, /data-hero-letter/);
   assert.match(workHeroSource, /from "gsap"/);
   assert.match(workHeroSource, /six time hackathon winner/);
-  assert.match(workHeroSource, /text-center/);
+  assert.match(workHeroSource, /self-end/);
   assert.match(workHeroSource, /brandSubtextClass/);
+  assert.match(workHeroSource, /HeroCapabilitySentence/);
   assert.match(brandTypographySource, /font-medium/);
   assert.match(brandTypographySource, /text-3xl/);
   assert.match(brandTypographySource, /text-zinc-400/);
@@ -52,6 +49,36 @@ test("WorkHero uses GSAP letter-shatter animation for lucas vu", () => {
   assert.match(workHeroSource, /HOVER_REVERT_DELAY_MS = 1000/);
   assert.match(workHeroSource, /pointerenter/);
   assert.doesNotMatch(workHeroSource, /tracking-\[0\.32em\]/);
+  assert.doesNotMatch(workHeroSource, /seeking summer 2027 internships/);
+});
+
+test("WorkHero interactive sentence covers Design, Code, and AI Workflows", () => {
+  const sentenceSource = readFileSync(
+    new URL("./hero/HeroCapabilitySentence.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.match(sentenceSource, /DesignWord/);
+  assert.match(sentenceSource, /CodeWord/);
+  assert.match(sentenceSource, /AIWorkflowsWord/);
+  assert.match(sentenceSource, /\byou\b/);
+  assert.match(sentenceSource, /cursor-none/);
+  assert.doesNotMatch(sentenceSource, /\bVik\b/);
+  assert.doesNotMatch(sentenceSource, />\s*Lucas\s*</);
+  assert.match(sentenceSource, /useReducedMotion/);
+  assert.match(sentenceSource, /hover: none/);
+  assert.match(sentenceSource, /h-\[100px\]/);
+  assert.match(sentenceSource, /layout="position"/);
+  assert.match(sentenceSource, /float d = dist\(uv, p\);/);
+  assert.match(sentenceSource, /PLAN/);
+  assert.match(sentenceSource, /BUILD/);
+  assert.match(sentenceSource, /TEST/);
+  assert.match(sentenceSource, /ITERATE/);
+  assert.match(sentenceSource, /border-zinc-200/);
+  assert.match(sentenceSource, /bg-white/);
+  assert.match(sentenceSource, /text-blue-500|bg-blue-500/);
+  assert.match(sentenceSource, /#70D1FF/);
+  assert.doesNotMatch(sentenceSource, /#FF7722/);
+  assert.doesNotMatch(sentenceSource, /bg-\[#121212\]/);
 });
 
 test("fades the pulse ring out instead of snapping it off", () => {

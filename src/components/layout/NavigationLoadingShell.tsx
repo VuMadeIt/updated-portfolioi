@@ -77,7 +77,11 @@ export default function NavigationLoadingShell({
 
         {/* Navigation band */}
         <div className="relative shrink-0 w-full" style={{ zIndex: 3 }}>
-          <div className="flex w-full items-center justify-end gap-4 px-16 pb-4 pt-8 max-md:px-6 max-md:pb-3 md:pt-10">
+          <div className="flex w-full items-center justify-between gap-4 px-16 pb-4 pt-8 max-md:px-6 max-md:pb-3 md:pt-10">
+            <div className="flex min-w-0 items-center gap-2">
+              <div className="size-1.5 shrink-0 rounded-full bg-zinc-100" />
+              <div className="h-3 w-44 max-w-[50vw] animate-pulse rounded bg-zinc-50" />
+            </div>
             <div className="flex items-center gap-5">
               <div className="h-4 w-10 animate-pulse rounded bg-zinc-50" />
               <div className="h-4 w-12 animate-pulse rounded bg-zinc-50" />

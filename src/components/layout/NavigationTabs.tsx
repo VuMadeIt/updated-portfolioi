@@ -18,6 +18,8 @@ const NAV_LINKS: { id: NavigationTab; label: string; href: string }[] = [
   { id: "about", label: "about", href: "/about" },
 ];
 
+const NAV_STATUS = "seeking summer 2027 internships";
+
 export default function NavigationTabs({ activeTab }: NavigationTabsProps) {
   const router = useRouter();
   const prefetchedRef = useRef<Set<string>>(new Set());
@@ -49,7 +51,18 @@ export default function NavigationTabs({ activeTab }: NavigationTabsProps) {
   return (
     <header className="relative z-50 w-full shrink-0 bg-white pt-8 max-md:pt-8 md:pt-10">
       <ScrollReveal variant="fade" delay={280} rootMargin="0px" className="relative w-full" disabled>
-        <div className="flex w-full items-center justify-end gap-4 px-16 pb-4 max-md:px-6 max-md:pb-3">
+        <div className="flex w-full items-center justify-between gap-4 px-16 pb-4 max-md:px-6 max-md:pb-3">
+          <p
+            className="flex min-w-0 items-center gap-2 font-['Lucas',sans-serif] text-xs font-normal lowercase tracking-[0.01em] text-zinc-600 md:text-sm"
+            aria-label={NAV_STATUS}
+          >
+            <span
+              aria-hidden="true"
+              className="size-1.5 shrink-0 rounded-full bg-emerald-400 animate-[blink_1.2s_ease-in-out_infinite]"
+            />
+            <span className="min-w-0 truncate">{NAV_STATUS}</span>
+          </p>
+
           <nav className="flex shrink-0 items-center gap-5 md:gap-6">
             {NAV_LINKS.map((link) => {
               const isActive = activeTab === link.id;

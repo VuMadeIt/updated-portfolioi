@@ -47,14 +47,15 @@ test("route loading shells align to production geometry without spinners", () =>
   );
   assertSharedGeometry(
     navigationTabsSource,
-    "flex w-full items-center justify-end gap-4 px-16 pb-4 max-md:px-6 max-md:pb-3",
+    "flex w-full items-center justify-between gap-4 px-16 pb-4 max-md:px-6 max-md:pb-3",
   );
 
   const workHeroSource = readFileSync(
     new URL("../home/WorkHero.tsx", import.meta.url),
     "utf8",
   );
-  assert.match(workHeroSource, /seeking summer 2027 internships/);
+  assert.doesNotMatch(workHeroSource, /seeking summer 2027 internships/);
+  assert.match(navigationTabsSource, /seeking summer 2027 internships/);
 
   assert.match(shellSource, /Rectangle Grain 1\.png/);
   assert.match(shellSource, /backgroundRepeat: "repeat"/);
