@@ -35,7 +35,6 @@ export default function LiquidGlassButton({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        cursor: "pointer",
         position: "relative",
         overflow: "hidden",
         isolation: "isolate",

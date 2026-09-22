@@ -68,9 +68,11 @@ test("WorkHero interactive sentence covers Design, Code, and AI Workflows", () =
   assert.doesNotMatch(sentenceSource, />\s*Lucas\s*</);
   assert.match(sentenceSource, /useReducedMotion/);
   assert.match(sentenceSource, /hover: none/);
-  assert.match(sentenceSource, /h-\[100px\]|md:h-\[100px\]/);
-  assert.match(sentenceSource, /max-md:flex-col/);
-  assert.match(sentenceSource, /overflow-x-clip/);
+  assert.match(sentenceSource, /h-\[72px\]|lg:h-\[72px\]/);
+  assert.match(sentenceSource, /max-sm:flex-col/);
+  assert.match(sentenceSource, /overflow-visible/);
+  assert.match(sentenceSource, /text-2xl/);
+  assert.match(sentenceSource, /text-zinc-700/);
   assert.match(sentenceSource, /layout="position"/);
   assert.match(sentenceSource, /dist\(idea, reality\)/);
   assert.match(sentenceSource, /prototype/);

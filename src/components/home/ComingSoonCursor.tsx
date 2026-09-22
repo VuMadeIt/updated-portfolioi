@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -15,10 +15,13 @@ export function useComingSoonCursor(enabled: boolean) {
 
   const handlers = enabled
     ? {
-        onMouseEnter: () =>
-          setCursor((current) => ({ ...current, active: true })),
-        onMouseLeave: () => setCursor({ active: false, x: 0, y: 0 }),
-        onMouseMove: (event: MouseEvent) => {
+        onPointerEnter: (event: ReactPointerEvent) => {
+          if (event.pointerType === "touch") return;
+          setCursor({ active: true, x: event.clientX, y: event.clientY });
+        },
+        onPointerLeave: () => setCursor({ active: false, x: 0, y: 0 }),
+        onPointerMove: (event: ReactPointerEvent) => {
+          if (event.pointerType === "touch") return;
           setCursor({ active: true, x: event.clientX, y: event.clientY });
         },
       }
@@ -77,7 +80,7 @@ export default function ComingSoonCursor({
         <motion.div
           key="coming-soon-cursor"
           aria-hidden="true"
-          className="pointer-events-none fixed z-[9999] hidden md:flex items-start"
+          className="pointer-events-none fixed z-[9999] hidden items-start md:!flex"
           style={{ left: x, top: y }}
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}

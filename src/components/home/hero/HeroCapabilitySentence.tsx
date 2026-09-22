@@ -15,16 +15,16 @@ import {
 } from "../ComingSoonCursor";
 
 const wordBaseClass = clsx(
-  "font-['Lucas',sans-serif] font-light text-[#3f3f46]",
-  // Slightly smaller on mobile so “AI Workflows” fits inside page gutters
-  "text-[clamp(1.25rem,5.2vw,1.75rem)] md:text-[clamp(1.5rem,4vw,2.75rem)] leading-none",
+  "font-['Lucas',sans-serif] font-light text-zinc-700",
+  // Design-system scale: text-2xl → text-3xl → text-4xl
+  "text-2xl leading-none sm:text-3xl lg:text-4xl",
 );
 
 const punctClass = clsx(wordBaseClass, "select-none text-zinc-400");
 
-/** Locked sentence row height on desktop — hover cards overflow without jumping.
- * Mobile uses auto height so the line can wrap under the name without a tall gap. */
-const SENTENCE_ROW_H = "max-md:h-auto md:h-[100px]";
+/** Locked sentence row height on large desktop — hover cards overflow without jumping.
+ * Phone/tablet use auto height so the line wraps freely without a scroll box. */
+const SENTENCE_ROW_H = "h-auto lg:h-[72px]";
 
 /** True when the primary input can't hover (phones/tablets). */
 function useIsTouchDevice() {
@@ -43,23 +43,37 @@ function useIsTouchDevice() {
 
 /**
  * “Design” — Figma selection chrome + magnetic drag (snap back).
+ * Desktop: hover. Phone/tablet: tap to toggle.
  * Cursor matches Coming Soon: blue arrow + “you” badge.
  */
 function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
+  const rootRef = useRef<HTMLSpanElement>(null);
   const isTouch = useIsTouchDevice();
 
-  const showChrome = isHovered || isDragging;
+  const showChrome = isDragging || (isTouch ? isOpen : isHovered);
   const showCustomCursor = showChrome && !isTouch;
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen || !isTouch) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [isOpen, isTouch]);
 
   useEffect(() => {
     if (!isDragging) return;
@@ -69,6 +83,17 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
     window.addEventListener("pointermove", onMove);
     return () => window.removeEventListener("pointermove", onMove);
   }, [isDragging]);
+
+  // Hide the site CSS cursor while the labeled overlay is up
+  // (including drag outside the word).
+  useEffect(() => {
+    if (!showCustomCursor) return;
+    const prev = document.body.style.cursor;
+    document.body.style.cursor = "none";
+    return () => {
+      document.body.style.cursor = prev;
+    };
+  }, [showCustomCursor]);
 
   useEffect(() => {
     const el = textRef.current;
@@ -119,29 +144,52 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
     );
 
   return (
-    <span className="relative mx-0 inline-flex h-full items-center select-none align-middle">
+    <span
+      ref={rootRef}
+      className="relative mx-0 inline-flex h-full items-center select-none align-middle"
+    >
       <motion.span
         ref={textRef}
         layout="position"
-        drag={!reduceMotion}
+        drag={!reduceMotion && !isTouch}
         dragSnapToOrigin
         dragElastic={0.35}
         dragTransition={{ bounceStiffness: 600, bounceDamping: 30 }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
+        onHoverStart={() => {
+          if (!isTouch) setIsHovered(true);
+        }}
+        onHoverEnd={() => {
+          if (!isTouch) setIsHovered(false);
+        }}
+        onClick={() => {
+          if (isTouch) setIsOpen((v) => !v);
+        }}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={() => setIsDragging(false)}
         onPointerMove={(e) => {
-          setCursorPos({ x: e.clientX, y: e.clientY });
+          if (!isTouch) setCursorPos({ x: e.clientX, y: e.clientY });
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            if (isTouch) setIsOpen((v) => !v);
+            else setIsHovered((v) => !v);
+          }
         }}
         className={clsx(
           wordBaseClass,
           "relative z-20 inline-block py-1 pl-0 pr-0",
-          showCustomCursor ? "cursor-none" : "cursor-grab active:cursor-grabbing",
+          showCustomCursor
+            ? "hero-labeled-cursor cursor-none"
+            : isTouch
+              ? "cursor-pointer"
+              : "cursor-grab active:cursor-grabbing",
         )}
+        style={showCustomCursor ? { cursor: "none" } : undefined}
         tabIndex={0}
         role="button"
-        aria-label="Design — drag to move, releases snap back"
+        aria-expanded={showChrome}
+        aria-label="Design — frame selection, drag to move"
       >
         <span className="relative z-10">Design</span>
 
@@ -162,7 +210,7 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
               <span className="absolute -bottom-1 -right-1 size-2 border border-[#0088FF] bg-white" />
 
               <span className="absolute -top-5 left-0 font-['Lucas',sans-serif] text-[11px] font-medium text-[#0088FF]">
-                Design
+                Frame
               </span>
 
               <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#0088FF] px-2 py-0.5 font-mono text-[10px] text-white tabular-nums shadow-lg">
@@ -278,7 +326,7 @@ function CodeTypewriter({
   const activeLine = done ? -1 : lineIndex;
 
   return (
-    <div className="flex flex-col gap-px text-left font-mono text-[9px] leading-[1.15] text-zinc-600 sm:text-[10px]">
+    <div className="flex flex-col gap-px text-left font-mono text-[8px] leading-[1.2] text-zinc-600 sm:text-[9px]">
       {CODE_LINES.map((line, i) => {
         const isActive = i === activeLine;
         const isComplete = done || i < lineIndex;
@@ -294,7 +342,7 @@ function CodeTypewriter({
           <div
             key={line}
             className={clsx(
-              "flex min-h-[1.1em] items-center rounded-sm px-0.5 whitespace-nowrap",
+              "flex min-h-[1.05em] items-center rounded-sm px-0.5 whitespace-nowrap",
               isActive && "bg-blue-100",
             )}
           >
@@ -310,7 +358,7 @@ function CodeTypewriter({
             </span>
             {showCaret && (
               <span
-                className="ml-0.5 inline-block h-2.5 w-1.5 animate-pulse bg-blue-500"
+                className="ml-0.5 inline-block h-2 w-1 animate-pulse bg-blue-500"
                 aria-hidden
               />
             )}
@@ -370,11 +418,11 @@ function CodeWord({ reduceMotion }: { reduceMotion: boolean }) {
           <motion.span
             key="code-block"
             layout="position"
-            initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="z-10 inline-block cursor-pointer select-none rounded-lg border border-zinc-200 bg-white px-2 py-1.5 shadow-sm"
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.94, y: 4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.94, y: 2 }}
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            className="z-10 inline-block cursor-pointer select-none rounded-md border border-zinc-200 bg-white px-1.5 py-1 shadow-sm"
           >
             <CodeTypewriter active={isOpen} reduceMotion={reduceMotion} />
           </motion.span>
@@ -397,10 +445,10 @@ function CodeWord({ reduceMotion }: { reduceMotion: boolean }) {
 }
 
 const AI_NODES = [
-  { id: "plan", label: "PLAN", y: -10, accent: PALETTE.kiwi },
-  { id: "build", label: "BUILD", y: 10, accent: PALETTE.blueberry },
-  { id: "test", label: "TEST", y: -10, accent: PALETTE.mustard },
-  { id: "iterate", label: "ITERATE", y: 10, accent: PALETTE.salmon },
+  { id: "plan", label: "PLAN", y: -6, accent: PALETTE.kiwi },
+  { id: "build", label: "BUILD", y: 6, accent: PALETTE.blueberry },
+  { id: "test", label: "TEST", y: -6, accent: PALETTE.mustard },
+  { id: "iterate", label: "ITERATE", y: 6, accent: PALETTE.salmon },
 ] as const;
 
 function BendyConnector({
@@ -415,17 +463,17 @@ function BendyConnector({
   reduceMotion: boolean;
 }) {
   const x1 = 2;
-  const x2 = 38;
-  const y1 = 20 + fromY;
-  const y2 = 20 + toY;
+  const x2 = 26;
+  const y1 = 14 + fromY;
+  const y2 = 14 + toY;
   const mid = (x1 + x2) / 2;
   const d = `M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`;
 
   return (
     <svg
-      width="40"
-      height="40"
-      viewBox="0 0 40 40"
+      width="28"
+      height="28"
+      viewBox="0 0 28 28"
       className="relative z-0 shrink-0 overflow-visible"
       aria-hidden
     >
@@ -499,11 +547,11 @@ function AIWorkflowsWord({ reduceMotion }: { reduceMotion: boolean }) {
           <motion.span
             key="node-pipeline"
             layout="position"
-            initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="relative z-10 inline-flex max-w-full cursor-pointer select-none items-center px-0 max-md:overflow-x-auto max-md:pb-1 md:px-1"
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.94, y: 4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.94, y: 2 }}
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 inline-flex shrink cursor-pointer select-none items-center px-0"
           >
             {AI_NODES.map((node, i) => (
               <span key={node.id} className="contents">
@@ -516,25 +564,25 @@ function AIWorkflowsWord({ reduceMotion }: { reduceMotion: boolean }) {
                   />
                 )}
                 <motion.div
-                  className="relative z-10 flex items-center rounded-xl border border-zinc-200 bg-white px-2.5 py-1 font-mono text-[10px] text-zinc-600 shadow-sm"
-                  initial={reduceMotion ? false : { opacity: 0 }}
-                  animate={{ opacity: 1, y: node.y }}
+                  className="relative z-10 flex items-center rounded-lg border border-zinc-200 bg-white px-1.5 py-0.5 font-mono text-[8px] text-zinc-600 shadow-sm sm:px-2 sm:text-[9px]"
+                  initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1, y: node.y }}
                   transition={{
-                    delay: reduceMotion ? 0 : 0.05 * i,
-                    duration: 0.18,
-                    ease: "easeOut",
+                    delay: reduceMotion ? 0 : 0.04 * i,
+                    duration: 0.16,
+                    ease: [0.22, 1, 0.36, 1],
                   }}
                 >
                   <span>{node.label}</span>
                   <motion.span
-                    className="absolute -right-1.5 -top-1.5 flex size-3.5 items-center justify-center rounded-full text-[9px] font-bold leading-none text-white"
+                    className="absolute -right-1 -top-1 flex size-2.5 items-center justify-center rounded-full text-[7px] font-bold leading-none text-white sm:size-3 sm:text-[8px]"
                     style={{ backgroundColor: node.accent }}
                     initial={reduceMotion ? false : { opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{
-                      delay: reduceMotion ? 0 : 0.18 + 0.1 * i,
-                      duration: 0.18,
-                      ease: "easeOut",
+                      delay: reduceMotion ? 0 : 0.12 + 0.06 * i,
+                      duration: 0.16,
+                      ease: [0.22, 1, 0.36, 1],
                     }}
                     aria-hidden
                   >
@@ -563,8 +611,9 @@ function AIWorkflowsWord({ reduceMotion }: { reduceMotion: boolean }) {
 }
 
 /**
- * Interactive “Design, Code & AI Workflows.” sentence for the Work hero.
- * Mobile: line 1 = Design, Code · line 2 = & AI Workflows. (respects page gutters)
+ * Interactive “Design, Code & AI Workflows” sentence for the Work hero.
+ * Phone only: line 1 = Design, Code · line 2 = & AI Workflows.
+ * Tablet+ keeps the full sentence on one row (no scroll box).
  */
 export default function HeroCapabilitySentence() {
   const reduceMotion = useReducedMotion() ?? false;
@@ -575,20 +624,20 @@ export default function HeroCapabilitySentence() {
         layout="position"
         className={clsx(
           SENTENCE_ROW_H,
-          "box-border flex w-full min-w-0 max-w-full items-center gap-x-[0.35em] overflow-x-clip overflow-y-visible",
-          // Mobile: two explicit rows aligned to the left gutter
-          "max-md:flex-col max-md:items-stretch max-md:gap-y-1",
-          "md:flex-row md:flex-nowrap md:items-center",
+          "box-border ml-0 flex w-full min-w-0 max-w-full items-center gap-x-[0.3em] overflow-visible pl-0",
+          // Phone only: stack & AI Workflows under Design, Code
+          "max-sm:flex-col max-sm:items-stretch max-sm:gap-y-1",
+          "sm:flex-row sm:flex-nowrap sm:items-center",
         )}
         aria-label="Design, Code and AI Workflows"
       >
-        {/* Line 1 (mobile): Design, Code */}
-        <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-[0.2em] md:contents">
+        {/* Line 1 (phone): Design, Code */}
+        <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-[0.2em] sm:contents">
           <DesignWord reduceMotion={reduceMotion} />
           <span
             className={clsx(
               punctClass,
-              "-ml-[0.08em] inline-flex items-center md:h-full",
+              "-ml-[0.08em] inline-flex items-center sm:h-full",
             )}
             aria-hidden
           >
@@ -597,21 +646,15 @@ export default function HeroCapabilitySentence() {
           <CodeWord reduceMotion={reduceMotion} />
         </span>
 
-        {/* Line 2 (mobile): & AI Workflows. */}
-        <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-[0.35em] md:contents">
+        {/* Line 2 (phone): & AI Workflows — tablet+ stays inline */}
+        <span className="inline-flex min-w-0 max-w-full flex-wrap items-center gap-x-[0.3em] sm:contents">
           <span
-            className={clsx(punctClass, "inline-flex items-center md:h-full")}
+            className={clsx(punctClass, "inline-flex items-center sm:h-full")}
             aria-hidden
           >
             &
           </span>
           <AIWorkflowsWord reduceMotion={reduceMotion} />
-          <span
-            className={clsx(punctClass, "inline-flex items-center md:h-full")}
-            aria-hidden
-          >
-            .
-          </span>
         </span>
       </motion.div>
     </LayoutGroup>

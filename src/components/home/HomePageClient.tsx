@@ -440,7 +440,9 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
   const enterStyle = { animationDelay: `${Math.min(index * 60, 300)}ms` };
   const cardClassName = clsx(
     "content-stretch flex flex-col gap-3 items-start relative shrink-0 w-full group project-card",
-    isComingSoon ? "cursor-none max-md:cursor-default" : "cursor-pointer",
+    isComingSoon
+      ? "coming-soon-card cursor-none max-md:cursor-default"
+      : "cursor-pointer",
   );
   const sharedCardProps = {
     style: enterStyle,
@@ -478,6 +480,13 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
             mediaFit={project.mediaFit}
             mediaBackground={project.mediaBackground}
           />
+          {isComingSoon && (
+            <div
+              className="absolute inset-0 z-30 hidden rounded-[26px] md:block"
+              aria-hidden
+              {...comingSoonHandlers}
+            />
+          )}
           <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
           <div className="absolute bottom-0 left-0 p-3 hidden md:block">
             <div className="bg-white border border-[#f4f4f5] border-solid flex items-center justify-center px-3 pt-[5px] pb-[4.8px] rounded-full">
@@ -554,6 +563,13 @@ const ProjectCard = React.memo(function ProjectCard({ project, onProjectClick, f
           mediaFit={project.mediaFit}
           mediaBackground={project.mediaBackground}
         />
+        {isComingSoon && (
+          <div
+            className="absolute inset-0 z-30 hidden rounded-[26px] md:block"
+            aria-hidden
+            {...comingSoonHandlers}
+          />
+        )}
         <div aria-hidden="true" className="absolute border border-zinc-100 inset-0 pointer-events-none rounded-[26px]" />
       </div>
       <div className="content-stretch flex font-['Lucas',sans-serif] md:-mt-1.5 md:-mb-0.5 font-normal items-start leading-snug px-[13px] py-0 relative shrink-0 text-base tracking-[0.005em] w-full project-hover-text">

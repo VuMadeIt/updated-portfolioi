@@ -21,7 +21,7 @@ function HeroLetter({ char }: { char: string }) {
   return (
     <span
       data-hero-letter=""
-      className="inline-block cursor-default will-change-transform"
+      className="inline-block will-change-transform"
       style={{ transformOrigin: "center center" }}
     >
       {char}
@@ -165,11 +165,11 @@ export default function WorkHero() {
   return (
     <section
       aria-label="Introduction"
-      className="relative flex w-full flex-col overflow-visible px-16 py-8 max-md:px-6 max-md:py-6"
+      className="relative flex w-full flex-col overflow-visible px-16 py-8 max-md:px-6 max-md:py-6 lg:py-10"
     >
-      {/* Left column: name + interactive sentence */}
-      <div className="relative flex w-full max-w-full flex-col items-start text-left">
-        <div className="relative inline-block max-w-full overflow-visible">
+      {/* Name + interactive sentence — flush left edge (shared optical nudge) */}
+      <div className="relative flex w-full max-w-full flex-col items-stretch pl-0 text-left md:pt-[4vh] lg:pt-[8vh] xl:pt-[12vh]">
+        <div className="relative w-full max-w-full overflow-visible pl-0 -ml-[0.04em]">
           <p
             ref={ghostRef}
             aria-hidden="true"
@@ -186,7 +186,7 @@ export default function WorkHero() {
             ref={headingRef}
             className={clsx(
               heroNameClass,
-              "relative z-[1] inline-flex items-end whitespace-nowrap",
+              "relative z-[1] flex w-full items-end whitespace-nowrap pl-0",
             )}
           >
             <span className="inline-block whitespace-nowrap">
@@ -201,20 +201,23 @@ export default function WorkHero() {
           </h1>
         </div>
 
-        <div className="mt-0.5 w-full min-w-0 max-w-full md:mt-1">
+        {/* Same left edge as name — Frame label clearance via pt on desktop */}
+        <div className="mt-3 w-full min-w-0 max-w-full pl-0 max-md:mt-4 md:mt-0 md:pt-5 lg:pt-4 xl:pt-4 -ml-[0.04em]">
           <HeroCapabilitySentence />
         </div>
       </div>
 
-      {/* Bottom-right hackathon subtext */}
+      {/* Hackathon subtext — desktop/laptop: exactly 2 lines; phone/tablet: free wrap */}
       <p
         className={clsx(
           brandSubtextClass,
-          "mt-10 max-w-sm self-end text-right text-lg max-md:mt-8 max-md:max-w-none max-md:self-stretch max-md:text-left md:text-[1.35rem]",
+          "mt-8 self-stretch text-left text-lg leading-snug",
+          "md:mt-10 md:max-w-[22rem] md:self-end md:text-right md:text-[1.35rem] md:leading-[1.35] md:line-clamp-2",
+          "lg:mt-12",
         )}
       >
         a six time hackathon winner who{" "}
-        <br className="md:hidden" />
+        <br className="hidden md:block" aria-hidden="true" />
         transforms ideas into interfaces people&nbsp;adore
       </p>
     </section>

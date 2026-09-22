@@ -438,7 +438,7 @@ function ProfilePolaroidFrame({
     <div
       className={clsx(
         "flex w-[17.5rem] rotate-[-4deg] flex-col border border-zinc-100 bg-white p-3 pb-0 shadow-media transition-transform duration-200 ease-out md:w-[19rem]",
-        onClick && "cursor-zoom-in hover:scale-[0.99]",
+        onClick && "cursor-pointer hover:scale-[0.99]",
         className,
       )}
       onClick={onClick}
