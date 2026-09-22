@@ -207,18 +207,19 @@ export default function WorkHero() {
         </div>
       </div>
 
-      {/* Hackathon subtext — desktop/laptop: exactly 2 lines; phone/tablet: free wrap */}
+      {/* Hackathon subtext — desktop/laptop: exactly 2 lines (full copy); phone: free wrap */}
       <p
         className={clsx(
           brandSubtextClass,
           "mt-8 self-stretch text-left text-lg leading-snug",
-          "md:mt-10 md:max-w-[22rem] md:self-end md:text-right md:text-[1.35rem] md:leading-[1.35] md:line-clamp-2",
+          "md:mt-10 md:max-w-[34rem] md:self-end md:text-right md:text-[1.35rem] md:leading-[1.35]",
           "lg:mt-12",
         )}
       >
-        a six time hackathon winner who{" "}
-        <br className="hidden md:block" aria-hidden="true" />
-        transforms ideas into interfaces people&nbsp;adore
+        <span className="md:block">a six time hackathon winner who</span>{" "}
+        <span className="md:block">
+          transforms ideas into interfaces people&nbsp;adore
+        </span>
       </p>
     </section>
   );

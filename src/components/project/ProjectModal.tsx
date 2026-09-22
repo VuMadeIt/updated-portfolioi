@@ -254,13 +254,11 @@ import SideQuestSection from "./SideQuestSection";
 import { TwoColumnImageSectionComponent } from "./TwoColumnImageSection";
 import { ScrollReveal } from "../shared/ScrollReveal";
 import { useScrollLock } from "../../utils/useScrollLock";
-import lockIcon from "../../assets/lock.svg";
 import quoteGraphic from "../../assets/quote gray 200.png";
 import { posthog, posthogEnabled } from "../../lib/posthog";
-import { FieldInput, FieldShell, fieldIconSlotClassName } from "../shared/FieldInput";
 import { Chevron } from "../icons/Chevron";
 import { Close } from "../icons/Close";
-import { ArrowRightIcon } from "../icons/Arrow";
+import { ArrowLeftIcon } from "../icons/Arrow";
 import { Expand } from "../icons/Expand";
 import { iconSize } from "../shared/iconSizes";
 import { HorizontalLine } from "../shared/HorizontalLine";
@@ -418,35 +416,6 @@ function createPortableTextComponents(highlightedText?: string, highlightColor?:
 
 // Default PortableText components (without highlighting)
 const portableTextComponents = createPortableTextComponents();
-
-// Helper functions for tracking unlocked projects in session
-const UNLOCKED_PROJECTS_KEY = 'unlockedProjects';
-
-function getUnlockedProjects(): string[] {
-  try {
-    if (typeof window === "undefined") return [];
-    const stored = sessionStorage.getItem(UNLOCKED_PROJECTS_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function markProjectUnlocked(projectId: string): void {
-  try {
-    const unlocked = getUnlockedProjects();
-    if (!unlocked.includes(projectId)) {
-      unlocked.push(projectId);
-      sessionStorage.setItem(UNLOCKED_PROJECTS_KEY, JSON.stringify(unlocked));
-    }
-  } catch {
-    // Silently fail if sessionStorage is unavailable
-  }
-}
-
-function isProjectUnlocked(projectId: string): boolean {
-  return getUnlockedProjects().includes(projectId);
-}
 
 // Breadcrumb component for fullscreen modal header
 type BreadcrumbProps = {
@@ -826,163 +795,6 @@ function ExpandableImage({ src, alt = "", caption, className = "", containerClas
   );
 }
 
-type PasswordErrorKind = "invalid" | "rate_limited" | "unconfigured" | "network";
-
-const PASSWORD_ERROR_MESSAGES: Record<PasswordErrorKind, string> = {
-  invalid: "Please try again!",
-  rate_limited: "Too many attempts. Please try again in a few minutes.",
-  unconfigured: "Something's broken on my end, not your password. Please email me!",
-  network: "Couldn't reach the server. Please try again.",
-};
-
-// Password input component - verifies password server-side via /api/password
-function PasswordInput({ 
-  projectId, 
-  onUnlock,
-  placeholder = "Enter",
-}: { 
-  projectId: string; 
-  onUnlock?: () => void;
-  placeholder?: string;
-}) {
-  const [passwordValue, setPasswordValue] = useState("");
-  // `kind` outlives `visible` so the message doesn't blank out mid fade-out.
-  const [error, setError] = useState<{ kind: PasswordErrorKind; visible: boolean }>({
-    kind: "invalid",
-    visible: false,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  const showError = (kind: PasswordErrorKind) => setError({ kind, visible: true });
-  const clearError = () => setError((current) => ({ ...current, visible: false }));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isLoading || !passwordValue.trim()) return;
-
-    setIsLoading(true);
-    clearError();
-
-    try {
-      const response = await fetch('/api/password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: "same-origin",
-        body: JSON.stringify({ project: projectId, password: passwordValue }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setPasswordValue("");
-        onUnlock?.();
-        return;
-      }
-
-      if (data.error === "unconfigured" || response.status >= 500) {
-        console.error(
-          `Password unlock is misconfigured for "${projectId}" — check the PASSWORD_* and PASSWORD_SESSION_SECRET env vars for this environment.`,
-        );
-        showError("unconfigured");
-      } else if (data.error === "rate_limited" || response.status === 429) {
-        showError("rate_limited");
-      } else {
-        showError("invalid");
-      }
-    } catch {
-      showError("network");
-    }
-    setIsLoading(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordValue(e.target.value);
-    if (error.visible) {
-      clearError();
-    }
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-[313px]">
-      <FieldShell error={error.visible} className="justify-between">
-        <FieldInput
-          type={showPassword ? "text" : "password"}
-          placeholder={placeholder}
-          value={passwordValue}
-          onChange={handleInputChange}
-          disabled={isLoading}
-        />
-        <div className="flex items-center gap-2.5">
-          {/* Show/Hide password toggle - only visible when there's input */}
-          <button
-            type="button"
-            onClick={toggleShowPassword}
-            disabled={isLoading}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            className={clsx(
-              "relative shrink-0 size-[18px] text-zinc-500 hover:opacity-70 transition-all duration-200",
-              passwordValue.length > 0 ? "opacity-100" : "opacity-0 pointer-events-none"
-            )}
-          >
-            <span className="relative block size-[18px]">
-              <span
-                className={clsx(
-                  "absolute inset-0 transition-all duration-200 ease-out",
-                  showPassword ? "opacity-0 scale-90" : "opacity-100 scale-100"
-                )}
-              >
-                <EyeIcon />
-              </span>
-              <span
-                className={clsx(
-                  "absolute inset-0 transition-all duration-200 ease-out",
-                  showPassword ? "opacity-100 scale-100" : "opacity-0 scale-90"
-                )}
-              >
-                <EyeOffIcon />
-              </span>
-            </span>
-          </button>
-          {/* Submit arrow or loading spinner */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            aria-label="Submit password"
-            className={clsx(
-              fieldIconSlotClassName,
-              "relative text-zinc-500 transition-opacity hover:opacity-70 disabled:opacity-50",
-            )}
-          >
-            {isLoading ? (
-              <div className="size-3.5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-500" />
-            ) : (
-              <ArrowRightIcon size={iconSize("md")} />
-            )}
-          </button>
-        </div>
-      </FieldShell>
-      {/* Error message overlays without affecting layout size */}
-      <div
-        className={clsx(
-          "absolute left-0 top-full mt-1 w-full pointer-events-none transition-all duration-300 ease-out z-10",
-          error.visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
-        )}
-      >
-        <p role="alert" className="text-[#f87171] text-sm leading-normal px-2 bg-transparent">
-          {PASSWORD_ERROR_MESSAGES[error.kind]}
-        </p>
-      </div>
-    </form>
-  );
-}
-
 type ProjectModalProps = {
   projectId: string; // company name: "apple", "roblox", "adobe", "nasa"
   onClose: () => void;
@@ -1027,8 +839,8 @@ export default function ProjectModal({
     () => !getCachedData<Project>(`project:${projectId}`),
   );
   const [error, setError] = useState<string | null>(null);
-  // Check if project was previously unlocked in this session
-  const [isUnlocked, setIsUnlocked] = useState(() => isProjectUnlocked(projectId));
+  // Password gates removed — case studies open unlocked.
+  const [isUnlocked] = useState(true);
   // Start false for SSR; useEffect below syncs from window.innerWidth on mount
   const [isMobile, setIsMobile] = useState(false);
 
@@ -1059,15 +871,16 @@ export default function ProjectModal({
     if (isRipple || isShufflr || isMapleLeaf || !project?.content) return [];
 
     return project.content.filter((section) => {
-      if (section._type === "protectedSection") return !isUnlocked;
+      // Never show the password / protection card
+      if (section._type === "protectedSection") return false;
 
       const visibility = (section as { visibility?: string }).visibility || "both";
       if (visibility === "both") return true;
-      if (visibility === "locked") return !isUnlocked;
-      if (visibility === "unlocked") return isUnlocked;
+      if (visibility === "locked") return false;
+      if (visibility === "unlocked") return true;
       return true;
     });
-  }, [project, isUnlocked, isRipple, isShufflr, isMapleLeaf]);
+  }, [project, isRipple, isShufflr, isMapleLeaf]);
 
   const navItems = useMemo(() => {
     if (isRipple) return RIPPLE_NAV_ITEMS;
@@ -1080,21 +893,6 @@ export default function ProjectModal({
     () => getAlsoCheckOutFromPortfolio(portfolioProjects, projectId),
     [portfolioProjects, projectId],
   );
-
-  const mapleLeafProtectedSections = useMemo(() => {
-    if (!isMapleLeaf || !project?.content) return [];
-
-    return project.content.filter((section) => {
-      if (section._type !== "protectedSection") return false;
-
-      const visibility = section.visibility || "locked";
-      if (visibility === "both") return true;
-      if (visibility === "locked") return !isUnlocked;
-      if (visibility === "unlocked") return isUnlocked;
-      return !isUnlocked;
-    });
-  }, [isMapleLeaf, project, isUnlocked]);
-
   // Fetch project data from Sanity (uses preloaded cache if available).
   // Lucas local case studies never depend on Michelle Sanity company rows.
   useEffect(() => {
@@ -1114,7 +912,7 @@ export default function ProjectModal({
         const cacheKey = `project:${projectId}`;
         const cachedData = getCachedData<Project>(cacheKey);
 
-        if (cachedData && !isProjectUnlocked(projectId)) {
+        if (cachedData) {
           setProject(applyLucasProjectOverrides(projectId, cachedData));
           setError(null);
           setLoading(false);
@@ -1124,11 +922,7 @@ export default function ProjectModal({
         setLoading(true);
 
         const apiCompany = toInternalProjectId(projectId);
-        const { project: data, unlocked } = await fetchProjectByCompany(apiCompany);
-        if (unlocked) {
-          markProjectUnlocked(projectId);
-          setIsUnlocked(true);
-        }
+        const { project: data } = await fetchProjectByCompany(apiCompany);
         const next = applyLucasProjectOverrides(projectId, data);
         if (next) {
           setCachedData(cacheKey, next);
@@ -1394,41 +1188,16 @@ export default function ProjectModal({
     };
   }, [isUnlocked, isFullscreen, project]);
 
-  // Sync unlock state from sessionStorage when transitioning to fullscreen
-  useEffect(() => {
-    if (isFullscreen && !isUnlocked && isProjectUnlocked(projectId)) {
-      setIsUnlocked(true);
-    }
-  }, [isFullscreen, isUnlocked, projectId]);
-
-  // Handle unlocking a password-protected project
-  const handleUnlock = async (targetSectionId?: string) => {
-    const normalizedTarget = targetSectionId?.trim();
-    pendingUnlockTargetRef.current = normalizedTarget || null;
-
-    try {
-      const { project: unlockedProject } = await fetchProjectByCompany(projectId);
-      if (unlockedProject) {
-        setProject(applyLucasProjectOverrides(projectId, unlockedProject));
-      }
-    } catch (err) {
-      console.error("Error fetching unlocked project:", err);
-      setError("Failed to load unlocked project content.");
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
       return;
     }
-
-    if (posthogEnabled) {
-      posthog.capture("protected_content_unlocked", { project_id: projectId });
+    if (onViewAllProjects) {
+      onViewAllProjects();
+      return;
     }
-
-    markProjectUnlocked(projectId);
-
-    if (!isFullscreen && onExpandToFullscreen) {
-      // Navigate to fullscreen first; unlocked state syncs via the effect above
-      onExpandToFullscreen();
-    } else {
-      setIsUnlocked(true);
-    }
+    onClose();
   };
 
   const handleProjectClick = (company: string) => {
@@ -1505,12 +1274,19 @@ export default function ProjectModal({
                 "content-stretch flex flex-col items-start px-16 max-md:px-6 relative shrink-0 w-full md:sticky md:top-0 z-30 transition-all duration-300 ease-out",
                 isScrolled ? "py-4" : "py-8"
               )}
-              /*style={{ 
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.5) 33%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 70%, rgba(255,255,255,0) 100%)'
-              }} */
             >
-              <div className="content-stretch flex gap-1.5 items-center relative shrink-0 w-full">
-                {/* Breadcrumb navigation */}
+              <div className="content-stretch flex gap-2 items-center relative shrink-0 w-full">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className={clsx(
+                    ghostIconButtonClass("md"),
+                    "-ml-2 shrink-0 text-zinc-600 hover:text-zinc-900",
+                  )}
+                  aria-label="Back"
+                >
+                  <ArrowLeftIcon size={iconSize("lg")} className="text-current" />
+                </button>
                 <Breadcrumb 
                   projectName={getBreadcrumbProjectName(projectId, project)}
                   onWorkClick={onViewAllProjects}
@@ -1748,28 +1524,7 @@ export default function ProjectModal({
               ) : isShufflr ? (
                 <ShufflrCaseStudy />
               ) : isMapleLeaf ? (
-                <>
-                  <MapleLeafCaseStudy />
-                  {mapleLeafProtectedSections.map((section) => (
-                    <div
-                      key={section._key}
-                      className="mx-auto w-full max-w-[800px]"
-                    >
-                      <ScrollReveal>
-                        <ContentBlock
-                          section={section}
-                          isFullscreen={isFullscreen}
-                          isUnlocked={isUnlocked}
-                          onUnlock={handleUnlock}
-                          projectId={projectId}
-                          scrollContainerRef={scrollContainerRef}
-                          missionRef={missionRef}
-                          tocRef={tocRef}
-                        />
-                      </ScrollReveal>
-                    </div>
-                  ))}
-                </>
+                <MapleLeafCaseStudy />
               ) : (
               visibleSections.map((section, index) => {
                   const sectionNumber =
@@ -1797,9 +1552,8 @@ export default function ProjectModal({
                       <ContentBlock
                         section={section}
                         isFullscreen={isFullscreen}
-                        isUnlocked={isUnlocked}
-                        onUnlock={handleUnlock}
-                        projectId={projectId}
+                          isUnlocked={isUnlocked}
+                          projectId={projectId}
                         scrollContainerRef={scrollContainerRef}
                         missionRef={missionRef}
                         tocRef={tocRef}
@@ -1821,7 +1575,6 @@ export default function ProjectModal({
                           section={section} 
                           isFullscreen={isFullscreen} 
                           isUnlocked={isUnlocked} 
-                          onUnlock={handleUnlock}
                           scrollContainerRef={scrollContainerRef}
                           projectId={projectId}
                           missionRef={missionRef}
@@ -2219,86 +1972,8 @@ function ContentBlock({
       );
 
     case "protectedSection":
-      // Check visibility setting
-      const shouldShowProtected = 
-        section.visibility === 'both' || 
-        (section.visibility === 'locked' && !isUnlocked) || 
-        (section.visibility === 'unlocked' && isUnlocked) ||
-        (!section.visibility && !isUnlocked); // Default behavior: show when locked
-      
-      if (!shouldShowProtected) return null;
-      
-      const hasPassword = !!section.showPasswordProtection;
-      const isMapleLeafProtected =
-        !!projectId && isMapleLeafProject(projectId);
-      return (
-        <div className="content-stretch flex flex-col items-start case-study-pad-x py-10 relative shrink-0 w-full">
-          <div className="bg-zinc-100 content-stretch flex flex-col items-center justify-center overflow-clip p-16 max-md:px-8 max-md:py-16 relative rounded-[26px] shrink-0 w-full">
-            <div className={clsx(
-              "content-stretch flex flex-col items-start relative shrink-0 w-full",
-              hasPassword && "gap-8"
-            )}>
-              <div className="content-stretch flex flex-col gap-8 items-start justify-center relative shrink-0">
-                {/* Lock Icon with shadow */}
-                <div className="relative shrink-0 size-[60px]">
-                  <div className="absolute inset-0 rounded-full bg-white shadow-soft flex items-center justify-center">
-                    <img src={lockIcon} alt="" className="w-[19px] h-[28px]" />
-                  </div>
-                </div>
-
-                {/* Text Content */}
-                <div className="content-stretch flex flex-col gap-2 items-start relative shrink-0 w-full">
-                  <p className="leading-relaxed relative shrink-0 text-2xl text-zinc-900">
-                    {(section.title || (projectId === "apple" ? "This work is confidential." : hasPassword ? "This case study is password-protected." : "Confidential")).replace(/\n/g, ' ')}
-                  </p>
-                  <p className="leading-normal relative shrink-0 text-[#a1a1aa] text-lg">
-                    {isMapleLeafProtected ? (
-                      <>
-                        Want to learn more? Feel free to{" "}
-                        <a
-                          href={`mailto:${section.contactEmail || "lucasvu.work@gmail.com"}`}
-                          className="font-medium text-zinc-500 hover:text-blue-500 transition-colors"
-                        >
-                          email me
-                        </a>
-                        !
-                      </>
-                    ) : projectId === "apple" ? (
-                      "Please "
-                    ) : hasPassword ? (
-                      "Curious? Feel free to "
-                    ) : (
-                      section.message || "Interested? Please "
-                    )}
-                    {!isMapleLeafProtected && section.contactEmail ? (
-                      <>
-                        <a
-                          href={`mailto:${section.contactEmail}`}
-                          className="font-medium text-zinc-500 hover:text-blue-500 transition-colors"
-                        >
-                          email me
-                        </a>
-                        {projectId === "apple" ? " if you'd like to chat!" : "!"}
-                      </>
-                    ) : !isMapleLeafProtected ? (
-                      projectId === "apple" ? "email me if you'd like to chat!" : "email me!"
-                    ) : null}
-                  </p>
-                </div>
-              </div>
-
-              {/* Password Input - verifies server-side via /api/password */}
-              {hasPassword && !isUnlocked && projectId && (
-                <PasswordInput 
-                  projectId={projectId} 
-                  placeholder={isMapleLeafProtected ? "Enter Password" : "Enter"}
-                  onUnlock={() => onUnlock?.(section.unlockTargetSectionId)}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      );
+      // Password / protection cards are disabled site-wide.
+      return null;
 
     case "featureSection":
       const featureImageSrc = section.externalImageUrl
