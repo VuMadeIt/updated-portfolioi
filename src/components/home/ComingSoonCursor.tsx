@@ -28,7 +28,7 @@ export function useComingSoonCursor(enabled: boolean) {
 }
 
 /** Pixel-perfect blue arrow (matches site CSS cursor assets). */
-function BlueArrowCursor({ className }: { className?: string }) {
+export function BlueArrowCursor({ className }: { className?: string }) {
   return (
     <svg
       width="24"
@@ -48,6 +48,11 @@ function BlueArrowCursor({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/** Shared badge classes for Coming Soon / Design “you” labeled cursors. */
+export const labeledCursorBadgeClass =
+  "mt-[14px] ml-0.5 whitespace-nowrap bg-[#3b82f6] px-2 py-1 font-['Lucas',sans-serif] text-[11px] font-medium leading-none text-white shadow-sm";
+
 
 /**
  * Coming-soon project hover cursor: blue arrow + sharp “Coming Soon” badge.
@@ -85,7 +90,7 @@ export default function ComingSoonCursor({
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -4, scale: 0.96 }}
             transition={{ duration: 0.16, ease: "easeOut", delay: 0.02 }}
-            className="mt-[14px] ml-0.5 whitespace-nowrap bg-[#3b82f6] px-2 py-1 font-['Lucas',sans-serif] text-[11px] font-medium leading-none text-white shadow-sm"
+            className={labeledCursorBadgeClass}
           >
             Coming Soon
           </motion.span>

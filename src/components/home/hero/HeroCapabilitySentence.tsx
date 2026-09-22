@@ -9,6 +9,10 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import clsx from "clsx";
+import {
+  BlueArrowCursor,
+  labeledCursorBadgeClass,
+} from "../ComingSoonCursor";
 
 const wordBaseClass = clsx(
   "font-['Lucas',sans-serif] font-light text-[#3f3f46]",
@@ -37,32 +41,9 @@ function useIsTouchDevice() {
   return isTouch;
 }
 
-/** Open-hand grab cursor (Design drag affordance). */
-function DesignHandCursor({ className }: { className?: string }) {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 28 28"
-      fill="none"
-      className={className}
-      aria-hidden
-    >
-      <path
-        d="M9.2 12.2V7.4c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v4.2M12.8 11.2V5.6c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v6.2M16.4 11.5V6.8c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v7.4M20 13.2v-1.6c0-1 .8-1.8 1.8-1.8s1.8.8 1.8 1.8v6.2c0 4.2-3.4 7.2-7.6 7.2h-1.4c-2.8 0-5.2-1.4-6.6-3.6L6.2 16.8c-.7-1-.5-2.4.5-3.1.9-.6 2.1-.4 2.8.4l.7.9V12.2"
-        fill="#ffffff"
-        stroke="#3b82f6"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 /**
  * “Design” — Figma selection chrome + magnetic drag (snap back).
- * On hover/drag, cursor becomes open hand + sharp “You” badge.
+ * Cursor matches Coming Soon: blue arrow + “you” badge.
  */
 function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -113,7 +94,7 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
       <AnimatePresence>
         {showCustomCursor && (
           <motion.div
-            key="design-hand-cursor"
+            key="design-you-cursor"
             initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={reduceMotion ? undefined : { opacity: 0, scale: 0.92 }}
@@ -122,14 +103,14 @@ function DesignWord({ reduceMotion }: { reduceMotion: boolean }) {
             style={{ left: cursorPos.x, top: cursorPos.y }}
             aria-hidden
           >
-            <DesignHandCursor className="shrink-0 drop-shadow-sm" />
+            <BlueArrowCursor className="shrink-0 drop-shadow-sm" />
             <motion.span
               initial={reduceMotion ? false : { opacity: 0, x: -6, scale: 0.96 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               transition={{ duration: 0.16, ease: "easeOut", delay: 0.02 }}
-              className="mt-4 ml-0.5 whitespace-nowrap bg-[#3b82f6] px-2 py-1 font-['Lucas',sans-serif] text-[11px] font-semibold leading-none text-white shadow-sm"
+              className={labeledCursorBadgeClass}
             >
-              You
+              you
             </motion.span>
           </motion.div>
         )}
